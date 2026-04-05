@@ -1,0 +1,70 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: voice_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: voice_db
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_PASSWORD: dbpassword
+      MYSQL_USER: voice_user
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - voice-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  laravel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: voice_laravel
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - voice-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:alpine
+    container_name: voice_nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - voice-network
+    depends_on:
+      - laravel
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: voice_phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - "8080:80"
+    networks:
+      - voice-network
+    depends_on:
+      - mysql
+
+networks:
+  voice-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
