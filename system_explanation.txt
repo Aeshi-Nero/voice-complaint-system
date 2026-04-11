@@ -1,0 +1,82 @@
+# System Explanation: Voice Complaint System
+
+This document provides a comprehensive overview of the files and directories in the Voice Complaint System project.
+
+## 1. Standard Laravel Directories
+- **app/**: Contains the core PHP code for the application, including Models, Controllers, Middleware, and Services.
+- **bootstrap/**: Contains the `app.php` file which bootstraps the framework, and the `cache/` directory which contains framework-generated files for performance optimization.
+- **config/**: Houses all of the application's configuration files (database, mail, session, etc.).
+- **database/**: Contains database migrations, model factories, and seeders. It also includes the `database.sqlite` file used for local development.
+- **lang/**: Contains localization files (currently empty).
+- **public/**: The entry point for all requests entering the application (`index.php`) and publicly accessible assets like icons and robots.txt.
+- **resources/**: Contains your views (Blade templates) and uncompiled assets like CSS and JavaScript.
+- **routes/**: Contains all route definitions for the application (`web.php` for web UI, `api.php` for API endpoints).
+- **storage/**: Used by the framework to store logs, compiled Blade templates, and file-based sessions/cache.
+- **tests/**: Contains automated tests (Unit and Feature tests).
+
+## 2. Root Directory Files
+- **.editorconfig**: Configuration for maintaining consistent coding styles across different editors.
+- **.env.example**: A template for environment variables (database credentials, API keys, etc.).
+- **.gitattributes / .gitignore**: Git configuration for path-specific settings and ignoring files.
+- **artisan**: The Laravel command-line interface used for running migrations, clearing cache, etc.
+- **composer.json / composer.lock**: Manages PHP dependencies and their versions.
+- **docker-compose.yaml**: Orchestrates the multi-container Docker environment (Laravel, MySQL, Nginx, PhpMyAdmin).
+- **docker-entrypoint.sh**: Script that runs when the Laravel Docker container starts.
+- **Dockerfile**: Instructions for building the Laravel PHP-FPM image.
+- **package.json**: Manages JavaScript dependencies and build scripts.
+- **phpunit.xml**: Configuration for the PHPUnit testing framework.
+- **priority**: A custom project file (currently empty), likely intended for tracking task priorities or system importance levels.
+- **README.md**: General project documentation.
+- **render-build.sh**: A script used by Render to install dependencies and build assets during deployment.
+- **render.yaml**: Configuration for deploying the application on the Render platform.
+- **tailwind.config.js**: Configuration for the Tailwind CSS framework.
+- **vite.config.js / vite.config.ts**: Configuration for Vite, the modern frontend build tool used by Laravel.
+
+## 3. Project-Specific Files & Logic
+### app/
+- **Console/Commands/ResetDailyComplaints.php**: A custom Artisan command to reset complaint counters daily.
+- **Http/Controllers/**:
+    - **Admin/**: Controllers for administrative tasks like moderation and dashboard management.
+    - **Auth/LoginController.php**: Manages user authentication.
+    - **ComplaintController.php**: Main logic for handling complaint submission and retrieval.
+    - **VoteController.php**: Logic for user voting on polls or complaints.
+- **Models/**:
+    - **Complaint.php**: Represents a user complaint.
+    - **Poll.php / PollOption.php / PollVote.php**: Models for the system's polling feature.
+    - **ProfanityWord.php**: Model for managing forbidden words.
+    - **User.php**: The standard User model for authentication.
+- **Services/**:
+    - **ComplaintNumberService.php**: Generates unique identifiers for complaints.
+    - **ProfanityService.php**: Filters and checks for profanity in submissions.
+
+### database/
+- **migrations/**: Six migration files creating tables for users, complaints, polls, options, votes, and profanity words.
+- **seeders/DatabaseSeeder.php**: Populates the database with initial or dummy data.
+
+### resources/views/
+- **admin/**: Dashboard and moderation views for administrators.
+- **auth/**: Login and authentication templates.
+- **dashboard/**: Contains subdirectories for admin and user dashboards, including complaint details and submission forms.
+- **layouts/app.blade.php**: The main layout file that provides the common structure (HTML head, navbar, footer) for all pages.
+- **welcome.blade.php**: The landing page of the application.
+
+### routes/
+- **web.php**: Defines the web-accessible routes, including dashboard access and complaint submission.
+- **api.php**: (Optional) API endpoints for mobile or external integration.
+
+## 4. Custom Folders and Files
+- **designs/**: This directory contains visual mockups or screenshots (`voice_admin.png`, `voice_login.png`, `voice_user.png`) that serve as a reference for the system's UI/UX implementation.
+- **priority**: A custom file at the root. Although currently empty, it is likely intended to designate system priorities or development roadmap items.
+
+## 5. Docker and Render Deployment
+### Docker Setup
+The project uses a containerized environment defined in `docker-compose.yaml`:
+- **mysql**: A MySQL 8.0 database container.
+- **laravel**: The application container using a custom PHP 8.3-FPM image defined in the `Dockerfile`. It uses `docker-entrypoint.sh` to initialize the environment.
+- **nginx**: An Alpine-based Nginx container to serve the application, configured by `nginx/default.conf`.
+- **phpmyadmin**: A web interface for managing the MySQL database during development.
+
+### Render Deployment
+The project is configured for automated deployment on Render:
+- **render.yaml**: Specifies a web service and a PostgreSQL database. It defines environment variables and links the build/start commands.
+- **render-build.sh**: A deployment script that runs `composer install`, `npm install`, `npm run build`, and `php artisan migrate --force` to ensure the application is ready for production.

@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ComplaintModerationController;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\VoteController;
+use App\Http\Controllers\ProfileController;
 
 Route::get("/", function () {
     return redirect("/login");
@@ -16,9 +17,13 @@ Route::get("/login", [LoginController::class, "showLoginForm"])->name("login");
 Route::post("/login", [LoginController::class, "login"]);
 Route::post("/logout", [LoginController::class, "logout"])->name("logout");
 
+// Profile Routes
+Route::post("/profile/update", [ProfileController::class, "update"])->name("profile.update")->middleware('auth');
+
 // User Routes
 Route::middleware(["auth"])->prefix("user")->name("user.")->group(function () {
-    Route::get("/dashboard", [ComplaintController::class, "index"])->name("dashboard");
+    Route::get("/dashboard", [ComplaintController::class, "dashboard"])->name("dashboard");
+    Route::get("/polls", [ComplaintController::class, "polls"])->name("polls");
     Route::resource("complaints", ComplaintController::class);
 });
 

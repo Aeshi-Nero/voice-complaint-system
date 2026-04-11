@@ -21,6 +21,7 @@ class User extends Authenticatable
         'complaints_today',
         'last_complaint_reset',
         'course',
+        'profile_image',
     ];
 
     protected $hidden = [

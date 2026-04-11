@@ -15,7 +15,7 @@ services:
     networks:
       - voice-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       timeout: 20s
       retries: 10
 
@@ -24,6 +24,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: voice_laravel
+    entrypoint: ["/var/www/docker-entrypoint.sh"]
     restart: unless-stopped
     working_dir: /var/www
     volumes:
@@ -33,6 +34,11 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "cgi-fcgi", "-bind", "-connect", "localhost:9000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   nginx:
     image: nginx:alpine
@@ -46,7 +52,10 @@ services:
     networks:
       - voice-network
     depends_on:
-      - laravel
+      laravel:
+        condition: service_healthy
+
+
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

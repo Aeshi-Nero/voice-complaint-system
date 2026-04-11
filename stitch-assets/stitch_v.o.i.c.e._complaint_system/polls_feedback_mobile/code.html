@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline-variant": "#c1c9be",
+                    "inverse-on-surface": "#fcf1c5",
+                    "error-container": "#ffdad6",
+                    "primary-container": "#1a4d2a",
+                    "on-tertiary-container": "#d8ab28",
+                    "on-secondary-fixed": "#00210a",
+                    "on-primary-container": "#88bd90",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed": "#b0f2b9",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#3b2c00",
+                    "surface-container-high": "#f3e8bd",
+                    "secondary-fixed-dim": "#95d59e",
+                    "tertiary-fixed": "#ffdf95",
+                    "outline": "#717970",
+                    "on-primary-fixed-variant": "#1e502d",
+                    "on-primary-fixed": "#00210b",
+                    "error": "#ba1a1a",
+                    "surface-dim": "#e5dab0",
+                    "surface": "#fff9ec",
+                    "on-error": "#ffffff",
+                    "surface-variant": "#ede3b8",
+                    "inverse-primary": "#9dd3a5",
+                    "secondary-container": "#adefb6",
+                    "background": "#fff9ec",
+                    "on-surface": "#201c02",
+                    "surface-container": "#f9eec2",
+                    "surface-tint": "#376943",
+                    "surface-bright": "#fff9ec",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#003616",
+                    "surface-container-low": "#fff4c8",
+                    "on-secondary-container": "#326f41",
+                    "inverse-surface": "#363113",
+                    "tertiary-container": "#564100",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface-variant": "#414941",
+                    "on-background": "#201c02",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed": "#251a00",
+                    "tertiary-fixed-dim": "#f0c03e",
+                    "primary-fixed": "#b8f0c0",
+                    "on-tertiary-fixed-variant": "#594400",
+                    "on-secondary-fixed-variant": "#115227",
+                    "primary-fixed-dim": "#9dd3a5",
+                    "secondary": "#2d6a3d",
+                    "surface-container-highest": "#ede3b8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased min-h-screen">
+<!-- Top Navigation (Mobile Version) -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-stone-50/80 backdrop-blur-md h-16 flex items-center px-4 justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-2xl">menu</span>
+<span class="text-xl font-black text-primary tracking-tighter">V.O.I.C.E.</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-primary-container">
+<img class="w-full h-full object-cover" data-alt="close-up portrait of a university student smiling in a library with warm bokeh lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqI9QHyYfkb4VCRvxubXsS4CTjhRopoPFx3iBpAtTb9cu6AIYqAkBkd838b0lJWKWFAlnJHCQAm90VtoB9hnatQD3MMJ_nGkzb78fBEqyOe2f3yUGc3vagmI_JJh-wWFMGcLNnZ1eUo2D6aD_m2EM3YWI6cy8QHV3LT-DR9cYtUm8GG9Hf00Mn_WMWJPWSRJteGTj-T6oJ3aChFgKF-lKoeyAUeF8OyQ7h-GdgYUC-Fo-qKmklCk7mTzREwd_17vGzlLBMixgoQIQ"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-20 pb-24 px-4 max-w-md mx-auto">
+<!-- Page Header -->
+<div class="mb-8">
+<h1 class="text-3xl font-extrabold text-primary tracking-tight mb-2">Polls &amp; Feedback</h1>
+<p class="text-on-surface-variant text-sm font-medium">Shape the future of Aldersgate College campus life.</p>
+</div>
+<!-- Section: Active Polls -->
+<section class="mb-10">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xs font-bold uppercase tracking-widest text-primary">Active Polls</h2>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-[10px] px-2 py-0.5 rounded-full font-bold">2 LIVE</span>
+</div>
+<!-- Active Poll Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-lg shadow-primary/5 p-5 mb-4 relative overflow-hidden border border-outline-variant/10">
+<div class="absolute top-0 right-0 p-3">
+<span class="material-symbols-outlined text-tertiary-fixed-dim" style="font-variation-settings: 'FILL' 1;">timer</span>
+</div>
+<div class="mb-4">
+<p class="text-xs font-bold text-secondary mb-1">Campus Facilities</p>
+<h3 class="text-lg font-bold leading-tight text-on-surface">Should the University Library extend operating hours to 24/7 during finals week?</h3>
+</div>
+<div class="space-y-3 mb-6">
+<label class="flex items-center p-4 bg-surface-container rounded-lg cursor-pointer border-2 border-transparent active:border-primary transition-all">
+<input class="w-5 h-5 text-primary focus:ring-primary border-outline-variant bg-white" name="poll1" type="radio"/>
+<span class="ml-4 font-semibold text-on-surface">Strongly Support</span>
+</label>
+<label class="flex items-center p-4 bg-surface-container rounded-lg cursor-pointer border-2 border-transparent active:border-primary transition-all">
+<input class="w-5 h-5 text-primary focus:ring-primary border-outline-variant bg-white" name="poll1" type="radio"/>
+<span class="ml-4 font-semibold text-on-surface">Support with reservations</span>
+</label>
+<label class="flex items-center p-4 bg-surface-container rounded-lg cursor-pointer border-2 border-transparent active:border-primary transition-all">
+<input class="w-5 h-5 text-primary focus:ring-primary border-outline-variant bg-white" name="poll1" type="radio"/>
+<span class="ml-4 font-semibold text-on-surface">Do not support</span>
+</label>
+</div>
+<button class="w-full bg-gradient-to-r from-primary to-primary-container text-white font-bold py-4 rounded-xl shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2">
+                    Submit My Vote
+                    <span class="material-symbols-outlined text-sm">how_to_vote</span>
+</button>
+<p class="text-[10px] text-center mt-3 text-on-surface-variant font-medium">Closes in 48 hours • 1,240 votes so far</p>
+</div>
+<!-- Active Poll Card 2 (Minimal) -->
+<div class="bg-surface-container-low rounded-xl p-5 border border-outline-variant/5">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-bold text-on-surface">New Student Hub Furniture Theme</h3>
+<span class="material-symbols-outlined text-primary text-xl">palette</span>
+</div>
+<p class="text-xs text-on-surface-variant mb-4">Choose the color palette for the upcoming renovation.</p>
+<div class="flex gap-2">
+<button class="flex-1 py-2 px-4 rounded-lg border border-primary text-primary text-xs font-bold hover:bg-primary/5">View Options</button>
+<button class="flex-1 py-2 px-4 rounded-lg bg-primary text-white text-xs font-bold">Vote Now</button>
+</div>
+</div>
+</section>
+<!-- Section: Closed Polls -->
+<section>
+<h2 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">Archived Results</h2>
+<div class="space-y-3">
+<!-- Result Card 1 -->
+<div class="bg-surface-container-high rounded-xl p-4 flex items-center justify-between opacity-80">
+<div class="flex-1">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase mb-0.5">MARCH 2024</p>
+<h4 class="text-sm font-bold text-primary">Intramural Sports Expansion</h4>
+<div class="mt-2 w-full bg-white/50 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[84%]"></div>
+</div>
+<p class="text-[10px] mt-1 font-bold text-on-surface">84% Approved</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant ml-4">chevron_right</span>
+</div>
+<!-- Result Card 2 -->
+<div class="bg-surface-container-high rounded-xl p-4 flex items-center justify-between opacity-80">
+<div class="flex-1">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase mb-0.5">FEBRUARY 2024</p>
+<h4 class="text-sm font-bold text-primary">Digital ID Integration</h4>
+<div class="mt-2 w-full bg-white/50 h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[92%]"></div>
+</div>
+<p class="text-[10px] mt-1 font-bold text-on-surface">92% Approved</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant ml-4">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Feedback CTA Section -->
+<section class="mt-10 p-6 bg-primary-container rounded-3xl text-white relative overflow-hidden">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
+<h2 class="text-xl font-black mb-2">Have a specific suggestion?</h2>
+<p class="text-on-primary-container text-xs mb-4">Your voice matters beyond just polls. Submit detailed feedback directly to the Student Council.</p>
+<button class="bg-tertiary-fixed text-on-tertiary-fixed px-6 py-3 rounded-full text-sm font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-base">feedback</span>
+                Submit Feedback
+            </button>
+</section>
+</main>
+<!-- Bottom Navigation Bar (Mobile) -->
+<nav class="fixed bottom-0 left-0 right-0 bg-emerald-900 shadow-[0_-8px_20px_rgba(0,0,0,0.15)] flex justify-around items-center h-20 px-2 z-50">
+<a class="text-emerald-100/70 flex flex-col items-center gap-1 transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-medium">Dashboard</span>
+</a>
+<a class="text-emerald-100/70 flex flex-col items-center gap-1 transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined">add_box</span>
+<span class="text-[10px] font-medium">New</span>
+</a>
+<a class="text-emerald-100/70 flex flex-col items-center gap-1 transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined">list_alt</span>
+<span class="text-[10px] font-medium">My Claims</span>
+</a>
+<a class="bg-emerald-800 text-white border-t-2 border-amber-400 flex flex-col items-center gap-1 px-4 py-2 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">poll</span>
+<span class="text-[10px] font-bold">Polls</span>
+</a>
+<a class="text-emerald-100/70 flex flex-col items-center gap-1 transition-all active:scale-90" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px] font-medium">Settings</span>
+</a>
+</nav>
+<!-- FAB (Suppressed on this page per rule, but following the "New Complaint" requirement from logic if it were Home, but this is focused Polls page) -->
+</body></html>

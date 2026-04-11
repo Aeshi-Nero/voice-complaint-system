@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>V.O.I.C.E. | Aldersgate College Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#1a4d2a",
+                        "surface": "#fff9ec",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#3b2c00",
+                        "on-tertiary-container": "#d8ab28",
+                        "surface-dim": "#e5dab0",
+                        "outline-variant": "#c1c9be",
+                        "secondary-container": "#adefb6",
+                        "on-primary-fixed": "#00210b",
+                        "on-background": "#201c02",
+                        "surface-variant": "#ede3b8",
+                        "on-secondary-fixed": "#00210a",
+                        "primary-fixed": "#b8f0c0",
+                        "on-secondary-fixed-variant": "#115227",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#376943",
+                        "on-surface-variant": "#414941",
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-primary-fixed-variant": "#1e502d",
+                        "inverse-surface": "#363113",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#326f41",
+                        "tertiary-container": "#564100",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed": "#251a00",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffdf95",
+                        "secondary-fixed-dim": "#95d59e",
+                        "secondary": "#2d6a3d",
+                        "primary": "#003616",
+                        "surface-container-high": "#f3e8bd",
+                        "secondary-fixed": "#b0f2b9",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#fff9ec",
+                        "inverse-on-surface": "#fcf1c5",
+                        "primary-fixed-dim": "#9dd3a5",
+                        "surface-container-low": "#fff4c8",
+                        "on-surface": "#201c02",
+                        "inverse-primary": "#9dd3a5",
+                        "on-primary-container": "#88bd90",
+                        "tertiary-fixed-dim": "#f0c03e",
+                        "background": "#fff9ec",
+                        "outline": "#717970",
+                        "surface-container-highest": "#ede3b8",
+                        "surface-container": "#f9eec2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background: linear-gradient(180deg, #fef3c7 0%, #ffffff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="antialiased">
+<!-- Login Container -->
+<main class="w-full max-w-[450px] p-4">
+<!-- Brand Identity / Logo Area -->
+<div class="mb-8 text-center">
+<div class="inline-flex items-center justify-center w-20 h-20 bg-primary rounded-full mb-4 shadow-xl shadow-primary/10">
+<span class="material-symbols-outlined text-4xl text-on-primary" data-icon="school">school</span>
+</div>
+<h1 class="text-3xl font-black tracking-tighter text-primary uppercase">Aldersgate College</h1>
+<p class="text-sm font-bold tracking-[0.2em] text-secondary uppercase mt-1">University Portal</p>
+</div>
+<!-- Login Card -->
+<div class="bg-primary-container text-on-primary p-10 rounded-[2rem] shadow-2xl shadow-primary/30 border border-primary/50">
+<header class="mb-8">
+<h2 class="text-3xl font-bold tracking-tight text-white mb-2">Welcome Back</h2>
+<p class="text-white/80 font-medium">Please enter your credentials to continue</p>
+</header>
+<!-- Error Area (Initially hidden or shown based on state) -->
+<div class="mb-6 bg-error-container/10 border border-error/20 p-4 rounded-xl flex items-center gap-3 hidden">
+<span class="material-symbols-outlined text-error" data-icon="error_outline">error_outline</span>
+<p class="text-sm font-semibold text-error">Invalid ID Number or Password. Please try again.</p>
+</div>
+<form class="space-y-6">
+<!-- ID Number Field -->
+<div>
+<label class="block text-xs font-bold uppercase tracking-widest text-white/60 mb-2 ml-1" for="id-number">ID Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/60" data-icon="badge">badge</span>
+<input class="w-full pl-12 pr-4 py-4 bg-white text-on-surface font-medium rounded-xl border-none focus:ring-4 focus:ring-tertiary-fixed/40 transition-all outline-none" id="id-number" name="id-number" placeholder="Enter your ID" required="" type="text"/>
+</div>
+</div>
+<!-- Password Field -->
+<div>
+<label class="block text-xs font-bold uppercase tracking-widest text-white/60 mb-2 ml-1" for="password">Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-primary/60" data-icon="lock">lock</span>
+<input class="w-full pl-12 pr-4 py-4 bg-white text-on-surface font-medium rounded-xl border-none focus:ring-4 focus:ring-tertiary-fixed/40 transition-all outline-none" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<!-- Remember Me & Forgot Password -->
+<div class="flex items-center justify-between text-sm">
+<label class="flex items-center gap-2 cursor-pointer group">
+<div class="relative flex items-center">
+<input class="peer h-5 w-5 appearance-none rounded bg-white/10 border-2 border-white/20 checked:bg-tertiary-fixed checked:border-tertiary-fixed transition-all cursor-pointer" type="checkbox"/>
+<span class="material-symbols-outlined absolute text-primary opacity-0 peer-checked:opacity-100 pointer-events-none scale-75" data-icon="check" style="font-variation-settings: 'wght' 700;">check</span>
+</div>
+<span class="text-white/90 group-hover:text-white transition-colors">Remember me</span>
+</label>
+<a class="text-tertiary-fixed font-bold hover:underline underline-offset-4 decoration-2 transition-all" href="#">Forgot password?</a>
+</div>
+<!-- Actions -->
+<button class="w-full py-4 bg-[#f5c542] text-primary font-black text-lg rounded-xl hover:bg-tertiary-fixed-dim active:scale-[0.98] transition-all shadow-lg shadow-tertiary/20 flex items-center justify-center gap-2" type="submit">
+                    Sign In
+                    <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</form>
+<!-- Secondary CTA -->
+<footer class="mt-8 text-center pt-8 border-t border-white/10">
+<p class="text-white/60 text-sm">Need help accessing your account?</p>
+<a class="mt-2 inline-block text-white font-bold hover:text-tertiary-fixed transition-colors" href="#">Contact IT Support</a>
+</footer>
+</div>
+<!-- System Name / Version -->
+<div class="mt-8 flex items-center justify-center gap-4 text-primary/40 font-bold text-xs uppercase tracking-widest">
+<span>V.O.I.C.E.</span>
+<div class="w-1 h-1 rounded-full bg-primary/20"></div>
+<span>v2.4.0</span>
+<div class="w-1 h-1 rounded-full bg-primary/20"></div>
+<span>Academic Excellence</span>
+</div>
+</main>
+<!-- Decoration Element (Optional) -->
+<div class="fixed bottom-0 right-0 w-64 h-64 opacity-5 pointer-events-none">
+<img alt="Aldersgate College Seal" class="w-full h-full object-contain" data-alt="faint watermark of a university seal with a torch and book emblem in traditional academic style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNKJCc_LobyK9D9UOaxpaoP_qZZRltgJAA99NlIEZ-ZynrixKR-DcFLnQOV5ujXyfDjyEN0wYz50Pmwfy82hhBBj6q_dgYm8Omcg8MOq6TvrS46ZSQz_eqJdhxHAUV7KCHTVhwNbSgSYTtQqQwqKtfDzAWJqg4LeBaelvLQHX3K8Keu6vchpyd7PpryxozjnEJq9stVQtKFauXqCf1A_maUCKeS8E6WSNfbC5h0GVDYix6VAAYHqHoHnwqNKSJuX1mPQOurE-LS1c"/>
+</div>
+</body></html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Polls &amp; Feedback | V.O.I.C.E. University Portal</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "outline": "#717970",
+                    "primary-fixed": "#b8f0c0",
+                    "on-primary-fixed": "#00210b",
+                    "on-error-container": "#93000a",
+                    "error-container": "#ffdad6",
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#c1c9be",
+                    "background": "#fff9ec",
+                    "on-surface-variant": "#414941",
+                    "on-tertiary-container": "#d8ab28",
+                    "on-background": "#201c02",
+                    "error": "#ba1a1a",
+                    "surface-container-low": "#fff4c8",
+                    "on-tertiary-fixed": "#251a00",
+                    "tertiary-container": "#564100",
+                    "on-primary": "#ffffff",
+                    "on-secondary-container": "#326f41",
+                    "on-tertiary-fixed-variant": "#594400",
+                    "surface-container": "#f9eec2",
+                    "surface": "#fff9ec",
+                    "inverse-primary": "#9dd3a5",
+                    "inverse-surface": "#363113",
+                    "primary": "#003616",
+                    "primary-fixed-dim": "#9dd3a5",
+                    "surface-variant": "#ede3b8",
+                    "on-tertiary": "#ffffff",
+                    "on-surface": "#201c02",
+                    "on-secondary-fixed": "#00210a",
+                    "on-primary-fixed-variant": "#1e502d",
+                    "surface-dim": "#e5dab0",
+                    "surface-container-highest": "#ede3b8",
+                    "secondary-fixed-dim": "#95d59e",
+                    "on-primary-container": "#88bd90",
+                    "primary-container": "#1a4d2a",
+                    "surface-bright": "#fff9ec",
+                    "tertiary-fixed": "#ffdf95",
+                    "tertiary": "#3b2c00",
+                    "on-secondary-fixed-variant": "#115227",
+                    "surface-tint": "#376943",
+                    "secondary": "#2d6a3d",
+                    "tertiary-fixed-dim": "#f0c03e",
+                    "surface-container-high": "#f3e8bd",
+                    "on-error": "#ffffff",
+                    "secondary-container": "#adefb6",
+                    "inverse-on-surface": "#fcf1c5",
+                    "secondary-fixed": "#b0f2b9",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-vignette {
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 54, 22, 0.03) 100%);
+        }
+    </style>
+</head>
+<body class="bg-background font-body text-on-surface min-h-screen">
+<!-- SideNavBar Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-emerald-900 dark:bg-emerald-950 shadow-2xl shadow-emerald-950/20 flex flex-col py-6 z-50">
+<div class="px-6 mb-10">
+<h1 class="text-2xl font-bold tracking-tighter text-white">V.O.I.C.E.</h1>
+<p class="text-emerald-100/50 text-xs uppercase tracking-widest font-semibold mt-1">University Portal</p>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="text-emerald-100/70 hover:bg-emerald-800/50 px-6 py-3 flex items-center gap-3 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-medium">Dashboard</span>
+</a>
+<a class="text-emerald-100/70 hover:bg-emerald-800/50 px-6 py-3 flex items-center gap-3 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="add_box">add_box</span>
+<span class="font-medium">New Complaint</span>
+</a>
+<a class="text-emerald-100/70 hover:bg-emerald-800/50 px-6 py-3 flex items-center gap-3 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+<span class="font-medium">My Complaints</span>
+</a>
+<a class="bg-emerald-800 text-white border-l-4 border-amber-400 font-semibold px-6 py-3 flex items-center gap-3 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="poll" style="font-variation-settings: 'FILL' 1;">poll</span>
+<span class="font-medium">Polls</span>
+</a>
+<a class="text-emerald-100/70 hover:bg-emerald-800/50 px-6 py-3 flex items-center gap-3 transition-colors active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-medium">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-6 pt-6 flex flex-col gap-2">
+<div class="bg-primary-container p-4 rounded-xl mb-4">
+<p class="text-emerald-100/70 text-[10px] uppercase tracking-widest font-bold mb-2">Primary Action</p>
+<button class="w-full bg-tertiary-fixed text-on-tertiary-fixed font-bold py-2 rounded-lg text-sm hover:brightness-110 transition-all">
+                    New Complaint
+                </button>
+</div>
+<a class="text-emerald-100/70 hover:bg-emerald-800/50 px-4 py-2 flex items-center gap-3 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-medium text-sm">Profile</span>
+</a>
+<a class="text-emerald-100/70 hover:bg-emerald-800/50 px-4 py-2 flex items-center gap-3 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-medium text-sm">Logout</span>
+</a>
+</div>
+</aside>
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-stone-50/80 backdrop-blur-md flex justify-between items-center px-8 h-20">
+<div class="flex items-center gap-8">
+<span class="text-xl font-black text-emerald-900">V.O.I.C.E.</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-stone-500 hover:text-emerald-700 font-medium transition-colors" href="#">Support</a>
+<a class="text-stone-500 hover:text-emerald-700 font-medium transition-colors" href="#">Guidelines</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="bg-stone-100 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-emerald-500/20 w-64" placeholder="Search polls..." type="text"/>
+</div>
+<div class="flex gap-4 items-center">
+<button class="text-stone-500 hover:text-emerald-700 relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute -top-1 -right-1 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-stone-500 hover:text-emerald-700">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="h-8 w-px bg-stone-200 mx-2"></div>
+<img alt="Profile" class="h-10 w-10 rounded-full object-cover border-2 border-emerald-900/10" data-alt="professional portrait of a university administrator with a warm smile in a brightly lit academic office" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYZ9Yk6j6VTvQLJFruCRJ5XscKUoxvl3QXk88ra0ytNVKmX3EQBPxPuNaGxa1lmGuuDnnLG7BuYjxHXYWiG0KPndtOV1V9V7cWJ1RcxplnomhDw9tLzf78LohVag9K0SsYC-QvTpUeOwNjclhbCY5rhQ2u7CkrmwuhyWy1No80srlu-bY5FAjFUGAQqLH83bjhDZPNsV6tc1mNINc6Tdieo4gaagWYhGx6vwdemCmzJwyQfjLgWpz8evMKIjG7dfepkywPb6e4n2U"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-20 pb-12 px-10">
+<!-- Editorial Header -->
+<div class="py-12 border-b border-outline-variant/15 mb-12">
+<h1 class="text-5xl font-black tracking-tight text-primary mb-3">Polls &amp; Feedback</h1>
+<p class="text-on-surface-variant text-lg max-w-2xl leading-relaxed">
+                Your voice shapes our future. Participate in active discussions regarding campus improvements, policy changes, and student life initiatives.
+            </p>
+</div>
+<!-- Section: Active Polls -->
+<section class="mb-16">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
+<h2 class="text-2xl font-bold tracking-tight text-primary">Active Polls</h2>
+</div>
+<button class="text-sm font-bold text-primary uppercase tracking-widest hover:underline">View All</button>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                @foreach($active_polls as $poll)
+                <div class="bg-surface-container-lowest rounded-xl shadow-lg shadow-primary/5 p-8 border border-outline-variant/10 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4">
+<span class="bg-tertiary-container text-on-tertiary-fixed text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                            Ends: {{ $poll-&gt;expires_at }}
+                        </span>
+</div>
+<h3 class="text-2xl font-bold text-primary mb-2 pr-20">{{ $poll-&gt;title }}</h3>
+<p class="text-on-surface-variant mb-8 line-clamp-2">
+                        {{ $poll-&gt;description }}
+                    </p>
+<form action="#" class="space-y-3 mb-8">
+                        @foreach($poll-&gt;options as $option)
+                        <label class="flex items-center p-4 bg-surface-bright rounded-lg border border-outline-variant/30 hover:border-amber-400 transition-all cursor-pointer group/option">
+<input class="w-5 h-5 text-emerald-900 focus:ring-emerald-500 border-outline-variant mr-4" name="poll_{{ $poll-&gt;id }}" type="radio"/>
+<span class="text-on-surface font-medium group-hover/option:text-primary transition-colors">{{ $option-&gt;label }}</span>
+</label>
+                        @endforeach
+                    </form>
+<div class="flex items-center justify-between">
+<div class="flex -space-x-2">
+<img alt="Voter" class="w-8 h-8 rounded-full border-2 border-white" data-alt="close up of a student smiling brightly in a college courtyard" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVi25AHjhTYs1FmqMg-HwKHBMPh5BAhultOjJixGbZw38u_vPjb8bOaGHFWFYKk5EuavxDJjnOq10kndcY73XtH8rnf4-3GdB8KE2QK7e6ZjY_AJd60fuHiJ_XKJlVAaFngR4TwWXYARjiq0Iw1xVwloMsgG460kSiYguxkWLicVoJMCCgsIpXhoUFSdyJdl14Ofr5ltmg9_ynC-Fw9zI-wubsT-t0iwRpTio2bcG5s3KTMVpWkfMPm9NtouLTyAgoqYv97EShdjU"/>
+<img alt="Voter" class="w-8 h-8 rounded-full border-2 border-white" data-alt="professional headshot of a male student wearing glasses in soft library lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtTGGPZCgAGQekktdC-IXNV7UTynLTinoaGBNma8BDoUMRzKqO9Tnf0KYaqy0B4Sh3RHHjaHxTkQNCar7BaooFe6wCn2w6vR_mQ1F-h9XmLQSlAu5x3CvGdU3YqMRHX5ARX221EhRVxnf6ozqmC26R-KqKXhNnPE_RTB0u2-YbtYOMVZPFmhnzlsS6O53ZsfqCyu1ya68HblibaKpWsXhBUghc-J3MqoXHODS2JXZT7V_9KqcNpKswg-6WnpVM4weL0ClImDYAsgg"/>
+<div class="w-8 h-8 rounded-full border-2 border-white bg-primary-container flex items-center justify-center text-[10px] text-white font-bold">+124</div>
+</div>
+<button class="bg-tertiary-fixed hover:bg-tertiary-fixed-dim text-on-tertiary-fixed font-black px-8 py-3 rounded-lg shadow-xl shadow-amber-400/20 active:scale-95 transition-all">
+                            Vote Now
+                        </button>
+</div>
+</div>
+                @endforeach
+
+                <!-- Static Mock Example 1 -->
+<div class="bg-surface-container-lowest rounded-xl shadow-lg shadow-primary/5 p-8 border border-outline-variant/10 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<span class="bg-tertiary-container text-on-tertiary-fixed text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                            Ends: Oct 24
+                        </span>
+</div>
+<h3 class="text-2xl font-bold text-primary mb-2 pr-20">New Cafeteria Menu Options</h3>
+<p class="text-on-surface-variant mb-8">Choose the primary focus for next semester's culinary rotation at the Central Hub.</p>
+<div class="space-y-3 mb-8">
+<div class="flex items-center p-4 bg-surface-bright rounded-lg border border-amber-400 shadow-sm">
+<div class="w-5 h-5 rounded-full border-4 border-emerald-900 mr-4"></div>
+<span class="text-on-surface font-bold">Healthy Bowls &amp; Salads</span>
+</div>
+<div class="flex items-center p-4 bg-surface-bright rounded-lg border border-outline-variant/30 hover:border-amber-400 transition-all cursor-pointer">
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant mr-4"></div>
+<span class="text-on-surface font-medium">Authentic Pasta Bar</span>
+</div>
+<div class="flex items-center p-4 bg-surface-bright rounded-lg border border-outline-variant/30 hover:border-amber-400 transition-all cursor-pointer">
+<div class="w-5 h-5 rounded-full border-2 border-outline-variant mr-4"></div>
+<span class="text-on-surface font-medium">Gourmet Street Food</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<div class="text-sm font-semibold text-on-surface-variant">428 students have voted</div>
+<button class="bg-tertiary-fixed hover:bg-tertiary-fixed-dim text-on-tertiary-fixed font-black px-8 py-3 rounded-lg shadow-xl shadow-amber-400/20 active:scale-95 transition-all">
+                            Vote Now
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Closed Polls -->
+<section>
+<div class="flex items-center gap-3 mb-8">
+<span class="material-symbols-outlined text-outline" data-icon="history">history</span>
+<h2 class="text-2xl font-bold tracking-tight text-primary">Closed Polls &amp; Results</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                @foreach($closed_polls as $poll)
+                <div class="bg-surface-bright rounded-xl p-6 border border-outline-variant/10 hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<h4 class="font-bold text-primary text-lg leading-tight">{{ $poll-&gt;title }}</h4>
+<span class="text-[10px] font-bold text-outline uppercase tracking-tighter">Closed</span>
+</div>
+<div class="space-y-4 mb-6">
+                        @foreach($poll-&gt;results as $result)
+                        <div>
+<div class="flex justify-between text-xs font-bold mb-1">
+<span class="text-on-surface">{{ $result-&gt;label }}</span>
+<span class="text-primary">{{ $result-&gt;percentage }}%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: {{ $result-&gt;percentage }}%"></div>
+</div>
+</div>
+                        @endforeach
+                    </div>
+<div class="pt-4 border-t border-outline-variant/10 flex justify-between items-center">
+<span class="text-xs text-on-surface-variant font-medium">{{ $poll-&gt;total_votes }} total votes</span>
+<button class="text-primary text-xs font-bold hover:underline flex items-center gap-1">
+                            Full Report <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+                @endforeach
+
+                <!-- Static Mock Example 2 -->
+<div class="bg-surface-bright rounded-xl p-6 border border-outline-variant/10">
+<div class="flex justify-between items-start mb-4">
+<h4 class="font-bold text-primary text-lg leading-tight">Library 24/7 Access Policy</h4>
+<span class="text-[10px] font-bold text-outline uppercase tracking-tighter">Closed</span>
+</div>
+<div class="space-y-4 mb-6">
+<div>
+<div class="flex justify-between text-xs font-bold mb-1">
+<span class="text-on-surface">Support 24/7 access</span>
+<span class="text-primary">82%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 82%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-bold mb-1">
+<span class="text-on-surface">Keep current hours</span>
+<span class="text-primary">18%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full opacity-30" style="width: 18%"></div>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/10 flex justify-between items-center">
+<span class="text-xs text-on-surface-variant font-medium">1,204 total votes</span>
+<button class="text-primary text-xs font-bold hover:underline flex items-center gap-1">
+                            Full Report <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Static Mock Example 3 -->
+<div class="bg-surface-bright rounded-xl p-6 border border-outline-variant/10">
+<div class="flex justify-between items-start mb-4">
+<h4 class="font-bold text-primary text-lg leading-tight">Campus Shuttle Route Update</h4>
+<span class="text-[10px] font-bold text-outline uppercase tracking-tighter">Closed</span>
+</div>
+<div class="space-y-4 mb-6">
+<div>
+<div class="flex justify-between text-xs font-bold mb-1">
+<span class="text-on-surface">Route A (Dorms)</span>
+<span class="text-primary">45%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 45%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-xs font-bold mb-1">
+<span class="text-on-surface">Route B (West Campus)</span>
+<span class="text-primary">55%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full" style="width: 55%"></div>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/10 flex justify-between items-center">
+<span class="text-xs text-on-surface-variant font-medium">856 total votes</span>
+<button class="text-primary text-xs font-bold hover:underline flex items-center gap-1">
+                            Full Report <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter / Feedback Callout (Editorial Style) -->
+<section class="mt-20 bg-primary-container rounded-3xl p-12 relative overflow-hidden">
+<div class="relative z-10 grid md:grid-cols-2 gap-12 items-center">
+<div>
+<h2 class="text-4xl font-black text-white mb-4 leading-tight">Can't find a topic you care about?</h2>
+<p class="text-emerald-100/70 text-lg mb-8">Submit a suggestion for our next community poll. We review all student requests for campus-wide feedback weekly.</p>
+<button class="bg-white text-primary font-black px-10 py-4 rounded-xl hover:bg-stone-50 transition-colors shadow-2xl shadow-black/20">
+                        Propose a Poll
+                    </button>
+</div>
+<div class="hidden md:block">
+<div class="aspect-video rounded-2xl overflow-hidden shadow-2xl rotate-2">
+<img alt="Student Forum" class="w-full h-full object-cover" data-alt="a diverse group of college students in a modern glass-walled study space engaging in a collaborative discussion" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABrgywZoL9jBAX46F10bqDv33a184-y4WL19MhfuJah8Bn-23qAxZxlszJzbAzXoQpvEPEXxAh8LMz8fKOEnIJgJWYKJ36tCgxkZSYipzbfZe27VGmy1qibZ20ftd1o_w3aOW5xKDy_196B9KnmVO1j4OKx91sWacDSJl0BhwJTv6hRfuRRQban3lSwRnxn-F0Vn4E_-qIzcK9oUV8P8bQcnJ2dfK_ooAa-Nelhh62ejRwQSYJFGc28U0NjXaUN2vKeTCF-F5UDAA"/>
+</div>
+</div>
+</div>
+<!-- Decorative Grain/Shape -->
+<div class="absolute top-0 right-0 w-64 h-64 bg-amber-400/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-emerald-400/5 rounded-full blur-3xl -ml-20 -mb-20"></div>
+</section>
+</main>
+</body></html>

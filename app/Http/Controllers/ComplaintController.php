@@ -19,9 +19,30 @@ class ComplaintController extends Controller
         $this->profanityService = $profanityService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $complaints = Auth::user()->complaints()->latest()->paginate(10);
+        $query = Auth::user()->complaints();
+
+        if ($request->has('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', "%{$request->search}%")
+                  ->orWhere('complaint_number', 'like', "%{$request->search}%");
+            });
+        }
+
+        $complaints = $query->latest()->paginate(10);
+        $totalCount = Auth::user()->complaints()->count();
+        
+        return view("dashboard.user.complaints-index", compact("complaints", "totalCount"));
+    }
+
+    public function dashboard()
+    {
+        $complaints = Auth::user()->complaints()->latest()->take(4)->get();
         $stats = [
             "total" => Auth::user()->complaints()->count(),
             "pending" => Auth::user()->complaints()->where("status", "pending")->count(),
@@ -31,6 +52,14 @@ class ComplaintController extends Controller
         ];
         
         return view("dashboard.user.dashboard", compact("complaints", "stats"));
+    }
+
+    public function polls()
+    {
+        $active_polls = \App\Models\Poll::where('status', 'active')->with('options')->latest()->get();
+        $closed_polls = \App\Models\Poll::where('status', 'closed')->with('options')->latest()->get();
+        
+        return view("dashboard.user.polls", compact("active_polls", "closed_polls"));
     }
 
     public function create()
