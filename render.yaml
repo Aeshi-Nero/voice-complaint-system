@@ -2,8 +2,6 @@ services:
   - type: web
     name: voice-complaint-system
     runtime: docker
-    buildCommand: ./render-build.sh
-    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
     envVars:
       - key: APP_ENV
         value: production

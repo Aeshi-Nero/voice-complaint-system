@@ -32,8 +32,14 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
+# Install Composer dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# Install npm dependencies and build assets
+RUN npm install && npm run build
+
 # Copy existing application directory permissions
 RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www/storage /var/www/bootstrap/cache
 
-EXPOSE 9000
-CMD ["php-fpm"]
+# Use the port provided by Render's environment variable
+CMD ["sh", "-c", "php artisan serve --host 0.0.0.0 --port ${PORT:-10000}"]
