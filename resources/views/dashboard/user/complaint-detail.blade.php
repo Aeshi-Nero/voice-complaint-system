@@ -49,8 +49,20 @@
                 @if($complaint->image_path)
                     <div class="pt-8 border-t border-gray-50">
                         <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Evidence Attachment</h3>
-                        <div class="rounded-2xl overflow-hidden border border-gray-100 shadow-inner bg-gray-50">
-                            <img src="{{ Storage::url($complaint->image_path) }}" alt="Evidence" class="w-full h-auto object-cover max-h-[500px]">
+                        <div class="rounded-2xl overflow-hidden border border-gray-100 shadow-inner bg-gray-50 p-4">
+                            @if(Str::endsWith($complaint->image_path, '.pdf'))
+                                <a href="{{ Storage::url($complaint->image_path) }}" target="_blank" class="flex items-center gap-4 p-6 bg-white rounded-xl border border-gray-100 hover:shadow-md transition group">
+                                    <div class="w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center text-red-500 text-xl group-hover:scale-110 transition-transform">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-black text-gray-800">View Evidence PDF</p>
+                                        <p class="text-[10px] font-bold text-gray-400 uppercase">Click to open in new tab</p>
+                                    </div>
+                                </a>
+                            @else
+                                <img src="{{ Storage::url($complaint->image_path) }}" alt="Evidence" class="w-full h-auto object-cover max-h-[500px] rounded-xl">
+                            @endif
                         </div>
                     </div>
                 @endif

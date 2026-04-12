@@ -101,6 +101,16 @@
                             <i class="fas fa-th-large w-5 text-center"></i>
                             <span class="text-sm font-black uppercase tracking-widest">Dashboard</span>
                         </a>
+                        <a href="{{ route('admin.complaints') }}" 
+                           class="flex items-center gap-4 px-6 py-4 rounded-2xl transition group {{ Request::is('admin/complaints*') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
+                            <i class="fas fa-list-alt w-5 text-center"></i>
+                            <span class="text-sm font-black uppercase tracking-widest">All Complaints</span>
+                        </a>
+                        <a href="{{ route('admin.polls.index') }}" 
+                           class="flex items-center gap-4 px-6 py-4 rounded-2xl transition group {{ Request::is('admin/polls*') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
+                            <i class="fas fa-poll-h w-5 text-center"></i>
+                            <span class="text-sm font-black uppercase tracking-widest">Polls Management</span>
+                        </a>
                     @else
                         <a href="{{ route('user.dashboard') }}" 
                            class="flex items-center gap-4 px-6 py-4 rounded-2xl transition group {{ Request::is('user/dashboard') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
@@ -252,6 +262,14 @@
                                     <input type="email" name="email" value="{{ auth()->user()?->email }}" required
                                            class="w-full px-6 py-3.5 bg-gray-50 border-2 border-transparent focus:border-yellow-400 rounded-2xl font-bold text-[#004d26] outline-none transition">
                                 </div>
+
+                                @if(!auth()->user()?->isAdmin())
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">Academic Course</label>
+                                    <input type="text" name="course" value="{{ auth()->user()?->course }}" required
+                                           class="w-full px-6 py-3.5 bg-gray-50 border-2 border-transparent focus:border-yellow-400 rounded-2xl font-bold text-[#004d26] outline-none transition">
+                                </div>
+                                @endif
                             </div>
 
                             <div class="pt-4 border-t-2 border-dashed border-gray-100 mt-4">

@@ -82,7 +82,7 @@ class ComplaintController extends Controller
             "priority" => "required|string",
             "title" => "required|string|max:255",
             "description" => "required|string",
-            "image" => "nullable|image|max:5120", // 5MB
+            "image" => "nullable|mimes:jpeg,png,jpg,gif,pdf|max:5120", // 5MB
         ]);
 
         // Check for profanity

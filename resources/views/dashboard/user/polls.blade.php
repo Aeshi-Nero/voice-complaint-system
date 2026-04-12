@@ -33,26 +33,64 @@
                     @endif
                 </div>
 
-                <div class="space-y-3 mb-10 flex-1">
-                    @foreach($poll->options as $option)
-                    <label class="flex items-center gap-4 p-5 bg-[#fef9e1] rounded-2xl cursor-pointer hover:bg-[#f2e19d] transition-colors group">
-                        <input type="radio" name="poll_{{ $poll->id }}" value="{{ $option->id }}" class="w-5 h-5 text-[#163a24] focus:ring-[#f3bc3e] border-none bg-white">
-                        <span class="text-sm font-black text-[#163a24] group-hover:translate-x-1 transition-transform">{{ $option->label }}</span>
-                    </label>
-                    @endforeach
-                </div>
-
-                <div class="flex items-center justify-between mt-auto pt-6 border-t border-gray-50">
-                    <div class="flex -space-x-3 overflow-hidden">
-                        <img class="inline-block h-10 w-10 rounded-xl ring-4 ring-white object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                        <img class="inline-block h-10 w-10 rounded-xl ring-4 ring-white object-cover" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80" alt="">
-                        <img class="inline-block h-10 w-10 rounded-xl ring-4 ring-white object-cover" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
-                        <div class="flex items-center justify-center h-10 w-10 rounded-xl bg-[#112d1c] text-[#f3bc3e] text-[10px] font-black ring-4 ring-white">+124</div>
+                @if(auth()->user()->hasVotedInPoll($poll->id))
+                    {{-- Show Results if already voted --}}
+                    <div class="space-y-6 mb-10 flex-1">
+                        @foreach($poll->options as $option)
+                        @php
+                            $percentage = $poll->getTotalVotes() > 0 ? round(($option->votes_count / $poll->getTotalVotes()) * 100) : 0;
+                        @endphp
+                        <div>
+                            <div class="flex justify-between items-end mb-2">
+                                <span class="text-[10px] font-black text-[#163a24] uppercase tracking-widest">{{ $option->option_text }}</span>
+                                <span class="text-[10px] font-black text-[#163a24]">{{ $percentage }}%</span>
+                            </div>
+                            <div class="w-full bg-[#fef9e1] rounded-full h-3 overflow-hidden shadow-inner">
+                                <div class="bg-[#163a24] h-full rounded-full transition-all duration-1000" style="width: {{ $percentage }}%"></div>
+                            </div>
+                        </div>
+                        @endforeach
+                        <div class="mt-8 p-4 bg-green-50 rounded-2xl border border-green-100 flex items-center gap-3">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                            <p class="text-[10px] font-black text-green-700 uppercase tracking-widest">You have already voted in this poll</p>
+                        </div>
                     </div>
-                    <button class="bg-[#f3bc3e] text-[#163a24] px-10 py-4 rounded-xl font-black uppercase tracking-widest shadow-lg hover:bg-yellow-400 transition-all">
-                        Vote Now
-                    </button>
-                </div>
+
+                    <div class="flex items-center justify-between mt-auto pt-6 border-t border-gray-50">
+                        <div class="flex -space-x-3 overflow-hidden">
+                            <img class="inline-block h-10 w-10 rounded-xl ring-4 ring-white object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+                            <img class="inline-block h-10 w-10 rounded-xl ring-4 ring-white object-cover" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80" alt="">
+                            <img class="inline-block h-10 w-10 rounded-xl ring-4 ring-white object-cover" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+                            <div class="flex items-center justify-center h-10 w-10 rounded-xl bg-[#112d1c] text-[#f3bc3e] text-[10px] font-black ring-4 ring-white">+{{ $poll->getTotalVotes() }}</div>
+                        </div>
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Poll Results</span>
+                    </div>
+                @else
+                    {{-- Show Vote Form --}}
+                    <form action="{{ route('user.polls.vote', $poll) }}" method="POST" class="flex flex-col flex-1">
+                        @csrf
+                        <div class="space-y-3 mb-10 flex-1">
+                            @foreach($poll->options as $option)
+                            <label class="flex items-center gap-4 p-5 bg-[#fef9e1] rounded-2xl cursor-pointer hover:bg-[#f2e19d] transition-colors group">
+                                <input type="radio" name="option_id" value="{{ $option->id }}" class="w-5 h-5 text-[#163a24] focus:ring-[#f3bc3e] border-none bg-white" required>
+                                <span class="text-sm font-black text-[#163a24] group-hover:translate-x-1 transition-transform">{{ $option->option_text }}</span>
+                            </label>
+                            @endforeach
+                        </div>
+
+                        <div class="flex items-center justify-between mt-auto pt-6 border-t border-gray-50">
+                            <div class="flex -space-x-3 overflow-hidden">
+                                <img class="inline-block h-10 w-10 rounded-xl ring-4 ring-white object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+                                <img class="inline-block h-10 w-10 rounded-xl ring-4 ring-white object-cover" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80" alt="">
+                                <img class="inline-block h-10 w-10 rounded-xl ring-4 ring-white object-cover" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" alt="">
+                                <div class="flex items-center justify-center h-10 w-10 rounded-xl bg-[#112d1c] text-[#f3bc3e] text-[10px] font-black ring-4 ring-white">+{{ $poll->getTotalVotes() }}</div>
+                            </div>
+                            <button type="submit" class="bg-[#f3bc3e] text-[#163a24] px-10 py-4 rounded-xl font-black uppercase tracking-widest shadow-lg hover:bg-yellow-400 transition-all">
+                                Vote Now
+                            </button>
+                        </div>
+                    </form>
+                @endif
             </div>
             @endforeach
 
@@ -117,11 +155,11 @@
                 <div class="space-y-6 mb-10">
                     @foreach($poll->options as $option)
                     @php
-                        $percentage = $poll->total_votes > 0 ? round(($option->votes_count / $poll->total_votes) * 100) : 0;
+                        $percentage = $poll->getTotalVotes() > 0 ? round(($option->votes_count / $poll->getTotalVotes()) * 100) : 0;
                     @endphp
                     <div>
                         <div class="flex justify-between items-end mb-2">
-                            <span class="text-[10px] font-black text-[#163a24] uppercase tracking-widest">{{ $option->label }}</span>
+                            <span class="text-[10px] font-black text-[#163a24] uppercase tracking-widest">{{ $option->option_text }}</span>
                             <span class="text-[10px] font-black text-[#163a24]">{{ $percentage }}%</span>
                         </div>
                         <div class="w-full bg-[#fef9e1] rounded-full h-2 overflow-hidden">
@@ -132,7 +170,7 @@
                 </div>
 
                 <div class="flex items-center justify-between pt-6 border-t border-gray-50">
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ number_format($poll->total_votes ?? 0) }} total votes</p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ number_format($poll->getTotalVotes() ?? 0) }} total votes</p>
                     <a href="#" class="text-[10px] font-black text-[#163a24] uppercase tracking-widest flex items-center gap-2 hover:text-[#f3bc3e] transition">
                         Full Report <i class="fas fa-arrow-right text-[8px]"></i>
                     </a>

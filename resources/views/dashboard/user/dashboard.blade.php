@@ -79,7 +79,7 @@
                 <span class="w-1.5 h-8 bg-[#f3bc3e] rounded-full"></span>
                 My Recent Complaints
             </h3>
-            <a href="#" class="text-[10px] font-black text-[#163a24] hover:text-[#f3bc3e] uppercase tracking-widest transition flex items-center gap-2">
+            <a href="{{ route('user.complaints.index') }}" class="text-[10px] font-black text-[#163a24] hover:text-[#f3bc3e] uppercase tracking-widest transition flex items-center gap-2">
                 View All Submissions <i class="fas fa-chevron-right text-[8px]"></i>
             </a>
         </div>

@@ -81,8 +81,21 @@
                             <i class="fas fa-paperclip text-[#00a651]"></i>
                             Evidence Attachment
                         </h3>
-                        <div class="rounded-3xl overflow-hidden border-8 border-gray-50 shadow-inner bg-gray-50 group relative">
-                            <img src="{{ Storage::url($complaint->image_path) }}" alt="Evidence" class="w-full h-auto object-cover max-h-[600px] transition duration-500 group-hover:scale-[1.02]">
+                        <div class="rounded-3xl overflow-hidden border-8 border-gray-50 shadow-inner bg-gray-50 group relative p-4">
+                            @if(Str::endsWith($complaint->image_path, '.pdf'))
+                                <a href="{{ Storage::url($complaint->image_path) }}" target="_blank" class="flex items-center gap-4 p-8 bg-white rounded-2xl border border-gray-100 hover:shadow-xl transition-all group/pdf">
+                                    <div class="w-16 h-16 bg-red-50 rounded-xl flex items-center justify-center text-red-500 text-2xl group-hover/pdf:scale-110 transition-transform">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-lg font-black text-gray-800">Review Evidence PDF</p>
+                                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Click to inspect document</p>
+                                    </div>
+                                    <i class="fas fa-external-link-alt ml-auto text-gray-200 group-hover/pdf:text-[#00a651] transition-colors"></i>
+                                </a>
+                            @else
+                                <img src="{{ Storage::url($complaint->image_path) }}" alt="Evidence" class="w-full h-auto object-cover max-h-[600px] transition duration-500 group-hover:scale-[1.02] rounded-2xl">
+                            @endif
                         </div>
                     </div>
                 @endif

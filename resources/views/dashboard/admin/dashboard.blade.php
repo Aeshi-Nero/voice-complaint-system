@@ -82,21 +82,26 @@
 
             <div class="space-y-6">
                 @php
-                    $categories = [
-                        ['name' => 'Academic Issues', 'color' => 'bg-[#163a24]', 'percentage' => 45],
-                        ['name' => 'Facility Quality', 'color' => 'bg-[#f3bc3e]', 'percentage' => 30],
-                        ['name' => 'Staff Conduct', 'color' => 'bg-green-600', 'percentage' => 25],
+                    $totalComplaints = array_sum($categoryStats);
+                    $colors = [
+                        'Academic' => 'bg-[#163a24]',
+                        'Faculty' => 'bg-green-600',
+                        'Administrative' => 'bg-[#f3bc3e]',
+                        'IT/Technical' => 'bg-blue-600',
+                        'Health & Safety' => 'bg-red-600',
                     ];
                 @endphp
-                @foreach($categories as $cat)
+                @forelse($categoryStats as $category => $count)
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <span class="w-3 h-3 rounded-full {{ $cat['color'] }}"></span>
-                        <span class="text-sm font-bold text-[#163a24]">{{ $cat['name'] }}</span>
+                        <span class="w-3 h-3 rounded-full {{ $colors[$category] ?? 'bg-gray-400' }}"></span>
+                        <span class="text-sm font-bold text-[#163a24]">{{ $category }}</span>
                     </div>
-                    <span class="text-sm font-black text-[#163a24]">{{ $cat['percentage'] }}%</span>
+                    <span class="text-sm font-black text-[#163a24]">{{ $totalComplaints > 0 ? round(($count / $totalComplaints) * 100) : 0 }}%</span>
                 </div>
-                @endforeach
+                @empty
+                <p class="text-xs text-gray-400 font-bold italic">No data available</p>
+                @endforelse
             </div>
         </div>
 
@@ -167,7 +172,7 @@
             </div>
 
             <div class="px-10 py-8 bg-[#fef9e1]/20 flex flex-col sm:flex-row justify-between items-center gap-6 border-t border-gray-50">
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Showing 4 of 216 complaints</p>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Showing {{ $recentComplaints->count() }} of {{ array_sum($categoryStats) }} complaints</p>
                 <div class="flex items-center gap-2">
                     <button class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-100 text-gray-300 hover:bg-white transition"><i class="fas fa-chevron-left text-[8px]"></i></button>
                     <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#112d1c] text-white text-[10px] font-black">1</button>

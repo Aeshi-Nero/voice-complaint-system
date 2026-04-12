@@ -41,7 +41,8 @@ class ProfanityService
         $lowerText = strtolower($text);
         
         foreach ($this->profanityWords as $word) {
-            if (str_contains($lowerText, strtolower($word))) {
+            $pattern = '/\b' . preg_quote(strtolower($word), '/') . '\b/';
+            if (preg_match($pattern, $lowerText)) {
                 return true;
             }
         }
