@@ -9,5 +9,5 @@ class ProfanityWord extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['word'];
+    protected $fillable = ['word', 'language', 'type'];
 }

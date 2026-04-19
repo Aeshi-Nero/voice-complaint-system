@@ -16,9 +16,10 @@ class Complaint extends Model
         'priority',
         'title',
         'description',
+        'audio_path',
         'image_path',
+        'extra_images',
         'status',
-        'admin_notes',
         'submitted_at',
         'resolved_at',
     ];
@@ -26,6 +27,7 @@ class Complaint extends Model
     protected $casts = [
         'submitted_at' => 'datetime',
         'resolved_at' => 'datetime',
+        'extra_images' => 'array',
     ];
 
     public function user()
@@ -33,24 +35,19 @@ class Complaint extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getStatusBadgeClass(): string
+    public function messages()
     {
-        return match($this->status) {
-            'pending' => 'bg-yellow-100 text-yellow-800',
-            'in_progress' => 'bg-blue-100 text-blue-800',
-            'resolved' => 'bg-green-100 text-green-800',
-            'rejected' => 'bg-red-100 text-red-800',
-            default => 'bg-gray-100 text-gray-800',
-        };
+        return $this->hasMany(ComplaintMessage::class);
     }
 
-    public function getPriorityBadgeClass(): string
+    public function getStatusColor()
     {
-        return match($this->priority) {
-            'Low' => 'bg-gray-100 text-gray-800',
-            'Medium' => 'bg-yellow-100 text-yellow-800',
-            'High' => 'bg-red-100 text-red-800',
-            default => 'bg-gray-100 text-gray-800',
+        return match($this->status) {
+            'pending' => 'yellow',
+            'in_progress' => 'blue',
+            'resolved' => 'green',
+            'rejected' => 'red',
+            default => 'gray',
         };
     }
 }

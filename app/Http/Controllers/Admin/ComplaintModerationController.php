@@ -13,20 +13,28 @@ class ComplaintModerationController extends Controller
     public function index(Request $request)
     {
         $status = $request->get('status', 'all');
+        $course = $request->get('course', 'all');
         
         $query = Complaint::with('user');
         
         if ($status !== 'all') {
             $query->where('status', $status);
         }
+
+        if ($course !== 'all') {
+            $query->whereHas('user', function($q) use ($course) {
+                $q->where('course', $course);
+            });
+        }
         
         $complaints = $query->orderBy('created_at', 'desc')->paginate(20);
         
-        return view('dashboard.admin.complaints.index', compact('complaints', 'status'));
+        return view('dashboard.admin.complaints.index', compact('complaints', 'status', 'course'));
     }
 
     public function show(Complaint $complaint)
     {
+        $complaint->load('messages.user');
         $userComplaints = Complaint::where('user_id', $complaint->user_id)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -89,6 +97,26 @@ class ComplaintModerationController extends Controller
     {
         $user->update(['is_blocked' => true]);
         
-        return redirect()->route('admin.complaints.index')->with('success', 'User has been blocked.');
+        return back()->with('success', 'User has been blocked.');
+    }
+
+    public function unblockUser(User $user)
+    {
+        $user->update([
+            'is_blocked' => false,
+            'banned_until' => null,
+            'profanity_count' => 0
+        ]);
+        
+        return back()->with('success', 'User access has been restored.');
+    }
+
+    public function quickBan(User $user)
+    {
+        $user->update([
+            'banned_until' => Carbon::now()->addDay(), // 24 hours from now
+        ]);
+        
+        return back()->with('success', "User has been banned for 24 hours.");
     }
 }

@@ -19,9 +19,11 @@ class User extends Authenticatable
         'role',
         'is_blocked',
         'complaints_today',
+        'profanity_count',
         'last_complaint_reset',
         'course',
         'profile_image',
+        'banned_until',
     ];
 
     protected $hidden = [
@@ -32,6 +34,7 @@ class User extends Authenticatable
     protected $casts = [
         'is_blocked' => 'boolean',
         'last_complaint_reset' => 'datetime',
+        'banned_until' => 'datetime',
     ];
 
     public function complaints()
@@ -46,7 +49,9 @@ class User extends Authenticatable
 
     public function canSubmitComplaint(): bool
     {
-        if ($this->is_blocked) {
+        $this->ensureComplaintsReset();
+        
+        if ($this->is_blocked || ($this->banned_until && $this->banned_until->isFuture())) {
             return false;
         }
 
@@ -55,7 +60,20 @@ class User extends Authenticatable
 
     public function getRemainingComplaints(): int
     {
+        $this->ensureComplaintsReset();
         return max(0, 6 - $this->complaints_today);
+    }
+
+    protected function ensureComplaintsReset(): void
+    {
+        $now = now('Asia/Manila');
+        
+        if (!$this->last_complaint_reset || !$this->last_complaint_reset->isToday()) {
+            $this->update([
+                'complaints_today' => 0,
+                'last_complaint_reset' => $now
+            ]);
+        }
     }
 
     public function hasVotedInPoll($pollId): bool

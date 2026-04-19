@@ -1,165 +1,244 @@
 @extends("layouts.app")
 
 @section("content")
-<div class="max-w-7xl mx-auto">
-    <!-- Header Section -->
-    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-12">
-        <div>
-            <p class="text-[10px] font-black text-[#163a24]/40 uppercase tracking-[0.3em] mb-2">{{ now()->format('l, F d, Y') }}</p>
-            <h2 class="text-5xl font-black text-[#163a24] tracking-tight">Welcome back, {{ auth()->user()->name }}!</h2>
-        </div>
-        
-        <!-- Submissions Widget -->
-        <div class="bg-[#f2e19d]/40 rounded-3xl p-6 flex items-center gap-6 border border-[#163a24]/5">
-            <div class="relative w-16 h-16 flex items-center justify-center">
-                <svg class="w-full h-full transform -rotate-90">
-                    <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="4" fill="transparent" class="text-white/20" />
-                    <circle cx="32" cy="32" r="28" stroke="currentColor" stroke-width="4" fill="transparent" stroke-dasharray="175.9" stroke-dashoffset="{{ 175.9 * (1 - auth()->user()->getRemainingComplaints()/6) }}" class="text-[#163a24]" />
-                </svg>
-                <span class="absolute text-xs font-black text-[#163a24]">{{ auth()->user()->getRemainingComplaints() }}/6</span>
-            </div>
-            <div>
-                <p class="text-sm font-black text-[#163a24] leading-tight">Submissions Available</p>
-                <p class="text-[10px] font-bold text-[#163a24]/40 uppercase tracking-tight mt-0.5">You have {{ auth()->user()->getRemainingComplaints() }}/6 submissions left today</p>
-            </div>
-        </div>
-    </div>
+<div class="max-w-6xl mx-auto h-[calc(100vh-140px)] flex flex-col relative overflow-hidden">
     
-    <!-- Status Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <div class="bg-white rounded-3xl p-8 border-b-8 border-[#f3bc3e] shadow-sm group hover:shadow-xl transition-all duration-300">
-            <div class="flex justify-between items-start mb-10">
-                <div class="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-[#f3bc3e] text-xl">
-                    <i class="fas fa-comment-dots"></i>
-                </div>
-                <span class="text-[10px] font-black text-[#f3bc3e] uppercase tracking-widest">Status</span>
-            </div>
-            <p class="text-4xl font-black text-[#163a24] leading-none mb-1">{{ $stats["pending"] }}</p>
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pending Review</p>
-        </div>
+    <div x-data="complaintForm()" class="flex-1 flex flex-col">
         
-        <div class="bg-white rounded-3xl p-8 border-b-8 border-[#22c55e] shadow-sm group hover:shadow-xl transition-all duration-300">
-            <div class="flex justify-between items-start mb-10">
-                <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-[#22c55e] text-xl">
-                    <i class="fas fa-sync-alt"></i>
-                </div>
-                <span class="text-[10px] font-black text-[#22c55e] uppercase tracking-widest">Active</span>
+        <!-- Center Hero Text -->
+        <div class="flex-1 flex items-center justify-center px-4"
+             x-show="!expanded"
+             x-transition:leave="transition ease-in duration-300"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95">
+            <div class="text-center">
+                <h1 class="text-6xl md:text-8xl font-black text-[#163a24] tracking-tightest leading-[0.85] mb-8">
+                    Voice your<br>complaint now
+                </h1>
+                <p class="text-sm md:text-base font-black text-[#163a24]/20 uppercase tracking-[0.5em]">
+                    You have {{ auth()->user()->getRemainingComplaints() }} submissions left today
+                </p>
             </div>
-            <p class="text-4xl font-black text-[#163a24] leading-none mb-1">{{ $stats["in_progress"] }}</p>
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">In Progress</p>
-        </div>
-        
-        <div class="bg-white rounded-3xl p-8 border-b-8 border-[#163a24] shadow-sm group hover:shadow-xl transition-all duration-300">
-            <div class="flex justify-between items-start mb-10">
-                <div class="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-[#163a24] text-xl">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <span class="text-[10px] font-black text-[#163a24] uppercase tracking-widest">Complete</span>
-            </div>
-            <p class="text-4xl font-black text-[#163a24] leading-none mb-1">{{ $stats["resolved"] }}</p>
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Resolved Cases</p>
         </div>
 
-        <div class="bg-white rounded-3xl p-8 border-b-8 border-[#ef4444] shadow-sm group hover:shadow-xl transition-all duration-300">
-            <div class="flex justify-between items-start mb-10">
-                <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-[#ef4444] text-xl">
-                    <i class="fas fa-times-circle"></i>
-                </div>
-                <span class="text-[10px] font-black text-[#ef4444] uppercase tracking-widest">Declined</span>
-            </div>
-            <p class="text-4xl font-black text-[#163a24] leading-none mb-1">{{ $stats["rejected"] }}</p>
-            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Rejected/Closed</p>
-        </div>
-    </div>
-    
-    <!-- Recent Complaints Section -->
-    <div class="bg-[#f2e19d]/30 rounded-[3rem] p-10 mb-12 border border-[#163a24]/5">
-        <div class="flex items-center justify-between mb-10">
-            <h3 class="text-2xl font-black text-[#163a24] flex items-center gap-4">
-                <span class="w-1.5 h-8 bg-[#f3bc3e] rounded-full"></span>
-                My Recent Complaints
-            </h3>
-            <a href="{{ route('user.complaints.index') }}" class="text-[10px] font-black text-[#163a24] hover:text-[#f3bc3e] uppercase tracking-widest transition flex items-center gap-2">
-                View All Submissions <i class="fas fa-chevron-right text-[8px]"></i>
-            </a>
-        </div>
+        <!-- Bottom Form Container -->
+        <div :class="expanded ? 'absolute inset-0 z-50 bg-[#fef9e1]' : 'w-full max-w-3xl mx-auto mb-2'"
+             class="transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col justify-end">
+            
+            <div :class="expanded ? 'h-full w-full max-w-4xl mx-auto p-6 md:p-12 flex flex-col justify-center' : 'w-full'">
+                <form action="{{ route('user.complaints.store') }}" method="POST" enctype="multipart/form-data" id="complaintForm"
+                      :class="expanded ? 'bg-white rounded-[3rem] shadow-2xl p-8 md:p-16 border-4 border-white' : 'bg-white rounded-[2.5rem] shadow-lg p-4 border-4 border-white'"
+                      class="transition-all duration-500 overflow-hidden flex flex-col">
+                    @csrf
+                    
+                    <!-- Header (Visible when expanded) -->
+                    <div x-show="expanded" x-cloak x-transition:enter="transition delay-200 duration-300"
+                         x-transition:enter-start="opacity-0 -translate-y-4"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         class="mb-10 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-3xl font-black text-[#163a24] uppercase tracking-tighter">New Complaint</h2>
+                            <p class="text-gray-400 font-bold">What's on your mind?</p>
+                        </div>
+                        <button type="button" @click="expanded = false" class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-500 transition-all">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
 
-        <div class="space-y-4">
-            @forelse($complaints->take(4) as $complaint)
-            <div class="bg-white rounded-3xl p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:shadow-lg transition-all duration-300 group cursor-pointer"
-                 onclick="window.location='{{ route("user.complaints.show", $complaint) }}'">
+                    <!-- Input Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="md:col-span-2">
+                            <input type="text" name="title" x-model="title" required
+                                   placeholder="Title..."
+                                   @focus="expanded = true"
+                                   class="w-full px-6 py-4 bg-[#fef9e1] border-none rounded-2xl font-bold text-[#163a24] outline-none focus:ring-2 focus:ring-[#f3bc3e]/30 transition placeholder-[#163a24]/30">
+                        </div>
+                        <div>
+                            <div class="relative">
+                                <select name="category" x-model="category" required
+                                        @focus="expanded = true"
+                                        class="w-full px-6 py-4 bg-[#fef9e1] border-none rounded-2xl appearance-none font-bold text-[#163a24] outline-none focus:ring-2 focus:ring-[#f3bc3e]/30 transition cursor-pointer">
+                                    <option value="">Category</option>
+                                    <option value="Academic">Academic</option>
+                                    <option value="Faculty">Faculty</option>
+                                    <option value="Administrative">Administrative</option>
+                                    <option value="IT/Technical">IT/Technical</option>
+                                    <option value="Health & Safety">Health & Safety</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-[#163a24]/30">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Textarea with Action Icons -->
+                    <div class="relative">
+                        <textarea name="description" x-model="description" required
+                                  placeholder="Voice your concern..."
+                                  @focus="expanded = true"
+                                  :rows="expanded ? 10 : 3"
+                                  class="w-full px-6 py-5 pr-24 bg-[#fef9e1] border-none rounded-2xl font-bold text-[#163a24] outline-none focus:ring-2 focus:ring-[#f3bc3e]/30 transition placeholder-[#163a24]/30 resize-none leading-relaxed"></textarea>
+                        
+                        <!-- Floating Action Icons -->
+                        <div class="absolute bottom-4 right-6 flex items-center gap-4 text-[#163a24]/30">
+                            <button type="button" @click="$refs.imageInput.click()" class="hover:text-[#f3bc3e] transition-colors p-2" title="Attach Image">
+                                <i class="fas fa-image text-lg" :class="images.length > 0 ? 'text-[#f3bc3e]' : ''"></i>
+                            </button>
+                            <button type="button" @click="toggleRecording()" 
+                                    class="hover:text-[#f3bc3e] transition-colors p-2" 
+                                    :class="isRecording ? 'text-red-500 animate-pulse' : (audioBlob ? 'text-[#f3bc3e]' : '')"
+                                    title="Voice Input">
+                                <i class="fas fa-microphone text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Inputs -->
+                    <input type="file" x-ref="imageInput" name="images[]" multiple class="hidden" accept="image/*" @change="handleImageUpload">
+                    <input type="file" x-ref="audioInput" name="audio" class="hidden" accept="audio/*">
+
+                    <!-- Attachments Preview -->
+                    <div x-show="images.length > 0 || audioBlob" x-cloak class="mt-4 flex flex-wrap gap-3">
+                        <template x-for="(img, index) in images" :key="index">
+                            <div class="relative w-16 h-16 rounded-lg overflow-hidden border-2 border-[#f3bc3e]/20 group">
+                                <img :src="img.preview" class="w-full h-full object-cover">
+                                <button type="button" @click="removeImage(index)" class="absolute inset-0 bg-red-500/80 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </template>
+                        <div x-show="audioBlob" class="bg-[#f3bc3e]/10 px-4 py-2 rounded-xl flex items-center gap-3 border border-[#f3bc3e]/20">
+                            <i class="fas fa-volume-up text-[#f3bc3e]"></i>
+                            <span class="text-[10px] font-black text-[#163a24]">Voice Message</span>
+                            <button type="button" @click="removeAudio()" class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Footer (Visible when expanded) -->
+                    <div x-show="expanded" x-cloak x-transition:enter="transition delay-300 duration-300"
+                         x-transition:enter-start="opacity-0 translate-y-4"
+                         x-transition:enter-end="opacity-100 translate-y-0"
+                         class="mt-8 flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-gray-100">
+                        
+                        <div class="flex items-center gap-4 text-gray-400">
+                            <div class="w-10 h-10 bg-[#fef9e1] rounded-xl flex items-center justify-center text-[#163a24]/40">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <span class="text-[10px] font-black uppercase tracking-widest" x-text="statusText"></span>
+                        </div>
+
+                        <div class="flex items-center gap-6 w-full md:w-auto">
+                            <button type="submit" class="flex-1 md:flex-none px-10 py-4 bg-[#163a24] text-white rounded-xl font-black uppercase tracking-widest shadow-xl hover:bg-[#1a442a] transition-all flex items-center justify-center gap-3">
+                                Submit <i class="fas fa-paper-plane text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
                 
-                <div class="flex items-start gap-8">
-                    <div class="min-w-[120px]">
-                        <p class="text-[8px] font-black text-gray-300 uppercase tracking-widest mb-1">Case ID</p>
-                        <p class="text-xs font-black text-[#163a24]">{{ $complaint->complaint_number }}</p>
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-black text-[#163a24] leading-tight mb-1 group-hover:text-[#f3bc3e] transition">{{ $complaint->title }}</h4>
-                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tight">
-                            Submitted via Online Portal • {{ $complaint->category }}
-                        </p>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-12">
-                    <div class="text-right hidden sm:block">
-                        <p class="text-[8px] font-black text-gray-300 uppercase tracking-widest mb-1">Submitted On</p>
-                        <p class="text-xs font-black text-[#163a24]">{{ $complaint->created_at->format('M d, Y') }}</p>
-                    </div>
-                    <div class="min-w-[120px] text-center">
-                        <span class="px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest 
-                            @if($complaint->status === 'pending') bg-[#163a24] text-[#f3bc3e] @elseif($complaint->status === 'in_progress') bg-green-100 text-green-700 @elseif($complaint->status === 'resolved') bg-blue-100 text-blue-700 @else bg-red-100 text-red-700 @endif">
-                            {{ $complaint->status === 'pending' ? 'PENDING' : ($complaint->status === 'in_progress' ? 'IN PROGRESS' : ($complaint->status === 'resolved' ? 'RESOLVED' : 'REJECTED')) }}
-                        </span>
-                    </div>
-                    <i class="fas fa-chevron-right text-gray-200 group-hover:text-[#163a24] transition-colors"></i>
-                </div>
+                <!-- Submission helper (Visible when not expanded) -->
+                <p x-show="!expanded" class="text-center mt-4 text-[10px] font-black text-[#163a24]/20 uppercase tracking-[0.2em]">
+                    Press <span class="bg-[#163a24]/5 px-2 py-1 rounded text-[#163a24]/40">Enter</span> to grow the workspace
+                </p>
             </div>
-            @empty
-            <div class="bg-white rounded-3xl p-20 text-center">
-                <p class="text-gray-400 font-black uppercase tracking-widest">No recent submissions found</p>
-            </div>
-            @endforelse
-        </div>
-    </div>
-
-    <!-- Bottom Widgets -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-20">
-        <!-- Banner Widget -->
-        <div class="lg:col-span-2 relative h-64 rounded-[3rem] overflow-hidden group shadow-xl">
-            <img src="https://images.unsplash.com/photo-1541339907198-e08756ebafe3?auto=format&fit=crop&q=80&w=1000" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-            <div class="absolute inset-0 bg-gradient-to-t from-[#163a24] via-[#163a24]/40 to-transparent"></div>
-            <div class="absolute bottom-0 left-0 p-10">
-                <h3 class="text-4xl font-black text-white mb-2">Student Advocacy Program 2024</h3>
-                <p class="text-white/70 text-sm font-bold max-w-xl">Learn how Aldersgate College is empowering student voices through our new digital feedback ecosystem and policy reforms.</p>
-            </div>
-        </div>
-
-        <!-- Pro-Tip Widget -->
-        <div class="bg-[#f3bc3e]/20 rounded-[3rem] p-10 border border-[#f3bc3e]/20 flex flex-col items-center justify-center text-center shadow-sm">
-            <div class="bg-[#f3bc3e] w-12 h-12 rounded-full flex items-center justify-center text-[#163a24] text-xl mb-6 shadow-lg">
-                <i class="fas fa-lightbulb"></i>
-            </div>
-            <h4 class="text-xl font-black text-[#163a24] mb-3 uppercase tracking-tight">Pro-Tip</h4>
-            <p class="text-sm font-bold text-[#163a24]/60 italic">"Detailed descriptions with photos often lead to 40% faster resolution times."</p>
         </div>
     </div>
 </div>
 
-<!-- Floating Action Button -->
-<a href="{{ route('user.complaints.create') }}" class="fixed bottom-10 right-10 w-20 h-20 bg-[#163a24] text-white rounded-3xl flex items-center justify-center text-3xl shadow-[0_15px_30px_rgba(22,58,36,0.3)] hover:bg-[#1a442a] transition-all hover:-translate-y-2 active:scale-95 z-50">
-    <i class="fas fa-plus"></i>
-</a>
-</div>
+<script>
+function complaintForm() {
+    return {
+        expanded: false,
+        title: '',
+        category: '',
+        description: '',
+        images: [],
+        isRecording: false,
+        mediaRecorder: null,
+        audioChunks: [],
+        audioBlob: null,
+        statusText: 'Media can be attached using the icons above',
+
+        handleImageUpload(e) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.images.push({
+                        file: file,
+                        preview: e.target.result
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+            this.expanded = true;
+        },
+
+        removeImage(index) {
+            this.images.splice(index, 1);
+        },
+
+        async toggleRecording() {
+            if (this.isRecording) {
+                this.mediaRecorder.stop();
+                this.isRecording = false;
+                this.statusText = 'Recording stopped';
+            } else {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    this.mediaRecorder = new MediaRecorder(stream);
+                    this.audioChunks = [];
+                    
+                    this.mediaRecorder.ondataavailable = (e) => {
+                        this.audioChunks.push(e.data);
+                    };
+
+                    this.mediaRecorder.onstop = () => {
+                        this.audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+                        const audioFile = new File([this.audioBlob], 'voice-message.webm', { type: 'audio/webm' });
+                        
+                        // Set the file to the hidden input
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(audioFile);
+                        this.$refs.audioInput.files = dataTransfer.files;
+                    };
+
+                    this.mediaRecorder.start();
+                    this.isRecording = true;
+                    this.expanded = true;
+                    this.statusText = 'Recording voice message...';
+                } catch (err) {
+                    console.error('Microphone access denied:', err);
+                    alert('Please allow microphone access to use voice messages.');
+                }
+            }
+        },
+
+        removeAudio() {
+            this.audioBlob = null;
+            this.$refs.audioInput.value = '';
+            this.statusText = 'Media can be attached using the icons above';
+        },
+
+        resetForm() {
+            this.expanded = false;
+            this.title = '';
+            this.category = '';
+            this.description = '';
+            this.images = [];
+            this.audioBlob = null;
+            this.$refs.imageInput.value = '';
+            this.$refs.audioInput.value = '';
+            this.statusText = 'Media can be attached using the icons above';
+        }
+    }
+}
+</script>
 
 <style>
-    @keyframes spin-slow {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-    .fa-spin-slow {
-        animation: spin-slow 3s linear infinite;
-    }
+    [x-cloak] { display: none !important; }
+    .tracking-tightest { letter-spacing: -0.05em; }
 </style>
 @endsection

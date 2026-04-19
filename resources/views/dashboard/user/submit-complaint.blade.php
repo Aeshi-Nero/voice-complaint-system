@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-5xl mx-auto pb-20">
+<div class="max-w-full mx-auto pb-20">
     <!-- Page Header -->
     <div class="flex flex-col md:flex-row justify-between items-start gap-6 mb-10">
         <div class="max-w-2xl">
             <h2 class="text-4xl font-black text-[#163a24] tracking-tight mb-2">Submit New Complaint</h2>
-            <p class="text-gray-500 font-bold text-sm leading-relaxed">Your voice helps us improve Aldersgate College. Please provide clear details so we can address your concerns effectively.</p>
+            <p class="text-gray-500 font-bold text-sm leading-relaxed">Your voice helps us improve V.O.I.C.E. Please provide clear details so we can address your concerns effectively.</p>
         </div>
         
         <!-- Submissions Tag -->
@@ -18,10 +18,22 @@
 
     <!-- Form Card -->
     <div class="bg-white rounded-[2.5rem] shadow-xl p-10 lg:p-16 border border-[#163a24]/5">
-        <form method="POST" action="{{ route('user.complaints.store') }}" enctype="multipart/form-data" class="space-y-12">
+        @if(auth()->user()->banned_until && auth()->user()->banned_until->isFuture())
+            <div class="mb-12 p-10 bg-red-50 border-4 border-red-100 rounded-[2.5rem] flex items-center gap-8 shadow-sm">
+                <div class="w-16 h-16 bg-red-600 rounded-3xl flex items-center justify-center text-white text-2xl shadow-lg shadow-red-200 animate-pulse">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-red-900 uppercase tracking-tight mb-2">Access Restricted</h3>
+                    <p class="text-red-700 font-bold text-sm leading-relaxed">Your account is temporarily banned from submitting new complaints until <span class="underline decoration-2">{{ auth()->user()->banned_until->format('M d, Y | h:i A') }}</span>.</p>
+                </div>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('user.complaints.store') }}" enctype="multipart/form-data" class="space-y-12 {{ (auth()->user()->banned_until && auth()->user()->banned_until->isFuture()) ? 'opacity-50 pointer-events-none' : '' }}">
             @csrf
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div class="grid grid-cols-1 gap-10">
                 <!-- Category -->
                 <div>
                     <label class="block text-[10px] font-black text-[#163a24] uppercase tracking-[0.2em] mb-4">Category</label>
@@ -39,23 +51,6 @@
                         </div>
                     </div>
                     @error('category') <p class="text-red-500 text-[10px] font-black mt-3 ml-1 uppercase">{{ $message }}</p> @enderror
-                </div>
-                
-                <!-- Priority -->
-                <div>
-                    <label class="block text-[10px] font-black text-[#163a24] uppercase tracking-[0.2em] mb-4">Priority Level</label>
-                    <div class="relative">
-                        <select name="priority" class="w-full px-6 py-5 bg-[#fef9e1] border-none rounded-2xl appearance-none font-bold text-[#163a24] outline-none focus:ring-2 focus:ring-[#f3bc3e] transition cursor-pointer" required>
-                            <option value="">Select Priority</option>
-                            <option value="Low" {{ old('priority') == 'Low' ? 'selected' : '' }}>Low (Standard Review)</option>
-                            <option value="Medium" {{ old('priority') == 'Medium' ? 'selected' : '' }}>Medium (Priority Review)</option>
-                            <option value="High" {{ old('priority') == 'High' ? 'selected' : '' }}>High (Immediate Attention)</option>
-                        </select>
-                        <div class="absolute inset-y-0 right-6 flex items-center pointer-events-none text-[#163a24]/30">
-                            <i class="fas fa-align-left text-xs"></i>
-                        </div>
-                    </div>
-                    @error('priority') <p class="text-red-500 text-[10px] font-black mt-3 ml-1 uppercase">{{ $message }}</p> @enderror
                 </div>
             </div>
             

@@ -1,7 +1,7 @@
 @extends("layouts.app")
 
 @section("content")
-<div class="max-w-7xl mx-auto">
+<div class="max-w-full mx-auto">
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8">
         <div>
             <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">All Complaints</h2>
@@ -32,15 +32,48 @@
         </div>
     </div>
     
+    <div class="mb-8">
+        <div class="flex flex-wrap items-center gap-1 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
+            @php
+                $courses = [
+                    'all' => 'All',
+                    'BSED' => 'BSED',
+                    'BSIT' => 'BSIT',
+                    'CBMA' => 'CBMA',
+                    'HM' => 'HM',
+                    'SMS' => 'SMS',
+                    'CRIM' => 'CRIM',
+                    'CET' => 'CET',
+                    'Pre-School' => 'Pre-School',
+                    'Elementary' => 'Elementary',
+                    'High School' => 'High School',
+                    'Teaching' => 'Teaching',
+                    'Non-Teaching' => 'Non-Teaching'
+                ];
+            @endphp
+            
+            @foreach($courses as $key => $label)
+                <a href="{{ route('admin.complaints', ['status' => $status, 'course' => $key]) }}" 
+                   class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ $course === $key ? 'bg-gray-100 text-[#00a651]' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50' }}">
+                    {{ $label }}
+                </a>
+                @if(!$loop->last)
+                    <span class="text-gray-200 font-thin">|</span>
+                @endif
+            @endforeach
+        </div>
+    </div>
+    
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left">
                 <thead>
                     <tr class="bg-gray-50/50 border-b border-gray-100">
                         <th class="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Complaint ID</th>
-                        <th class="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Category</th>
-                        <th class="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Title</th>
                         <th class="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Submitter</th>
+                        <th class="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Title</th>
+                        <th class="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Category</th>
+                        <th class="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest">Department</th>
                         <th class="px-8 py-5 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Action</th>
                     </tr>
                 </thead>
@@ -51,9 +84,18 @@
                             <span class="text-xs font-bold text-gray-300 tracking-wider uppercase group-hover:text-gray-500 transition">{{ $complaint->complaint_number }}</span>
                         </td>
                         <td class="px-8 py-6">
-                            <span class="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black uppercase rounded-lg border border-green-100">
-                                {{ $complaint->category }}
-                            </span>
+                            <div class="flex items-center gap-3">
+                                @if($complaint->user->profile_image)
+                                    <div class="w-8 h-8 rounded-full overflow-hidden border border-gray-100">
+                                        <img src="{{ asset('storage/' . $complaint->user->profile_image) }}" class="w-full h-full object-cover">
+                                    </div>
+                                @else
+                                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500">
+                                        {{ strtoupper(substr($complaint->user->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <span class="text-sm font-bold text-gray-600">{{ $complaint->user->name }}</span>
+                            </div>
                         </td>
                         <td class="px-8 py-6">
                             <div class="flex flex-col">
@@ -62,12 +104,12 @@
                             </div>
                         </td>
                         <td class="px-8 py-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500">
-                                    {{ strtoupper(substr($complaint->user->name, 0, 1)) }}
-                                </div>
-                                <span class="text-sm font-bold text-gray-600">{{ $complaint->user->name }}</span>
-                            </div>
+                            <span class="px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black uppercase rounded-lg border border-green-100">
+                                {{ $complaint->category }}
+                            </span>
+                        </td>
+                        <td class="px-8 py-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                            {{ $complaint->user->course ?? 'N/A' }}
                         </td>
                         <td class="px-8 py-6 text-right">
                             <div class="flex items-center justify-end gap-3">
@@ -99,7 +141,7 @@
         </div>
         
         <div class="px-8 py-6 bg-gray-50/30 border-t border-gray-100">
-            {{ $complaints->appends(["status" => $status])->links() }}
+            {{ $complaints->appends(["status" => $status, "course" => $course])->links() }}
         </div>
     </div>
 </div>

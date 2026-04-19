@@ -25,6 +25,7 @@ services:
       dockerfile: Dockerfile
     container_name: voice_laravel
     entrypoint: ["/var/www/docker-entrypoint.sh"]
+    env_file: .env
     restart: unless-stopped
     working_dir: /var/www
     volumes:
@@ -35,10 +36,10 @@ services:
       mysql:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "cgi-fcgi", "-bind", "-connect", "localhost:9000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "pidof php-fpm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   nginx:
     image: nginx:alpine

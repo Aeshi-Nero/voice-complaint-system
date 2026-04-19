@@ -27,6 +27,10 @@ class ComplaintController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->has('category') && $request->category !== 'all') {
+            $query->where('category', $request->category);
+        }
+
         if ($request->has('search')) {
             $query->where(function($q) use ($request) {
                 $q->where('title', 'like', "%{$request->search}%")
@@ -34,7 +38,15 @@ class ComplaintController extends Controller
             });
         }
 
-        $complaints = $query->latest()->paginate(10);
+        // Sorting
+        $sort = $request->get('sort', 'newest');
+        if ($sort === 'oldest') {
+            $query->oldest();
+        } else {
+            $query->latest();
+        }
+
+        $complaints = $query->paginate(10)->withQueryString();
         $totalCount = Auth::user()->complaints()->count();
         
         return view("dashboard.user.complaints-index", compact("complaints", "totalCount"));
@@ -62,6 +74,13 @@ class ComplaintController extends Controller
         return view("dashboard.user.polls", compact("active_polls", "closed_polls"));
     }
 
+    public function pollReport(\App\Models\Poll $poll)
+    {
+        $poll->load('options');
+
+        return view("dashboard.user.poll-report", compact("poll"));
+    }
+
     public function create()
     {
         if (!Auth::user()->canSubmitComplaint()) {
@@ -79,31 +98,62 @@ class ComplaintController extends Controller
 
         $request->validate([
             "category" => "required|string",
-            "priority" => "required|string",
             "title" => "required|string|max:255",
             "description" => "required|string",
-            "image" => "nullable|mimes:jpeg,png,jpg,gif,pdf|max:5120", // 5MB
+            "images.*" => "nullable|image|mimes:jpeg,png,jpg,gif|max:5120", // 5MB per image
+            "audio" => "nullable|mimes:webm,mp3,wav,ogg|max:10240", // 10MB
         ]);
 
         // Check for profanity
         if ($this->profanityService->containsProfanity($request->description) || 
             $this->profanityService->containsProfanity($request->title)) {
-            return back()->withErrors(["profanity" => "Your complaint contains inappropriate language."])->withInput();
+            
+            $user = Auth::user();
+            $user->profanity_count += 1;
+            
+            if ($user->profanity_count >= 3) {
+                $user->banned_until = now()->addHours(24);
+                $user->profanity_count = 0; // Reset after ban
+                $user->save();
+                
+                Auth::logout();
+                return redirect()->route('login')->with('error', 'Your account has been banned for 24 hours due to multiple violations of our community standards (Profanity).');
+            }
+            
+            $user->save();
+            $remainingStrikes = 3 - $user->profanity_count;
+            
+            $strikeMessage = ($remainingStrikes === 1) 
+                ? "One more violation and you will be banned for 24 hours." 
+                : "{$remainingStrikes} more violations until you are banned for 24 hours.";
+            
+            return back()->withErrors([
+                "profanity" => "Your complaint contains inappropriate language. Strike {$user->profanity_count}/3. {$strikeMessage}"
+            ])->withInput();
         }
 
-        $imagePath = null;
-        if ($request->hasFile("image")) {
-            $imagePath = $request->file("image")->store("complaints", "public");
+        $imagePaths = [];
+        if ($request->hasFile("images")) {
+            foreach ($request->file("images") as $image) {
+                $imagePaths[] = $image->store("complaints/images", "public");
+            }
+        }
+
+        $audioPath = null;
+        if ($request->hasFile("audio")) {
+            $audioPath = $request->file("audio")->store("complaints/audio", "public");
         }
 
         $complaint = Complaint::create([
             "user_id" => Auth::id(),
             "complaint_number" => $this->complaintNumberService->generate(),
             "category" => $request->category,
-            "priority" => $request->priority,
+            "priority" => "Medium", // Default priority
             "title" => $request->title,
             "description" => $request->description,
-            "image_path" => $imagePath,
+            "audio_path" => $audioPath,
+            "image_path" => $imagePaths[0] ?? null,
+            "extra_images" => count($imagePaths) > 1 ? array_slice($imagePaths, 1) : null,
             "status" => "pending",
             "submitted_at" => now(),
         ]);
@@ -121,6 +171,80 @@ class ComplaintController extends Controller
         if ($complaint->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
             abort(403);
         }
+        $complaint->load('messages.user');
         return view("dashboard.user.complaint-detail", compact("complaint"));
+    }
+
+    public function edit(Complaint $complaint)
+    {
+        if ($complaint->user_id !== Auth::id() || $complaint->status !== 'pending') {
+            abort(403, "You can only edit pending complaints.");
+        }
+
+        return view("dashboard.user.edit-complaint", compact("complaint"));
+    }
+
+    public function update(Request $request, Complaint $complaint)
+    {
+        if ($complaint->user_id !== Auth::id() || $complaint->status !== 'pending') {
+            abort(403, "You can only update pending complaints.");
+        }
+
+        $request->validate([
+            "category" => "required|string",
+            "title" => "required|string|max:255",
+            "description" => "required|string",
+            "images.*" => "nullable|image|mimes:jpeg,png,jpg,gif|max:5120",
+            "audio" => "nullable|mimes:webm,mp3,wav,ogg,bin|max:10240",
+        ]);
+
+        // Check for profanity
+        if ($this->profanityService->containsProfanity($request->description) || 
+            $this->profanityService->containsProfanity($request->title)) {
+            
+            $user = Auth::user();
+            $user->profanity_count += 1;
+            $user->save();
+            
+            return back()->withErrors([
+                "profanity" => "Your update contains inappropriate language. Strike {$user->profanity_count}/3."
+            ])->withInput();
+        }
+
+        $data = [
+            "category" => $request->category,
+            "title" => $request->title,
+            "description" => $request->description,
+        ];
+
+        // Handle new images
+        if ($request->hasFile("images")) {
+            $imagePaths = [];
+            foreach ($request->file("images") as $image) {
+                $imagePaths[] = $image->store("complaints/images", "public");
+            }
+            $data["image_path"] = $imagePaths[0];
+            $data["extra_images"] = count($imagePaths) > 1 ? array_slice($imagePaths, 1) : null;
+        }
+
+        // Handle new audio
+        if ($request->hasFile("audio")) {
+            $data["audio_path"] = $request->file("audio")->store("complaints/audio", "public");
+        }
+
+        $complaint->update($data);
+
+        return redirect()->route("user.complaints.index")->with("success", "Complaint updated successfully!");
+    }
+
+    public function destroy(Complaint $complaint)
+    {
+        if ($complaint->user_id !== Auth::id() || $complaint->status !== 'pending') {
+            abort(403, "You can only delete pending complaints.");
+        }
+
+        $complaint->delete();
+
+        return redirect()->route("user.complaints.index")->with("success", "Complaint deleted successfully!");
     }
 }

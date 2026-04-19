@@ -1,18 +1,13 @@
 @extends("layouts.app")
 
 @section("content")
-<div class="max-w-7xl mx-auto">
+<div class="max-w-full mx-auto">
     <!-- Header -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-12">
         <div>
             <h2 class="text-4xl font-black text-[#163a24] tracking-tight uppercase">Dashboard Overview</h2>
             <p class="text-gray-500 font-bold text-sm mt-1">Real-time complaint analytics and system metrics.</p>
         </div>
-        
-        <button class="bg-[#f2e19d] text-[#163a24] px-6 py-3 rounded-xl flex items-center gap-3 font-black text-xs uppercase tracking-widest shadow-sm">
-            <i class="fas fa-calendar-alt"></i>
-            Last 30 Days
-        </button>
     </div>
     
     <!-- Stats Cards -->
@@ -66,42 +61,82 @@
     <!-- Main Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
         <!-- Categories Progress -->
-        <div class="lg:col-span-1 bg-white rounded-[2.5rem] shadow-xl border border-[#163a24]/5 p-10">
-            <div class="flex items-center justify-between mb-12">
-                <h3 class="text-lg font-black text-[#163a24] uppercase tracking-tight">Complaints by Category</h3>
-                <i class="fas fa-ellipsis-v text-gray-300"></i>
-            </div>
-            
-            <div class="relative flex justify-center mb-12">
-                <div class="w-56 h-56 rounded-full border-[1.5rem] border-[#163a24] flex flex-col items-center justify-center">
-                    <p class="text-4xl font-black text-[#163a24] leading-none">{{ array_sum($categoryStats) }}</p>
-                    <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1">Total Files</p>
+        <div class="lg:col-span-1 space-y-10">
+            <!-- Category Chart -->
+            <div class="bg-white rounded-[2.5rem] shadow-xl border border-[#163a24]/5 p-10">
+                <div class="flex items-center justify-between mb-12">
+                    <h3 class="text-lg font-black text-[#163a24] uppercase tracking-tight">Complaints by Category</h3>
+                    <i class="fas fa-chart-pie text-gray-300"></i>
                 </div>
-                <div class="absolute inset-0 w-56 h-56 mx-auto rounded-full border-[1.5rem] border-transparent border-t-[#f3bc3e] border-r-transparent rotate-[45deg]"></div>
+                
+                <div class="relative flex justify-center mb-12">
+                    <div class="w-48 h-48 rounded-full border-[1.2rem] border-[#163a24] flex flex-col items-center justify-center">
+                        <p class="text-3xl font-black text-[#163a24] leading-none">{{ array_sum($categoryStats) }}</p>
+                        <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1">Total Files</p>
+                    </div>
+                    <div class="absolute inset-0 w-48 h-48 mx-auto rounded-full border-[1.2rem] border-transparent border-t-[#f3bc3e] border-r-transparent rotate-[45deg]"></div>
+                </div>
+
+                <div class="space-y-6">
+                    @php
+                        $totalComplaints = array_sum($categoryStats);
+                        $colors = [
+                            'Academic' => 'bg-[#163a24]',
+                            'Faculty' => 'bg-green-600',
+                            'Administrative' => 'bg-[#f3bc3e]',
+                            'IT/Technical' => 'bg-blue-600',
+                            'Health & Safety' => 'bg-red-600',
+                        ];
+                    @endphp
+                    @forelse($categoryStats as $category => $count)
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full {{ $colors[$category] ?? 'bg-gray-400' }}"></span>
+                            <span class="text-sm font-bold text-[#163a24]">{{ $category }}</span>
+                        </div>
+                        <span class="text-sm font-black text-[#163a24]">{{ $totalComplaints > 0 ? round(($count / $totalComplaints) * 100) : 0 }}%</span>
+                    </div>
+                    @empty
+                    <p class="text-xs text-gray-400 font-bold italic">No data available</p>
+                    @endforelse
+                </div>
             </div>
 
-            <div class="space-y-6">
-                @php
-                    $totalComplaints = array_sum($categoryStats);
-                    $colors = [
-                        'Academic' => 'bg-[#163a24]',
-                        'Faculty' => 'bg-green-600',
-                        'Administrative' => 'bg-[#f3bc3e]',
-                        'IT/Technical' => 'bg-blue-600',
-                        'Health & Safety' => 'bg-red-600',
-                    ];
-                @endphp
-                @forelse($categoryStats as $category => $count)
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <span class="w-3 h-3 rounded-full {{ $colors[$category] ?? 'bg-gray-400' }}"></span>
-                        <span class="text-sm font-bold text-[#163a24]">{{ $category }}</span>
-                    </div>
-                    <span class="text-sm font-black text-[#163a24]">{{ $totalComplaints > 0 ? round(($count / $totalComplaints) * 100) : 0 }}%</span>
+            <!-- Department Chart -->
+            <div class="bg-white rounded-[2.5rem] shadow-xl border border-[#163a24]/5 p-10">
+                <div class="flex items-center justify-between mb-12">
+                    <h3 class="text-lg font-black text-[#163a24] uppercase tracking-tight">Complaints by Dept</h3>
+                    <i class="fas fa-university text-gray-300"></i>
                 </div>
-                @empty
-                <p class="text-xs text-gray-400 font-bold italic">No data available</p>
-                @endforelse
+                
+                <div class="relative flex justify-center mb-12">
+                    <div class="w-48 h-48 rounded-full border-[1.2rem] border-[#163a24] flex flex-col items-center justify-center">
+                        <p class="text-3xl font-black text-[#163a24] leading-none">{{ array_sum($departmentStats) }}</p>
+                        <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1">Total Depts</p>
+                    </div>
+                    <div class="absolute inset-0 w-48 h-48 mx-auto rounded-full border-[1.2rem] border-transparent border-t-green-500 border-l-transparent -rotate-[120deg]"></div>
+                </div>
+
+                <div class="space-y-6 overflow-y-auto max-h-[300px] pr-2 custom-scrollbar">
+                    @php
+                        $totalDeptComplaints = array_sum($departmentStats);
+                        $deptColors = ['bg-[#163a24]', 'bg-[#f3bc3e]', 'bg-green-600', 'bg-blue-600', 'bg-red-600', 'bg-purple-600', 'bg-orange-600'];
+                    @endphp
+                    @forelse($departmentStats as $dept => $count)
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <span class="w-3 h-3 rounded-full {{ $deptColors[$loop->index % count($deptColors)] }}"></span>
+                            <span class="text-xs font-bold text-[#163a24] truncate max-w-[120px]">{{ $dept }}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-[10px] font-bold text-gray-400">({{ $count }})</span>
+                            <span class="text-sm font-black text-[#163a24]">{{ $totalDeptComplaints > 0 ? round(($count / $totalDeptComplaints) * 100) : 0 }}%</span>
+                        </div>
+                    </div>
+                    @empty
+                    <p class="text-xs text-gray-400 font-bold italic text-center py-4">No department data</p>
+                    @endforelse
+                </div>
             </div>
         </div>
 

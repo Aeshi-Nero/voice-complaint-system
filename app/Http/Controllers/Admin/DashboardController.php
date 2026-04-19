@@ -22,12 +22,21 @@ class DashboardController extends Controller
             ->get()
             ->pluck("total", "category")
             ->toArray();
+
+        $departmentStats = Complaint::join('users', 'complaints.user_id', '=', 'users.id')
+            ->select("users.course as department", DB::raw("count(*) as total"))
+            ->whereNotNull('users.course')
+            ->groupBy("users.course")
+            ->orderBy('total', 'desc')
+            ->get()
+            ->pluck("total", "department")
+            ->toArray();
             
         $recentComplaints = Complaint::with("user")
             ->latest()
             ->limit(10)
             ->get();
             
-        return view("dashboard.admin.dashboard", compact("stats", "categoryStats", "recentComplaints"));
+        return view("dashboard.admin.dashboard", compact("stats", "categoryStats", "departmentStats", "recentComplaints"));
     }
 }

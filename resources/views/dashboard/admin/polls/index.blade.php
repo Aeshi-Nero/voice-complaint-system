@@ -1,7 +1,7 @@
 @extends("layouts.app")
 
 @section("content")
-<div class="max-w-7xl mx-auto pb-20">
+<div class="max-w-full mx-auto pb-20">
     <!-- Header Section -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-10">
         <div>
