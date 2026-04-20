@@ -45,11 +45,13 @@ while ($retry_count < $max_retries) {
 exit(1);
 '
 
-echo "Database is ready. Running migrations..."
-php artisan migrate --force
+echo "Checking database connection..."
+# Don't exit on migration failure here, let the app start
+php artisan migrate --force || echo "Migration failed, will try again via web route"
 
 # Link storage
 php artisan storage:link --force || true
 
 echo "Starting application..."
+# Force port for Render
 exec php artisan serve --host 0.0.0.0 --port ${PORT:-10000}
