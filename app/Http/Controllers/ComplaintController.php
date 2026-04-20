@@ -21,7 +21,11 @@ class ComplaintController extends Controller
 
     public function index(Request $request)
     {
-        $query = Auth::user()->complaints();
+        $user = Auth::user();
+        $user->last_messages_viewed_at = now();
+        $user->save();
+
+        $query = $user->complaints();
 
         if ($request->has('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
@@ -71,6 +75,10 @@ class ComplaintController extends Controller
         $active_polls = \App\Models\Poll::where('status', 'active')->with('options')->latest()->get();
         $closed_polls = \App\Models\Poll::where('status', 'closed')->with('options')->latest()->get();
         
+        $user = Auth::user();
+        $user->last_poll_viewed_at = now();
+        $user->save();
+
         return view("dashboard.user.polls", compact("active_polls", "closed_polls"));
     }
 

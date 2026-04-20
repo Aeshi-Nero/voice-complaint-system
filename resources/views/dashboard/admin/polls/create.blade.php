@@ -10,7 +10,7 @@
         </p>
     </div>
 
-    <form action="{{ route('admin.polls.store') }}" method="POST">
+    <form action="{{ route('admin.polls.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="flex flex-col lg:flex-row gap-10">
             <!-- Form Canvas -->
@@ -35,28 +35,66 @@
                     </section>
 
                     <!-- Dynamic Poll Options -->
-                    <section x-data="{ options: {{ count(old('options', ['', ''])) }} }" class="space-y-6">
+                    <section x-data="{ 
+                        optionsCount: {{ count(old('options', ['', ''])) }},
+                        previews: [],
+                        updatePreview(index, event) {
+                            const file = event.target.files[0];
+                            if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    this.previews[index] = e.target.result;
+                                };
+                                reader.readAsDataURL(file);
+                            }
+                        }
+                    }" class="space-y-6">
                         <div class="flex justify-between items-center mb-4">
                             <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-[#163a24]/60 ml-1">Poll Options</label>
                             <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Min. 2 options required</span>
                         </div>
                         
-                        <div class="space-y-4">
-                            <template x-for="i in options" :key="i">
-                                <div class="flex items-center gap-4 group">
-                                    <span class="text-[10px] font-black text-[#163a24]/20 w-6" x-text="String(i).padStart(2, '0')"></span>
-                                    <input name="options[]" required
-                                           class="flex-1 px-6 py-4 rounded-2xl bg-[#fef9e1] border-none focus:ring-2 focus:ring-[#f3bc3e] font-black text-[#163a24] placeholder-[#163a24]/20" 
-                                           placeholder="Enter option text..." type="text"/>
-                                    <button type="button" @click="if(options > 2) options--" 
-                                            class="p-3 text-red-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
+                        <div class="space-y-6">
+                            <template x-for="(i, index) in optionsCount" :key="index">
+                                <div class="space-y-3 p-6 bg-[#fef9e1] rounded-[2rem] border border-[#163a24]/5 group relative">
+                                    <div class="flex items-center gap-4">
+                                        <span class="text-[10px] font-black text-[#163a24]/40" x-text="String(index + 1).padStart(2, '0')"></span>
+                                        <input :name="'options[' + index + ']'" required
+                                               class="flex-1 bg-transparent border-none focus:ring-0 font-black text-[#163a24] placeholder-[#163a24]/20" 
+                                               placeholder="Enter option text..." type="text"/>
+                                        <button type="button" @click="if(optionsCount > 2) { optionsCount--; previews.splice(index, 1); }" 
+                                                class="p-2 text-red-300 hover:text-red-500 transition-colors">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="flex flex-col gap-4 pt-4 border-t border-[#163a24]/5">
+                                        <div class="flex items-center gap-4">
+                                            <label class="flex items-center gap-2 cursor-pointer group/file">
+                                                <div class="w-8 h-8 rounded-lg bg-[#163a24] flex items-center justify-center text-[#f3bc3e] group-hover/file:bg-[#f3bc3e] group-hover/file:text-[#163a24] transition-colors">
+                                                    <i class="fas fa-image text-[10px]"></i>
+                                                </div>
+                                                <span class="text-[9px] font-black uppercase tracking-widest text-[#163a24]/40 group-hover/file:text-[#163a24]">Add Image (Optional)</span>
+                                                <input :name="'option_images[' + index + ']'" type="file" class="hidden" accept="image/*" @change="updatePreview(index, $event)">
+                                            </label>
+
+                                            <!-- Image Preview -->
+                                            <template x-if="previews[index]">
+                                                <div class="relative w-12 h-12 rounded-lg overflow-hidden border-2 border-[#163a24]/10 shadow-sm">
+                                                    <img :src="previews[index]" class="w-full h-full object-cover">
+                                                    <button type="button" @click="previews[index] = null; document.getElementsByName('option_images['+index+']')[0].value = ''" 
+                                                            class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                                        <i class="fas fa-trash text-white text-[8px]"></i>
+                                                    </button>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
                                 </div>
                             </template>
                         </div>
 
-                        <button type="button" @click="if(options < 10) options++"
+                        <button type="button" @click="if(optionsCount < 10) optionsCount++"
                                 class="flex items-center gap-2 text-xs font-black text-[#163a24] hover:text-[#f3bc3e] mt-6 uppercase tracking-widest transition">
                             <i class="fas fa-plus-circle"></i>
                             Add Another Option
@@ -85,23 +123,8 @@
                             <select class="w-full px-6 py-4 bg-white/5 border-none rounded-2xl text-sm font-bold text-white focus:ring-2 focus:ring-[#f3bc3e] appearance-none cursor-pointer">
                                 <option class="text-gray-900">All Students</option>
                                 <option class="text-gray-900">Faculty Only</option>
-                                <option class="text-gray-900">IT Department</option>
+                                <option class="text-gray-900">Teaching Staff</option>
                             </select>
-                        </div>
-                    </div>
-
-                    <div class="pt-8 border-t border-white/5 space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] font-black uppercase text-white/60 tracking-widest">Anonymous Voting</span>
-                            <div class="w-10 h-5 bg-[#22c55e] rounded-full p-1 cursor-pointer">
-                                <div class="w-3 h-3 bg-white rounded-full ml-auto shadow-sm"></div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] font-black uppercase text-white/60 tracking-widest">Live Results</span>
-                            <div class="w-10 h-5 bg-white/10 rounded-full p-1 cursor-pointer">
-                                <div class="w-3 h-3 bg-white rounded-full shadow-sm"></div>
-                            </div>
                         </div>
                     </div>
                 </div>

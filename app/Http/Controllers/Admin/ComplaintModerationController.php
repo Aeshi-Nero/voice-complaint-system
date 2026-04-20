@@ -15,6 +15,18 @@ class ComplaintModerationController extends Controller
         $status = $request->get('status', 'all');
         $course = $request->get('course', 'all');
         
+        $user = auth()->user();
+        
+        // Mark as viewed
+        if ($course === 'all') {
+            $user->last_complaints_viewed_at = now();
+        } else {
+            $viewedCats = $user->viewed_categories_at ?? [];
+            $viewedCats[$course] = now()->toDateTimeString();
+            $user->viewed_categories_at = $viewedCats;
+        }
+        $user->save();
+        
         $query = Complaint::with('user');
         
         if ($status !== 'all') {

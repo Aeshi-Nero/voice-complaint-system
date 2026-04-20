@@ -69,9 +69,45 @@ Route::get("/migrate", function() {
             });
             $output .= "Column 'banned_until' added successfully!\n";
         }
-        
-        return nl2br($output);
-    } catch (\Exception $e) {
+
+        // 6. Manual Fallback: Add last_poll_viewed_at to users
+        if (!Schema::hasColumn('users', 'last_poll_viewed_at')) {
+            $output .= "Column 'last_poll_viewed_at' missing in 'users'. Attempting manual addition...\n";
+            Schema::table('users', function ($table) {
+                $table->timestamp('last_poll_viewed_at')->nullable();
+            });
+            $output .= "Column 'last_poll_viewed_at' added successfully!\n";
+        }
+
+        // 7. Manual Fallback: Add image_path to poll_options
+        if (!Schema::hasColumn('poll_options', 'image_path')) {
+            $output .= "Column 'image_path' missing in 'poll_options'. Attempting manual addition...\n";
+            Schema::table('poll_options', function ($table) {
+                $table->string('image_path')->nullable();
+            });
+            $output .= "Manual addition successful!\n";
+        }
+
+        // 8. Manual Fallback: Add complaints tracking to users
+        if (!Schema::hasColumn('users', 'last_complaints_viewed_at')) {
+            $output .= "Column 'last_complaints_viewed_at' missing in 'users'. Attempting manual addition...\n";
+            Schema::table('users', function ($table) {
+                $table->timestamp('last_complaints_viewed_at')->nullable();
+                $table->json('viewed_categories_at')->nullable();
+            });
+            $output .= "Complaints tracking columns added successfully!\n";
+        }
+
+        // 9. Manual Fallback: Add message tracking to users
+        if (!Schema::hasColumn('users', 'last_messages_viewed_at')) {
+            $output .= "Column 'last_messages_viewed_at' missing in 'users'. Attempting manual addition...\n";
+            Schema::table('users', function ($table) {
+                $table->timestamp('last_messages_viewed_at')->nullable();
+            });
+            $output .= "Message tracking column added successfully!\n";
+        }
+
+        return nl2br($output);    } catch (\Exception $e) {
         return "Migration/Fix failed: " . $e->getMessage();
     }
 });

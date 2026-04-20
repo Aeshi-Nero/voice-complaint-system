@@ -13,6 +13,7 @@ class PollOption extends Model
         'poll_id',
         'option_text',
         'votes_count',
+        'image_path',
     ];
 
     public function poll()

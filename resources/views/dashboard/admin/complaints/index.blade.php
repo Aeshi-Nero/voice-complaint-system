@@ -53,10 +53,29 @@
             @endphp
             
             @foreach($courses as $key => $label)
-                <a href="{{ route('admin.complaints', ['status' => $status, 'course' => $key]) }}" 
-                   class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ $course === $key ? 'bg-gray-100 text-[#00a651]' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50' }}">
-                    {{ $label }}
-                </a>
+                <div class="flex items-center gap-1">
+                    <a href="{{ route('admin.complaints', ['status' => $status, 'course' => $key]) }}" 
+                       class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition flex items-center gap-2 {{ $course === $key ? 'bg-gray-100 text-[#00a651]' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50' }}">
+                        {{ $label }}
+                        
+                        {{-- Show glowing badge only if NOT current selection and count > 0 --}}
+                        @if($key !== 'all' && $course !== $key && isset($deptComplaintsCount[$key]) && $deptComplaintsCount[$key] > 0)
+                            <div class="flex h-2.5 w-2.5 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] flex items-center justify-center">
+                                    <span class="text-[6px] text-white">{{ $deptComplaintsCount[$key] }}</span>
+                                </span>
+                            </div>
+                        @elseif($key === 'all' && $course !== 'all' && ($totalComplaintsCount ?? 0) > 0)
+                            <div class="flex h-2.5 w-2.5 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] flex items-center justify-center">
+                                    <span class="text-[6px] text-white">{{ $totalComplaintsCount }}</span>
+                                </span>
+                            </div>
+                        @endif
+                    </a>
+                </div>
                 @if(!$loop->last)
                     <span class="text-gray-200 font-thin">|</span>
                 @endif

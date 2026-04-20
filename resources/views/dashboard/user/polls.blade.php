@@ -29,11 +29,26 @@
         @else
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             @foreach($active_polls as $poll)
-            <div class="bg-white rounded-[2.5rem] shadow-xl p-10 border border-[#163a24]/5 flex flex-col h-full">
+            @php
+                $flagshipImage = $poll->options->whereNotNull('image_path')->first()?->image_path;
+            @endphp
+            <div class="bg-white rounded-[2.5rem] shadow-xl border border-[#163a24]/5 flex flex-col h-full overflow-hidden group">
+                <div class="relative h-40 w-full overflow-hidden bg-[#163a24]/5">
+                    @if($flagshipImage)
+                        <img src="{{ asset('storage/' . $flagshipImage) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center bg-[#fef9e1]">
+                            <i class="fas fa-poll text-4xl text-[#163a24]/10"></i>
+                        </div>
+                    @endif
+                    <div class="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent"></div>
+                </div>
+
+                <div class="p-8 pt-6 flex flex-col h-full">
                 <div class="flex justify-between items-start mb-6">
                     <div class="flex-1">
-                        <h4 class="text-2xl font-black text-[#163a24] leading-tight mb-2">{{ $poll->title }}</h4>
-                        <p class="text-sm font-bold text-gray-400 leading-relaxed">{{ $poll->description }}</p>
+                        <h4 class="text-xl font-black text-[#163a24] leading-tight mb-2 group-hover:text-[#f3bc3e] transition-colors">{{ $poll->title }}</h4>
+                        <p class="text-xs font-bold text-gray-400 leading-relaxed">{{ $poll->description }}</p>
                     </div>
                     @if($poll->expires_at)
                     <span class="bg-[#112d1c] text-[#f3bc3e] px-4 py-1.5 rounded-xl text-[8px] font-black uppercase tracking-widest whitespace-nowrap ml-4">
@@ -106,10 +121,25 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($closed_polls as $poll)
-            <div class="bg-white rounded-[2.5rem] shadow-xl p-10 border border-[#163a24]/5">
-                <div class="flex justify-between items-start mb-8">
-                    <h4 class="text-lg font-black text-[#163a24] leading-tight">{{ $poll->title }}</h4>
-                    <span class="text-[8px] font-black text-gray-300 uppercase tracking-widest">Closed</span>
+            @php
+                $flagshipImage = $poll->options->whereNotNull('image_path')->first()?->image_path;
+            @endphp
+            <div class="bg-white rounded-[2.5rem] shadow-xl border border-[#163a24]/5 overflow-hidden group flex flex-col h-full transition-transform hover:-translate-y-1">
+                <div class="relative h-32 w-full overflow-hidden bg-[#163a24]/5">
+                    @if($flagshipImage)
+                        <img src="{{ asset('storage/' . $flagshipImage) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-60 grayscale">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center bg-[#fef9e1]">
+                            <i class="fas fa-poll text-3xl text-[#163a24]/10"></i>
+                        </div>
+                    @endif
+                    <div class="absolute inset-0 bg-gradient-to-t from-white via-white/5 to-transparent"></div>
+                </div>
+                
+                <div class="p-8 pt-6 flex-1 flex flex-col">
+                <div class="flex justify-between items-start mb-6">
+                    <h4 class="text-md font-black text-[#163a24] leading-tight group-hover:text-[#f3bc3e] transition-colors line-clamp-2">{{ $poll->title }}</h4>
+                    <span class="text-[8px] font-black text-gray-300 uppercase tracking-widest whitespace-nowrap ml-4">Closed</span>
                 </div>
 
                 <div class="space-y-6 mb-10">

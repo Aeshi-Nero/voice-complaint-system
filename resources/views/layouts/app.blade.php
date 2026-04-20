@@ -68,9 +68,19 @@
                             <span class="text-sm font-black uppercase tracking-widest">Dashboard</span>
                         </a>
                         <a href="{{ route('admin.complaints') }}" 
-                           class="flex items-center gap-4 px-6 py-4 rounded-2xl transition group {{ Request::is('admin/complaints*') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
-                            <i class="fas fa-list-alt w-5 text-center"></i>
-                            <span class="text-sm font-black uppercase tracking-widest">All Complaints</span>
+                           class="flex items-center justify-between px-6 py-4 rounded-2xl transition group {{ Request::is('admin/complaints*') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
+                            <div class="flex items-center gap-4">
+                                <i class="fas fa-list-alt w-5 text-center"></i>
+                                <span class="text-sm font-black uppercase tracking-widest">All Complaints</span>
+                            </div>
+                            @if(($totalComplaintsCount ?? 0) > 0)
+                            <div class="flex items-center justify-center min-w-[20px] h-5 px-1.5 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-5 w-auto px-1.5 bg-green-500 text-[10px] font-black text-white items-center justify-center shadow-[0_0_8px_rgba(34,197,94,0.6)]">
+                                    {{ $totalComplaintsCount }}
+                                </span>
+                            </div>
+                            @endif
                         </a>
                         <a href="{{ route('admin.users.index') }}" 
                            class="flex items-center gap-4 px-6 py-4 rounded-2xl transition group {{ Request::is('admin/users*') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
@@ -94,14 +104,32 @@
                             <span class="text-sm font-black uppercase tracking-widest">Homepage</span>
                         </a>
                         <a href="{{ route('user.complaints.index') }}" 
-                           class="flex items-center gap-4 px-6 py-4 rounded-2xl transition group {{ Request::is('user/complaints') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
-                            <i class="fas fa-list-ul w-5 text-center"></i>
-                            <span class="text-sm font-black uppercase tracking-widest">My Complaints</span>
+                           class="flex items-center justify-between px-6 py-4 rounded-2xl transition group {{ Request::is('user/complaints') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
+                            <div class="flex items-center gap-4">
+                                <i class="fas fa-list-ul w-5 text-center"></i>
+                                <span class="text-sm font-black uppercase tracking-widest">My Complaints</span>
+                            </div>
+                            @if(($unseenMessagesCount ?? 0) > 0)
+                            <div class="flex items-center justify-center min-w-[20px] h-5 px-1.5 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-5 w-auto px-1.5 bg-green-500 text-[10px] font-black text-white items-center justify-center shadow-[0_0_8px_rgba(34,197,94,0.6)]">
+                                    {{ $unseenMessagesCount }}
+                                </span>
+                            </div>
+                            @endif
                         </a>
                         <a href="{{ route('user.polls') }}" 
-                           class="flex items-center gap-4 px-6 py-4 rounded-2xl transition group {{ Request::is('user/polls') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
-                            <i class="fas fa-chart-bar w-5 text-center"></i>
-                            <span class="text-sm font-black uppercase tracking-widest">Polls</span>
+                           class="flex items-center justify-between px-6 py-4 rounded-2xl transition group {{ Request::is('user/polls') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
+                            <div class="flex items-center gap-4">
+                                <i class="fas fa-chart-bar w-5 text-center"></i>
+                                <span class="text-sm font-black uppercase tracking-widest">Polls</span>
+                            </div>
+                            @if($hasNewPolls ?? false)
+                            <div class="flex h-2 w-2 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+                            </div>
+                            @endif
                         </a>
                     @endif
                 </nav>

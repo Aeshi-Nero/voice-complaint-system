@@ -24,6 +24,10 @@ class User extends Authenticatable
         'course',
         'profile_image',
         'banned_until',
+        'last_poll_viewed_at',
+        'last_complaints_viewed_at',
+        'viewed_categories_at',
+        'last_messages_viewed_at',
     ];
 
     protected $hidden = [
@@ -35,6 +39,10 @@ class User extends Authenticatable
         'is_blocked' => 'boolean',
         'last_complaint_reset' => 'datetime',
         'banned_until' => 'datetime',
+        'last_poll_viewed_at' => 'datetime',
+        'last_complaints_viewed_at' => 'datetime',
+        'viewed_categories_at' => 'array',
+        'last_messages_viewed_at' => 'datetime',
     ];
 
     public function complaints()

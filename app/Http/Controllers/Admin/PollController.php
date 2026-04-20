@@ -29,6 +29,8 @@ class PollController extends Controller
             'expires_at' => 'required|date|after:today',
             'options' => 'required|array|min:2|max:10',
             'options.*' => 'required|string|max:255',
+            'option_images' => 'nullable|array',
+            'option_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
         
         $poll = Poll::create([
@@ -39,12 +41,27 @@ class PollController extends Controller
             'created_by' => auth()->id(),
         ]);
         
-        foreach ($request->options as $option) {
+        foreach ($request->options as $index => $optionText) {
+            $imagePath = null;
+            if ($request->hasFile("option_images.$index")) {
+                $imagePath = $request->file("option_images.$index")->store("polls/options", "public");
+            }
+
             PollOption::create([
                 'poll_id' => $poll->id,
-                'option_text' => $option,
+                'option_text' => $optionText,
                 'votes_count' => 0,
+                'image_path' => $imagePath,
             ]);
+        }
+
+        // Notify users through email or phone number (if both provided)
+        $users = \App\Models\User::whereNotNull('email')
+            ->whereNotNull('phone_number')
+            ->get();
+            
+        foreach ($users as $user) {
+            $user->notify(new \App\Notifications\NewPollNotification($poll));
         }
         
         return redirect()->route('admin.polls.index')->with('success', 'Poll created successfully.');
