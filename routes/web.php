@@ -107,6 +107,18 @@ Route::get("/migrate", function() {
             $output .= "Message tracking column added successfully!\n";
         }
 
+        // 10. Fix Storage Symlink for InfinityFree
+        $publicStoragePath = public_path('storage');
+        if (!file_exists($publicStoragePath)) {
+            $output .= "Attempting to create storage symlink...\n";
+            try {
+                app()->make('files')->link(storage_path('app/public'), $publicStoragePath);
+                $output .= "Storage symlink created successfully!\n";
+            } catch (\Exception $e) {
+                $output .= "Failed to create symlink: " . $e->getMessage() . ". You may need to create it manually.\n";
+            }
+        }
+
         return nl2br($output);    } catch (\Exception $e) {
         return "Migration/Fix failed: " . $e->getMessage();
     }
