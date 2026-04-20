@@ -24,6 +24,10 @@ Route::get("/migrate", function() {
         // 1. Run migrations
         Artisan::call('migrate', ['--force' => true]);
         $output .= "Migrate output: " . Artisan::output() . "\n\n";
+
+        // 2. Run Seeders (Initial data)
+        Artisan::call('db:seed', ['--force' => true]);
+        $output .= "Seed output: " . Artisan::output() . "\n\n";
         
         // 2. Manual Fallback: Check if column exists, if not add it
         if (!Schema::hasColumn('users', 'profile_image')) {
