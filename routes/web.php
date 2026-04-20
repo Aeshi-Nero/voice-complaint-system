@@ -130,6 +130,7 @@ Route::get("/migrate", function() {
 
 Route::get("/import-users", function() {
     try {
+        set_time_limit(300); // Increase to 5 mins
         $sharedStringsPath = base_path('sharedStrings.xml');
         $sheetPath = base_path('sheet1.xml');
 
@@ -191,7 +192,8 @@ Route::get("/import-users", function() {
 
         return "Successfully imported $usersImported users. Default password is 'password'.";
     } catch (\Exception $e) {
-        return "Import failed: " . $e->getMessage();
+        \Illuminate\Support\Facades\Log::error("Import failed: " . $e->getMessage());
+        return "Import failed: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine();
     }
 });
 
