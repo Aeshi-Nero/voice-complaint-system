@@ -33,6 +33,9 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
+# Make entrypoint script executable
+RUN chmod +x /var/www/docker-entrypoint.sh
+
 # Install Composer dependencies
 RUN composer install --no-dev --optimize-autoloader
 
@@ -42,5 +45,5 @@ RUN npm install && npm run build
 # Copy existing application directory permissions
 RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www/storage /var/www/bootstrap/cache
 
-# Use the port provided by Render's environment variable
-CMD ["sh", "-c", "php artisan serve --host 0.0.0.0 --port ${PORT:-10000}"]
+# Set Entrypoint
+ENTRYPOINT ["/var/www/docker-entrypoint.sh"]
