@@ -21,14 +21,16 @@ class AppServiceProvider extends ServiceProvider
     {
         view()->composer('*', function ($view) {
             if (auth()->check()) {
-                // Poll notifications
-                $hasNewPolls = \App\Models\Poll::where('status', 'active')
-                    ->where('created_at', '>', auth()->user()->last_poll_viewed_at ?? '2000-01-01')
-                    ->exists();
-                $view->with('hasNewPolls', $hasNewPolls);
+                // Poll notifications - Safe check if table exists
+                if (\Illuminate\Support\Facades\Schema::hasTable('polls')) {
+                    $hasNewPolls = \App\Models\Poll::where('status', 'active')
+                        ->where('created_at', '>', auth()->user()->last_poll_viewed_at ?? '2000-01-01')
+                        ->exists();
+                    $view->with('hasNewPolls', $hasNewPolls);
+                }
 
-                // Admin notifications
-                if (auth()->user()->isAdmin()) {
+                // Admin notifications - Safe check if table exists
+                if (auth()->user()->isAdmin() && \Illuminate\Support\Facades\Schema::hasTable('complaints')) {
                     $user = auth()->user();
                     
                     // Total unseen complaints
@@ -51,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
                     }
                     
                     $view->with('deptComplaintsCount', $deptCounts);
-                } else {
+                } elseif (!auth()->user()->isAdmin() && \Illuminate\Support\Facades\Schema::hasTable('complaint_messages')) {
                     // Student notifications
                     $user = auth()->user();
                     
