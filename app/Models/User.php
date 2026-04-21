@@ -74,7 +74,7 @@ class User extends Authenticatable
 
     protected function ensureComplaintsReset(): void
     {
-        $now = now('Asia/Manila');
+        $now = now();
         
         if (!$this->last_complaint_reset || !$this->last_complaint_reset->isToday()) {
             $this->update([

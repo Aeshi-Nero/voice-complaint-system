@@ -14,6 +14,32 @@
 </head>
 <body class="bg-[#fef9e1]">
     <div x-data="{ sidebarOpen: false, profileModalOpen: false, profilePreview: null, showCurrentPassword: false, showNewPassword: false }" class="min-h-screen flex flex-col">  
+            <!-- Mobile Header -->
+            <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[60] shadow-lg">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white w-8 h-8 rounded-full flex items-center justify-center overflow-hidden border border-[#f3bc3e]">
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('img/ac_logo.png'))) }}" class="w-full h-full object-cover">
+                    </div>
+                    <span class="font-black tracking-tighter uppercase text-sm">V.O.I.C.E.</span>
+                </div>
+                <button @click="sidebarOpen = true" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Sidebar Overlay -->
+            <div x-show="sidebarOpen" 
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 @click="sidebarOpen = false" 
+                 class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[45] lg:hidden"
+                 x-cloak>
+            </div>
+
             <!-- Sidebar Navigation -->
             @auth
             <aside 

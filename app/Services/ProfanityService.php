@@ -41,16 +41,31 @@ class ProfanityService
         // Standardize text: Lowercase and remove excessive whitespace
         $text = mb_strtolower($text, 'UTF-8');
         
+        // Create a normalized version of the text (remove symbols and punctuation)
+        // This helps catch "f.u.c.k" by turning it into "fuck"
+        $normalizedText = preg_replace('/[^\p{L}\p{N}\s]/u', '', $text);
+
+        // Apply basic substitutions to normalized text to catch things like "p0rn"
+        $substitutions = [
+            '0' => 'o', '1' => 'i', '3' => 'e', '4' => 'a', '5' => 's', '7' => 't', '8' => 'b', '@' => 'a', '$' => 's', '+' => 't'
+        ];
+        $substitutedText = strtr($normalizedText, $substitutions);
+        
         foreach ($this->profanityWords as $word) {
             $word = strtolower($word);
             
-            // 1. Exact/Word-Boundary match (e.g., "word")
+            // 1. Check in normalized and substituted text
+            if (str_contains($normalizedText, $word) || str_contains($substitutedText, $word)) {
+                return true;
+            }
+
+            // 2. Exact/Word-Boundary match (e.g., "word")
             $pattern = "~\\b" . preg_quote($word, '~') . "\\b~iu";
             if (preg_match($pattern, $text)) {
                 return true;
             }
 
-            // 2. Obfuscated match (e.g., "w.0.r.d")
+            // 3. Obfuscated match (e.g., "w.0.r.d")
             $obfuscatedPattern = $this->generateObfuscatedPattern($word);
             if (preg_match($obfuscatedPattern, $text)) {
                 return true;
