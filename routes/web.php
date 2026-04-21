@@ -216,6 +216,7 @@ Route::middleware(["auth"])->prefix("user")->name("user.")->group(function () {
     Route::get("/dashboard", [ComplaintController::class, "dashboard"])->name("dashboard");
     Route::get("/polls", [ComplaintController::class, "polls"])->name("polls");
     Route::get("/polls/{poll}/report", [ComplaintController::class, "pollReport"])->name("polls.report");
+    Route::get("/polls/{poll}/live", [ComplaintController::class, "livePollResults"])->name("polls.live");
     Route::post("/polls/{poll}/vote", [VoteController::class, "vote"])->name("polls.vote");
     Route::resource("complaints", ComplaintController::class);
 });

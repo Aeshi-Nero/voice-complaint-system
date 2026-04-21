@@ -1,7 +1,21 @@
 @extends("layouts.app")
 
-@section("content")
-<div class="max-w-6xl mx-auto pb-20">
+@section('content')
+<div class="max-w-full mx-auto pb-20" x-data="{ newMessages: false }" x-init="
+    LiveUpdate.lastCount['chat_{{ $complaint->id }}'] = {{ $complaint->messages->count() }};
+    setInterval(() => {
+        LiveUpdate.check('chat_{{ $complaint->id }}', '{{ route('complaints.messages.get', $complaint) }}', () => {
+            newMessages = true;
+        });
+    }, 4000);
+">
+    <!-- Live Chat Notification -->
+    <div x-show="newMessages" x-transition x-cloak class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100]">
+        <button @click="window.location.reload()" class="bg-[#163a24] text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 hover:scale-105 transition-all border border-[#f3bc3e]/30">
+            <i class="fas fa-comment-dots animate-bounce text-[#f3bc3e]"></i>
+            <span class="text-xs font-black uppercase tracking-widest">New reply from Admin. Refresh to view.</span>
+        </button>
+    </div>
     <!-- Header Section -->
     <div class="mb-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>

@@ -1,7 +1,25 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-4xl mx-auto pb-20">
+<div class="max-w-4xl mx-auto pb-20" x-data="{ newVotes: false }" x-init="
+    LiveUpdate.lastCount['poll_{{ $poll->id }}'] = {{ $poll->getTotalVotes() }};
+    setInterval(() => {
+        LiveUpdate.check('poll_{{ $poll->id }}', '{{ route('user.polls.live', $poll) }}', () => {
+            newVotes = true;
+        });
+    }, 5000);
+">
+    <!-- Live Notification Toast -->
+    <div x-show="newVotes" x-transition x-cloak class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100]">
+        <button @click="window.location.reload()" class="bg-[#163a24] text-white px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-4 hover:bg-black transition-all border border-[#f3bc3e]/30">
+            <span class="relative flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-yellow-500"></span>
+            </span>
+            <span class="text-sm font-black uppercase tracking-widest">New votes detected. Click to refresh results.</span>
+        </button>
+    </div>
+
     <!-- Breadcrumbs/Back Button -->
     <div class="mb-8">
         <a href="{{ route('user.polls') }}" class="text-[10px] font-black text-gray-400 hover:text-[#163a24] uppercase tracking-widest flex items-center gap-2 transition">
@@ -39,36 +57,48 @@
     </div>
 
     <!-- Detailed Results -->
-    <div class="bg-white rounded-[2.5rem] shadow-xl p-10 border border-[#163a24]/5">
+    <div class="bg-white rounded-[2.5rem] shadow-xl p-10 border border-[#163a24]/5" 
+         x-data="{ 
+            totalVotes: {{ $poll->getTotalVotes() }},
+            options: [
+                @foreach($poll->options->sortBy('id') as $option)
+                { id: {{ $option->id }}, votes: {{ $option->votes_count }}, percentage: {{ $poll->getTotalVotes() > 0 ? round(($option->votes_count / $poll->getTotalVotes()) * 100, 1) : 0 }} },
+                @endforeach
+            ],
+            async fetchLiveResults() {
+                try {
+                    const response = await fetch('{{ route('user.polls.live', $poll) }}');
+                    const data = await response.json();
+                    this.totalVotes = data.total_votes;
+                    this.options = data.options;
+                } catch (e) { console.error('Live update failed'); }
+            }
+         }"
+         x-init="setInterval(() => fetchLiveResults(), 5000)">
+        
         <h3 class="text-xl font-black text-[#163a24] uppercase tracking-widest mb-10 flex items-center gap-3">
             <i class="fas fa-chart-bar text-[#f3bc3e]"></i>
             Detailed Voting Breakdown
         </h3>
 
-        @php
-            $totalVotes = $poll->getTotalVotes();
-        @endphp
-
         <div class="space-y-10">
-            @foreach($poll->options as $option)
-            @php
-                $votesCount = $option->votes_count;
-                $percentage = $totalVotes > 0 ? round(($votesCount / $totalVotes) * 100, 1) : 0;
-            @endphp
+            @foreach($poll->options->sortBy('id') as $index => $option)
             <div class="relative">
                 <div class="flex justify-between items-end mb-4">
                     <div class="flex flex-col">
                         <span class="text-sm font-black text-[#163a24] uppercase tracking-widest">{{ $option->option_text }}</span>
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ number_format($votesCount) }} votes</span>
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            <span x-text="options.find(o => o.id === {{ $option->id }})?.votes.toLocaleString() || '0'">{{ number_format($option->votes_count) }}</span> votes
+                        </span>
                     </div>
-                    <span class="text-lg font-black text-[#163a24]">{{ $percentage }}%</span>
+                    <span class="text-lg font-black text-[#163a24]">
+                        <span x-text="options.find(o => o.id === {{ $option->id }})?.percentage || '0'">{{ $poll->getTotalVotes() > 0 ? round(($option->votes_count / $poll->getTotalVotes()) * 100, 1) : 0 }}</span>%
+                    </span>
                 </div>
                 
                 <div class="w-full bg-[#fef9e1] rounded-full h-4 overflow-hidden shadow-inner border border-[#163a24]/5">
-                    <div class="bg-[#163a24] h-full rounded-full transition-all duration-1000 flex items-center justify-end px-2" style="width: {{ $percentage }}%">
-                        @if($percentage > 15)
-                            <div class="w-1 h-1 bg-white/20 rounded-full"></div>
-                        @endif
+                    <div class="bg-[#163a24] h-full rounded-full transition-all duration-1000 flex items-center justify-end px-2" 
+                         :style="'width: ' + (options.find(o => o.id === {{ $option->id }})?.percentage || 0) + '%'">
                     </div>
                 </div>
                 
@@ -92,7 +122,7 @@
             <div class="flex gap-8">
                 <div class="text-center">
                     <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Total Participation</p>
-                    <p class="text-xl font-black text-[#163a24]">{{ number_format($totalVotes) }}</p>
+                    <p class="text-xl font-black text-[#163a24]" x-text="totalVotes.toLocaleString()">{{ number_format($poll->getTotalVotes()) }}</p>
                 </div>
                 <div class="text-center">
                     <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-1">Options Provided</p>

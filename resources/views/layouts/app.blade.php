@@ -10,7 +10,27 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         [x-cloak] { display: none !important; }
+        .live-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
     </style>
+    <script>
+        // Global live update handler
+        window.LiveUpdate = {
+            lastCount: {},
+            async check(key, url, callback) {
+                try {
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    const currentCount = Array.isArray(data) ? data.length : (data.total_votes || 0);
+                    
+                    if (this.lastCount[key] !== undefined && currentCount > this.lastCount[key]) {
+                        callback(data);
+                    }
+                    this.lastCount[key] = currentCount;
+                } catch (e) {}
+            }
+        };
+    </script>
 </head>
 <body class="bg-[#fef9e1]">
     <div x-data="{ sidebarOpen: false, profileModalOpen: false, profilePreview: null, showCurrentPassword: false, showNewPassword: false }" class="min-h-screen flex flex-col">  

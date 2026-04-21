@@ -89,6 +89,24 @@ class ComplaintController extends Controller
         return view("dashboard.user.poll-report", compact("poll"));
     }
 
+    public function livePollResults(\App\Models\Poll $poll)
+    {
+        $poll->load(['options' => function($query) {
+            $query->orderBy('id');
+        }]);
+
+        return response()->json([
+            'total_votes' => $poll->getTotalVotes(),
+            'options' => $poll->options->map(function($option) use ($poll) {
+                return [
+                    'id' => $option->id,
+                    'votes_count' => $option->votes_count,
+                    'percentage' => $poll->getTotalVotes() > 0 ? round(($option->votes_count / $poll->getTotalVotes()) * 100, 1) : 0,
+                ];
+            })
+        ]);
+    }
+
     public function create()
     {
         if (!Auth::user()->canSubmitComplaint()) {
