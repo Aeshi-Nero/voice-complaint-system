@@ -18,7 +18,7 @@
             <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[60] shadow-lg">
                 <div class="flex items-center gap-3">
                     <div class="bg-white w-8 h-8 rounded-full flex items-center justify-center overflow-hidden border border-[#f3bc3e]">
-                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('img/ac_logo.png'))) }}" class="w-full h-full object-cover">
+                        <img src="data:image/png;base64,{{ $logoBase64 }}" class="w-full h-full object-cover">
                     </div>
                     <span class="font-black tracking-tighter uppercase text-sm">V.O.I.C.E.</span>
                 </div>

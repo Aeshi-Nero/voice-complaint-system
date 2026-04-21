@@ -20,11 +20,19 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         view()->composer('*', function ($view) {
+            // Share base64 logo safely
+            $logoBase64 = '';
+            $logoPath = public_path('img/ac_logo.png');
+            if (file_exists($logoPath)) {
+                $logoBase64 = base64_encode(file_get_contents($logoPath));
+            }
+            $view->with('logoBase64', $logoBase64);
+
             if (auth()->check()) {
                 // Poll notifications - Safe check if table exists
                 if (\Illuminate\Support\Facades\Schema::hasTable('polls')) {
                     $hasNewPolls = \App\Models\Poll::where('status', 'active')
-                        ->where('created_at', '>', auth()->user()->last_poll_viewed_at ?? '2000-01-01')
+                        ->where('created_at', '>', auth()->user()->last_poll_viewed_at ?? '2000-01-01 00:00:00')
                         ->exists();
                     $view->with('hasNewPolls', $hasNewPolls);
                 }
@@ -34,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
                     $user = auth()->user();
                     
                     // Total unseen complaints
-                    $totalComplaints = \App\Models\Complaint::where('created_at', '>', $user->last_complaints_viewed_at ?? '2000-01-01')->count();
+                    $totalComplaints = \App\Models\Complaint::where('created_at', '>', $user->last_complaints_viewed_at ?? '2000-01-01 00:00:00')->count();
                     $view->with('totalComplaintsCount', $totalComplaints);
 
                     // Get counts per department/course for unseen complaints
