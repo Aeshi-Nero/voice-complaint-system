@@ -19,5 +19,13 @@ php artisan migrate --force --no-interaction &
 php artisan storage:link --force || true
 
 echo "Starting application..."
-# Use PORT provided by Render
-exec php artisan serve --host 0.0.0.0 --port ${PORT:-10000}
+
+if [ "$APP_ENV" = "production" ]; then
+    echo "Running in Production (Render) - Using Artisan Serve"
+    exec php artisan serve --host 0.0.0.0 --port ${PORT:-10000}
+else
+    echo "Running in Development (Local) - Using PHP-FPM"
+    # Create storage link if not exists
+    php artisan storage:link --force || true
+    exec php-fpm
+fi
