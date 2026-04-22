@@ -146,10 +146,14 @@
                 <h3 class="text-2xl font-black text-[#163a24]">Recent Complaints</h3>
                 
                 <div class="flex flex-wrap items-center gap-2">
-                    <button class="px-5 py-2 rounded-lg bg-[#112d1c] text-[#f3bc3e] text-[10px] font-black uppercase tracking-widest">All</button>
-                    <button class="px-5 py-2 rounded-lg text-gray-400 hover:text-[#163a24] text-[10px] font-black uppercase tracking-widest transition">Pending</button>
-                    <button class="px-5 py-2 rounded-lg text-gray-400 hover:text-[#163a24] text-[10px] font-black uppercase tracking-widest transition">In Progress</button>
-                    <button class="px-5 py-2 rounded-lg text-gray-400 hover:text-[#163a24] text-[10px] font-black uppercase tracking-widest transition">Resolved</button>
+                    <a href="{{ route('admin.dashboard', ['status' => 'all']) }}" 
+                       class="px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition {{ $status === 'all' ? 'bg-[#112d1c] text-[#f3bc3e]' : 'text-gray-400 hover:text-[#163a24]' }}">All</a>
+                    <a href="{{ route('admin.dashboard', ['status' => 'pending']) }}" 
+                       class="px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition {{ $status === 'pending' ? 'bg-[#112d1c] text-[#f3bc3e]' : 'text-gray-400 hover:text-[#163a24]' }}">Pending</a>
+                    <a href="{{ route('admin.dashboard', ['status' => 'in_progress']) }}" 
+                       class="px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition {{ $status === 'in_progress' ? 'bg-[#112d1c] text-[#f3bc3e]' : 'text-gray-400 hover:text-[#163a24]' }}">In Progress</a>
+                    <a href="{{ route('admin.dashboard', ['status' => 'resolved']) }}" 
+                       class="px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition {{ $status === 'resolved' ? 'bg-[#112d1c] text-[#f3bc3e]' : 'text-gray-400 hover:text-[#163a24]' }}">Resolved</a>
                 </div>
             </div>
 
@@ -207,13 +211,11 @@
             </div>
 
             <div class="px-10 py-8 bg-[#fef9e1]/20 flex flex-col sm:flex-row justify-between items-center gap-6 border-t border-gray-50">
-                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Showing {{ $recentComplaints->count() }} of {{ array_sum($categoryStats) }} complaints</p>
-                <div class="flex items-center gap-2">
-                    <button class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-100 text-gray-300 hover:bg-white transition"><i class="fas fa-chevron-left text-[8px]"></i></button>
-                    <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#112d1c] text-white text-[10px] font-black">1</button>
-                    <button class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-100 text-gray-400 hover:bg-white transition text-[10px] font-black">2</button>
-                    <button class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-100 text-gray-400 hover:bg-white transition text-[10px] font-black">3</button>
-                    <button class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-100 text-gray-300 hover:bg-white transition"><i class="fas fa-chevron-right text-[8px]"></i></button>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tight">
+                    Showing {{ $recentComplaints->firstItem() }} to {{ $recentComplaints->lastItem() }} of {{ $recentComplaints->total() }} records
+                </p>
+                <div class="flex items-center gap-2 dashboard-pagination">
+                    {{ $recentComplaints->appends(['status' => $status])->links() }}
                 </div>
             </div>
         </div>
@@ -224,6 +226,13 @@
     @keyframes spin-slow {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
+    }
+    .dashboard-pagination nav svg {
+        width: 1rem;
+        height: 1rem;
+    }
+    .dashboard-pagination nav div div p {
+        display: none;
     }
     .fa-spin-slow {
         animation: spin-slow 3s linear infinite;

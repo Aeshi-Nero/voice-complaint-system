@@ -4,7 +4,7 @@
 <div class="max-w-full mx-auto">
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8">
         <div>
-            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">All Complaints</h2>
+            <h2 class="text-4xl font-black text-[#163a24] tracking-tight uppercase mb-2">All Complaints</h2>
             <p class="text-gray-500 font-medium">Manage and moderate submitted complaints.</p>
         </div>
         

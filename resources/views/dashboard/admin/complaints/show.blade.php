@@ -2,12 +2,12 @@
 
 @section("content")
 <div class="max-w-full mx-auto pb-20" x-data="{ newMessages: false }" x-init="
-    LiveUpdate.lastCount['chat_{{ $complaint->id }}'] = {{ $complaint->messages->count() }};
-    setInterval(() => {
-        LiveUpdate.check('chat_{{ $complaint->id }}', '{{ route('complaints.messages.get', $complaint) }}', () => {
+    window.Echo.private('complaint.{{ $complaint->id }}')
+        .listen('MessageSent', (e) => {
             newMessages = true;
+            // Optional: Auto-append message instead of just showing refresh button
+            // This would require more complex DOM manipulation or using Alpine/Livewire better
         });
-    }, 4000);
 ">
     <!-- Live Chat Notification -->
     <div x-show="newMessages" x-transition x-cloak class="fixed bottom-10 right-10 z-[100]">
@@ -101,7 +101,35 @@
                             </div>
                         </div>
                         <h4 class="text-2xl font-black text-white mb-4">{{ $complaint->title }}</h4>
-                        <p class="text-white leading-relaxed text-xl">{{ $complaint->description }}</p>
+                        <p class="text-white leading-relaxed text-xl mb-8">{{ $complaint->description }}</p>
+
+                        {{-- Evidence attached to original complaint --}}
+                        @if($complaint->image_path || $complaint->audio_path)
+                            <div class="space-y-6 pt-8 border-t border-white/10">
+                                @if($complaint->audio_path)
+                                    <div class="bg-white/10 p-6 rounded-2xl border border-white/10">
+                                        <p class="text-[10px] font-black text-white/40 uppercase tracking-widest mb-3">Original Voice Record</p>
+                                        <audio controls class="w-full h-10 filter invert brightness-200">
+                                            <source src="{{ Storage::url($complaint->audio_path) }}" type="audio/webm">
+                                        </audio>
+                                    </div>
+                                @endif
+
+                                @if($complaint->image_path)
+                                    <div class="rounded-2xl overflow-hidden border border-white/10 group/img relative">
+                                        @if(Str::endsWith($complaint->image_path, '.pdf'))
+                                            <a href="{{ Storage::url($complaint->image_path) }}" target="_blank" class="flex items-center gap-4 p-6 bg-white/5 hover:bg-white/10 transition-all">
+                                                <i class="fas fa-file-pdf text-2xl"></i>
+                                                <span class="text-sm font-black uppercase tracking-widest">View Evidence PDF</span>
+                                            </a>
+                                        @else
+                                            <img src="{{ Storage::url($complaint->image_path) }}" class="w-full h-auto max-h-96 object-cover cursor-zoom-in" onclick="window.open(this.src)">
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+
                         <div class="mt-8 pt-6 border-t border-white/10 flex items-center justify-between">
                             <span class="text-xs text-white/40 font-bold uppercase tracking-widest">{{ $complaint->created_at->format('F d, Y | h:i A') }}</span>
                             <span class="px-4 py-1.5 bg-white/10 text-white text-[10px] font-black rounded-full uppercase tracking-widest">Case Opened</span>
@@ -164,95 +192,6 @@
                     </form>
                 </div>
             </div>
-
-            <!-- Evidence Section (If any) -->
-            @if($complaint->image_path || $complaint->audio_path)
-            <div class="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10">
-                <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-8 flex items-center gap-2">
-                    <i class="fas fa-paperclip text-[#00a651]"></i>
-                    Attached Evidence & Media
-                </h3>
-                
-                <div class="space-y-8">
-                    @if($complaint->audio_path)
-                        <div class="bg-gray-50 p-8 rounded-3xl border border-gray-100">
-                            <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Voice Record</p>
-                            <audio controls class="w-full h-12">
-                                <source src="{{ Storage::url($complaint->audio_path) }}" type="audio/webm">
-                                Your browser does not support the audio element.
-                            </audio>
-                        </div>
-                    @endif
-
-                    @if($complaint->image_path)
-                        <div class="rounded-[32px] overflow-hidden border-8 border-gray-50 shadow-inner bg-gray-50 group relative p-6">
-                            @if(Str::endsWith($complaint->image_path, '.pdf'))
-                                <a href="{{ Storage::url($complaint->image_path) }}" target="_blank" class="flex items-center gap-6 p-10 bg-white rounded-2xl border border-gray-100 hover:shadow-2xl transition-all group/pdf">
-                                    <div class="w-20 h-20 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 text-3xl group-hover/pdf:scale-110 transition-transform">
-                                        <i class="fas fa-file-pdf"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-xl font-black text-gray-800">Review Evidence PDF</p>
-                                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest">Click to inspect document in full</p>
-                                    </div>
-                                    <i class="fas fa-external-link-alt ml-auto text-gray-200 group-hover/pdf:text-[#00a651] transition-colors"></i>
-                                </a>
-                            @else
-                                <img src="{{ Storage::url($complaint->image_path) }}" alt="Evidence" class="w-full h-auto object-cover max-h-[800px] transition duration-500 group-hover:scale-[1.01] rounded-2xl cursor-zoom-in" onclick="window.open(this.src)">
-                            @endif
-                        </div>
-                    @endif
-                </div>
-            </div>
-            @endif
-
-            <!-- Moderation Action Form -->
-            @if($complaint->status === 'pending' || $complaint->status === 'in_progress')
-            <div class="bg-white rounded-[40px] shadow-2xl shadow-gray-200/50 border border-gray-100 p-10 overflow-hidden relative">
-                <div class="absolute top-0 right-0 p-8 opacity-5">
-                    <i class="fas fa-shield-alt text-7xl text-gray-900"></i>
-                </div>
-                
-                <h3 class="text-2xl font-black text-gray-900 mb-8 flex items-center gap-3">
-                    <i class="fas fa-gavel text-[#00a651]"></i>
-                    Moderation Command
-                </h3>
-                
-                <form method="POST" action="{{ route('admin.complaints.update', $complaint) }}" class="space-y-8">
-                    @csrf
-                    <div>
-                        <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Official Response / Admin Notes</label>
-                        <textarea name="admin_notes" rows="4" 
-                                  placeholder="Provide internal notes or feedback for the submitter..."
-                                  class="w-full px-6 py-5 bg-gray-50 border border-gray-100 rounded-[25px] focus:ring-4 focus:ring-[#00a651]/10 focus:bg-white focus:border-[#00a651] transition-all font-semibold text-gray-700">{{ $complaint->admin_notes }}</textarea>
-                    </div>
-                    
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        @if($complaint->status === 'pending')
-                            <button type="submit" name="action" value="accept" 
-                                    class="flex-1 bg-[#00a651] text-white px-8 py-5 rounded-2xl font-black shadow-lg shadow-green-200 hover:bg-[#008d44] hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3 uppercase tracking-wider">
-                                <i class="fas fa-check-double"></i>
-                                Accept & Process
-                            </button>
-                            <button type="submit" name="action" value="reject" 
-                                    class="flex-1 bg-white text-red-600 border-2 border-red-50 px-8 py-5 rounded-2xl font-black hover:bg-red-50 hover:border-red-100 transition-all active:scale-95 flex items-center justify-center gap-3 uppercase tracking-wider">
-                                <i class="fas fa-ban"></i>
-                                Reject Submission
-                            </button>
-                        @elseif($complaint->status === 'in_progress')
-                            </form> 
-                            <form method="POST" action="{{ route('admin.complaints.resolve', $complaint) }}" class="flex-1">
-                                @csrf
-                                <button type="submit" 
-                                        class="w-full bg-[#00a651] text-white px-8 py-5 rounded-2xl font-black shadow-lg shadow-green-200 hover:bg-[#008d44] hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3 uppercase tracking-wider">
-                                    <i class="fas fa-flag-checkered"></i>
-                                    Finalize & Resolve
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-            </div>
-            @endif
         </div>
         
         <!-- Sidebar: User & History -->
@@ -344,6 +283,58 @@
                     @endforeach
                 </div>
             </div>
+
+            <!-- Moderation Quick Action Card -->
+            @if($complaint->status === 'pending' || $complaint->status === 'in_progress')
+            <div class="bg-gray-900 rounded-[40px] shadow-xl p-8 text-white relative overflow-hidden group">
+                <div class="absolute -top-10 -left-10 w-40 h-40 bg-white/5 rounded-full transition-transform group-hover:scale-150 duration-700"></div>
+                
+                <h3 class="text-xs font-black text-white/40 uppercase tracking-widest mb-8 flex items-center gap-2">
+                    <i class="fas fa-gavel text-[#00a651]"></i>
+                    Case Decision
+                </h3>
+
+                @if($complaint->status === 'pending')
+                <form method="POST" action="{{ route('admin.complaints.update', $complaint) }}" class="space-y-6 relative z-10">
+                    @csrf
+                    <div>
+                        <label class="block text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-3 ml-1">Admin Notes</label>
+                        <textarea name="admin_notes" rows="3" 
+                                  placeholder="Enter resolution notes..."
+                                  class="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-[#00a651] focus:bg-white/10 transition-all font-semibold text-white placeholder-white/20 text-sm">{{ $complaint->admin_notes }}</textarea>
+                    </div>
+
+                    <div class="space-y-3">
+                        <button type="submit" name="action" value="accept" 
+                                class="w-full bg-[#00a651] text-white px-6 py-4 rounded-2xl font-black shadow-lg hover:bg-[#008d44] hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-[10px]">
+                            <i class="fas fa-check-double"></i>
+                            Accept & Process
+                        </button>
+                        <button type="submit" name="action" value="reject" 
+                                class="w-full bg-white/5 text-red-400 border border-red-400/30 px-6 py-4 rounded-2xl font-black hover:bg-red-400 hover:text-white transition-all active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-[10px]">
+                            <i class="fas fa-ban"></i>
+                            Reject Submission
+                        </button>
+                    </div>
+                </form>
+                @elseif($complaint->status === 'in_progress')
+                <form method="POST" action="{{ route('admin.complaints.resolve', $complaint) }}" class="space-y-6 relative z-10">
+                    @csrf
+                    <div>
+                        <label class="block text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-3 ml-1">Final Resolution Details</label>
+                        <textarea name="admin_notes" rows="3" 
+                                  placeholder="Enter final notes..."
+                                  class="w-full px-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-[#00a651] focus:bg-white/10 transition-all font-semibold text-white placeholder-white/20 text-sm">{{ $complaint->admin_notes }}</textarea>
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-[#00a651] text-white px-6 py-4 rounded-2xl font-black shadow-lg hover:bg-[#008d44] hover:-translate-y-1 transition-all active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-[10px]">
+                        <i class="fas fa-flag-checkered"></i>
+                        Finalize & Resolve
+                    </button>
+                </form>
+                @endif
+            </div>
+            @endif
         </div>
     </div>
 </div>

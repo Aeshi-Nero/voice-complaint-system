@@ -32,7 +32,22 @@
             @php
                 $flagshipImage = $poll->options->whereNotNull('image_path')->first()?->image_path;
             @endphp
-            <div class="bg-white rounded-[2.5rem] shadow-xl border border-[#163a24]/5 flex flex-col h-full overflow-hidden group">
+            <div class="bg-white rounded-[2.5rem] shadow-xl border border-[#163a24]/5 flex flex-col h-full overflow-hidden group"
+                 x-data="{ 
+                    votes: { @foreach($poll->options as $option) '{{ $option->id }}': {{ $option->votes_count }}, @endforeach },
+                    total: {{ $poll->getTotalVotes() }},
+                    getPercentage(optionId) {
+                        if (this.total === 0) return 0;
+                        return Math.round((this.votes[optionId] / this.total) * 100);
+                    }
+                 }"
+                 x-init="
+                    window.Echo.channel('poll.{{ $poll->id }}')
+                        .listen('PollVoteCast', (e) => {
+                            this.votes = e.results;
+                            this.total = Object.values(e.results).reduce((a, b) => a + b, 0);
+                        });
+                 ">
                 <div class="relative h-40 w-full overflow-hidden bg-[#163a24]/5">
                     @if($flagshipImage)
                         <img src="{{ asset('storage/' . $flagshipImage) }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
@@ -61,16 +76,13 @@
                     {{-- Show Results if already voted --}}
                     <div class="space-y-6 mb-10 flex-1">
                         @foreach($poll->options as $option)
-                        @php
-                            $percentage = $poll->getTotalVotes() > 0 ? round(($option->votes_count / $poll->getTotalVotes()) * 100) : 0;
-                        @endphp
                         <div>
                             <div class="flex justify-between items-end mb-2">
                                 <span class="text-[10px] font-black text-[#163a24] uppercase tracking-widest">{{ $option->option_text }}</span>
-                                <span class="text-[10px] font-black text-[#163a24]">{{ $percentage }}%</span>
+                                <span class="text-[10px] font-black text-[#163a24]" x-text="getPercentage('{{ $option->id }}') + '%'"></span>
                             </div>
                             <div class="w-full bg-[#fef9e1] rounded-full h-3 overflow-hidden shadow-inner">
-                                <div class="bg-[#163a24] h-full rounded-full transition-all duration-1000" style="width: {{ $percentage }}%"></div>
+                                <div class="bg-[#163a24] h-full rounded-full transition-all duration-1000" :style="'width: ' + getPercentage('{{ $option->id }}') + '%'"></div>
                             </div>
                         </div>
                         @endforeach

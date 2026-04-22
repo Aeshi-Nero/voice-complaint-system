@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://js.pusher.com/8.3.0/pusher.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
     <style>
         [x-cloak] { display: none !important; }
         .live-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
@@ -30,6 +32,18 @@
                 } catch (e) {}
             }
         };
+
+        // Initialize Echo
+        window.Pusher = Pusher;
+        window.Echo = new Echo({
+            broadcaster: 'reverb',
+            key: '{{ env('REVERB_APP_KEY') }}',
+            wsHost: '{{ env('REVERB_HOST') }}',
+            wsPort: {{ env('REVERB_PORT', 8080) }},
+            wssPort: {{ env('REVERB_PORT', 8080) }},
+            forceTLS: false,
+            enabledTransports: ['ws', 'wss'],
+        });
     </script>
 </head>
 <body class="bg-[#fef9e1]">
@@ -208,6 +222,7 @@
                                 <p class="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] mt-0.5">
                                     {{ auth()->user()?->role === 'admin' ? 'System Administrator' : 'Verified Student' }}
                                 </p>
+                                <p id="institutional-clock" class="text-[9px] font-black text-[#f3bc3e] uppercase tracking-[0.1em] mt-1.5 opacity-80"></p>
                             </div>
                         </button>
 
@@ -384,5 +399,25 @@
             </main>
     </div>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        function updateClock() {
+            const clock = document.getElementById('institutional-clock');
+            if (clock) {
+                const now = new Date();
+                const options = { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    hour12: true 
+                };
+                clock.textContent = now.toLocaleString('en-US', options);
+            }
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
 </body>
 </html>

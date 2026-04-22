@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
+        $status = $request->get('status', 'all');
+
         $stats = [
             "pending" => Complaint::where("status", "pending")->count(),
             "in_progress" => Complaint::where("status", "in_progress")->count(),
@@ -32,11 +34,15 @@ class DashboardController extends Controller
             ->pluck("total", "department")
             ->toArray();
             
-        $recentComplaints = Complaint::with("user")
-            ->latest()
-            ->limit(10)
-            ->get();
+        $query = Complaint::with("user");
+
+        if ($status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $recentComplaints = $query->latest()
+            ->paginate(10);
             
-        return view("dashboard.admin.dashboard", compact("stats", "categoryStats", "departmentStats", "recentComplaints"));
+        return view("dashboard.admin.dashboard", compact("stats", "categoryStats", "departmentStats", "recentComplaints", "status"));
     }
 }

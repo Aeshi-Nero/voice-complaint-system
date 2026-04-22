@@ -91,7 +91,7 @@ data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAAEbCAYAAABgArlgAACAAElEQVR42u
         <!-- Bottom Footer Info -->
         <div class="text-center mt-12">
             <p class="text-[#163a24] text-[11px] font-black uppercase tracking-[0.2em] opacity-60">
-                V.O.I.C.E v.1.4 | Aldersgate College Inc.
+                V.O.I.C.E | V.1.4 | Aldersgate College Inc.
             </p>
         </div>
     </div>

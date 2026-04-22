@@ -7,6 +7,7 @@ use App\Models\ComplaintMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\NewComplaintMessage;
+use App\Events\MessageSent;
 
 class ComplaintMessageController extends Controller
 {
@@ -31,6 +32,9 @@ class ComplaintMessageController extends Controller
             'is_admin' => Auth::user()->isAdmin(),
             'images' => !empty($imagePaths) ? $imagePaths : null,
         ]);
+
+        // Broadcast the message
+        MessageSent::dispatch($message);
 
         // Notify the appropriate party
         if (Auth::user()->isAdmin()) {

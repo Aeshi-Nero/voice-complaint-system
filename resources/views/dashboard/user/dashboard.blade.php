@@ -22,13 +22,13 @@
         </div>
 
         <!-- Bottom Form Container -->
-        <div :class="expanded ? 'absolute inset-0 z-50 bg-[#fef9e1]' : 'w-full max-w-3xl mx-auto mb-2'"
+        <div :class="expanded ? 'absolute inset-0 z-50 bg-[#fef9e1] overflow-y-auto' : 'w-full max-w-3xl mx-auto mb-2'"
              class="transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] flex flex-col justify-end">
             
-            <div :class="expanded ? 'h-full w-full max-w-4xl mx-auto p-6 md:p-12 flex flex-col justify-center' : 'w-full'">
+            <div :class="expanded ? 'min-h-full w-full max-w-4xl mx-auto p-6 md:p-12 flex flex-col justify-center' : 'w-full'">
                 <form action="{{ route('user.complaints.store') }}" method="POST" enctype="multipart/form-data" id="complaintForm"
                       :class="expanded ? 'bg-white rounded-[3rem] shadow-2xl p-8 md:p-16 border-4 border-white' : 'bg-white rounded-[2.5rem] shadow-lg p-4 border-4 border-white'"
-                      class="transition-all duration-500 overflow-hidden flex flex-col">
+                      class="transition-all duration-500 flex flex-col">
                     @csrf
                     
                     <!-- Header (Visible when expanded) -->

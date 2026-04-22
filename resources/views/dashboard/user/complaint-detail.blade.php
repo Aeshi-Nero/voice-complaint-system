@@ -2,12 +2,10 @@
 
 @section('content')
 <div class="max-w-full mx-auto pb-20" x-data="{ newMessages: false }" x-init="
-    LiveUpdate.lastCount['chat_{{ $complaint->id }}'] = {{ $complaint->messages->count() }};
-    setInterval(() => {
-        LiveUpdate.check('chat_{{ $complaint->id }}', '{{ route('complaints.messages.get', $complaint) }}', () => {
+    window.Echo.private('complaint.{{ $complaint->id }}')
+        .listen('MessageSent', (e) => {
             newMessages = true;
         });
-    }, 4000);
 ">
     <!-- Live Chat Notification -->
     <div x-show="newMessages" x-transition x-cloak class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100]">

@@ -6,6 +6,7 @@ use App\Models\Poll;
 use App\Models\PollVote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Events\PollVoteCast;
 
 class VoteController extends Controller
 {
@@ -32,6 +33,9 @@ class VoteController extends Controller
         ]);
         
         $option->increment('votes_count');
+
+        // Broadcast the update
+        PollVoteCast::dispatch($poll);
         
         return back()->with('success', 'Your vote has been recorded.');
     }
