@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Force DB connection to mysql if not set (to prevent sqlite 500 error)
+export DB_CONNECTION=${DB_CONNECTION:-mysql}
+
 # Ensure storage directories exist and are writable
 mkdir -p storage/framework/{sessions,views,cache}
 chmod -R 775 storage bootstrap/cache
@@ -10,9 +13,6 @@ php artisan cache:clear
 
 if [ "$APP_ENV" = "production" ]; then
     echo "Running in Production (Hugging Face)"
-    
-    # Force DB connection to mysql if not set (to prevent sqlite 500 error)
-    export DB_CONNECTION=${DB_CONNECTION:-mysql}
     
     # Initialize storage and start PHP
     php artisan storage:link --force || true
