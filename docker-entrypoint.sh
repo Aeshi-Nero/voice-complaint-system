@@ -2,6 +2,7 @@
 
 # Force DB connection to mysql if not set (to prevent sqlite 500 error)
 export DB_CONNECTION=${DB_CONNECTION:-mysql}
+export SESSION_DRIVER=${SESSION_DRIVER:-database}
 
 # Ensure storage directories exist and are writable
 mkdir -p storage/framework/{sessions,views,cache}
@@ -16,6 +17,11 @@ if [ "$APP_ENV" = "production" ]; then
     
     # Initialize storage and start PHP
     php artisan storage:link --force || true
+    
+    # Run migrations automatically
+    echo "Running cloud migrations..."
+    php artisan migrate --force || true
+    
     php-fpm -D
     
     # Install nginx if not present

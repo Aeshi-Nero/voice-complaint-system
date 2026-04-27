@@ -19,6 +19,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.env') === 'production') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+            
+            // Trust all proxies for Hugging Face/Render load balancers
+            $request = request();
+            $request->setTrustedProxies([$request->getClientIp()], \Illuminate\Http\Request::HEADER_X_FORWARDED_FOR | \Illuminate\Http\Request::HEADER_X_FORWARDED_PROTO | \Illuminate\Http\Request::HEADER_X_FORWARDED_PORT | \Illuminate\Http\Request::HEADER_X_FORWARDED_HOST);
+        }
+
         view()->composer('*', function ($view) {
             // Share base64 logo safely
             $logoBase64 = '';
