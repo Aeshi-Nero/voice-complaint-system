@@ -1,31 +1,34 @@
-#!/bin/sh
-set -e
+#!/bin/bash
 
-# Ensure storage and cache are writable
+# Ensure storage directories exist and are writable
+mkdir -p storage/framework/{sessions,views,cache}
 chmod -R 775 storage bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache
 
-# Generate APP_KEY if it doesn't exist
-if [ -z "$APP_KEY" ]; then
-    echo "Generating APP_KEY..."
-    php artisan key:generate --force --no-interaction
-fi
-
-# Run migrations in the background or skip if already done
-echo "Checking migrations..."
-php artisan migrate --force --no-interaction &
-
-# Link storage
-php artisan storage:link --force || true
-
-echo "Starting application..."
+# Run standard optimization
+php artisan config:clear
+php artisan cache:clear
 
 if [ "$APP_ENV" = "production" ]; then
-    echo "Running in Production (Render) - Using Artisan Serve"
-    exec php artisan serve --host 0.0.0.0 --port ${PORT:-10000}
+    echo "Running in Production (Hugging Face)"
+    
+    # Initialize storage and start PHP
+    php artisan storage:link --force || true
+    php-fpm -D
+    
+    # Install nginx if not present
+    if ! command -v nginx &> /dev/null
+    then
+        apt-get update && apt-get install -y nginx
+    fi
+    
+    # Apply our custom config to the system
+    cp /var/www/nginx/default.conf /etc/nginx/sites-available/default
+    ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+    
+    echo "Launching Nginx on Port 7860..."
+    exec nginx -g "daemon off;"
 else
-    echo "Running in Development (Local) - Using PHP-FPM"
-    # Create storage link if not exists
+    echo "Running in Development (Local)"
     php artisan storage:link --force || true
     exec php-fpm
 fi
