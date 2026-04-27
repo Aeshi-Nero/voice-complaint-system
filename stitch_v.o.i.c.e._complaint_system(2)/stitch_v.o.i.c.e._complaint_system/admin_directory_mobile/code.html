@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aldersgate Superadmin - Directory</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#95d59e",
+                        "on-surface": "#201c02",
+                        "surface-tint": "#376943",
+                        "on-primary-fixed-variant": "#1e502d",
+                        "outline-variant": "#c1c9be",
+                        "outline": "#717970",
+                        "tertiary": "#3b2c00",
+                        "secondary-fixed": "#b0f2b9",
+                        "primary-fixed-dim": "#9dd3a5",
+                        "on-primary-fixed": "#00210b",
+                        "primary": "#003616",
+                        "surface-container-highest": "#ede3b8",
+                        "primary-container": "#1a4d2a",
+                        "secondary-container": "#adefb6",
+                        "primary-fixed": "#b8f0c0",
+                        "surface-bright": "#fff9ec",
+                        "tertiary-fixed-dim": "#f0c03e",
+                        "on-primary-container": "#88bd90",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "surface": "#fff9ec",
+                        "tertiary-fixed": "#ffdf95",
+                        "on-secondary-container": "#326f41",
+                        "background": "#fff9ec",
+                        "surface-dim": "#e5dab0",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#564100",
+                        "surface-variant": "#ede3b8",
+                        "on-tertiary-container": "#d8ab28",
+                        "on-secondary-fixed-variant": "#115227",
+                        "secondary": "#2d6a3d",
+                        "inverse-primary": "#9dd3a5",
+                        "inverse-on-surface": "#fcf1c5",
+                        "surface-container": "#f9eec2",
+                        "on-background": "#201c02",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#00210a",
+                        "inverse-surface": "#363113",
+                        "surface-container-low": "#fff4c8",
+                        "surface-container-high": "#f3e8bd",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#251a00",
+                        "on-surface-variant": "#414941"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "display": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .academic-gradient {
+            background: linear-gradient(180deg, #fef3c7 0%, #ffffff 100%);
+        }
+        .glass-modal {
+            background: rgba(255, 249, 236, 0.8);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background font-body text-on-surface min-h-screen pb-20">
+<!-- TopAppBar -->
+<header class="bg-[#fff9ec] shadow-[0_10px_30px_-5px_rgba(0,54,22,0.08)] flex justify-between items-center w-full px-6 py-4 sticky top-0 z-40">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#003616]" data-icon="menu">menu</span>
+<h1 class="text-[#003616] font-bold text-lg tracking-tight font-inter">Aldersgate Superadmin</h1>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center border border-tertiary-fixed overflow-hidden">
+<img alt="Superadmin Profile" class="w-full h-full object-cover" data-alt="Close-up portrait of a professional male administrator in a suit with a neutral academic office background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVH_UxURWToUfFyYgbab0htv2XbudaanakyZoY-CeTLIFTqOJhVnrmlLrkKQ_5gzjdgFKYIvq7VX7nsqHo0UHe6pW6JAgWaVZ7ksYUk-qpaHLMPJGRTQqHzDcpcTusGRein1bh-llvKVEbG1adjO8FqGuejthy2zKXiqUOITLHle2TXIOaAgER_U6F8F40VlCgtk0mKSfnozv3uDglzW_VrqdG6aCvtROM6b6w26X4dGrxjmYrNLoG-l4WDAPV9d1QfZN3AiDj00w"/>
+</div>
+</header>
+<main class="px-4 pt-6 academic-gradient">
+<!-- Editorial Header Section -->
+<div class="mb-8">
+<span class="text-secondary font-bold label-md tracking-widest uppercase text-xs mb-2 block">System Registry</span>
+<h2 class="text-primary font-black text-3xl tracking-tighter leading-none mb-4">Administrator Management Directory</h2>
+<!-- Search & Filter Bar -->
+<div class="flex gap-2 items-center">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-3 rounded-xl bg-surface-container-lowest border-none shadow-sm focus:ring-2 focus:ring-primary text-sm placeholder:text-outline/60" placeholder="Search by name or role..." type="text"/>
+</div>
+<button class="w-12 h-12 flex items-center justify-center bg-surface-container-lowest rounded-xl shadow-sm text-primary transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+</button>
+</div>
+</div>
+<!-- Directory Cards List -->
+<div class="space-y-4">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col gap-4 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-24 h-24 bg-primary-container/5 rounded-full -mr-12 -mt-12 group-hover:scale-150 transition-transform duration-500"></div>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-surface-container-high border border-outline-variant/30 overflow-hidden">
+<img alt="Dr. Elena Rodriguez" class="w-full h-full object-cover" data-alt="Professional female academic dean in a library setting, warm natural lighting, high-end editorial style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbglxO5JOcWRtsXTs0Mwza8GvBDLkITHoR9j8tKvHiYN0fdgJP4U9V1_a-0xQFAFKFwnj38SBrihjaoZae25b1dCitJShalFJkaKWssegzGQpFdPaN-KIrm1Sv2jpssLp9969QnKKjL-iLkNxybJY3HvSu5WSGJQP7X0MR2pBFu9CpOEilGh6b39pfUyw_JK3kjB-QebCJ7oC-rjhlpqz0VH2sgvcMjiMwkYNLFkbudWRd74rt5YdeKbL-MgJuaejVqV1Ju5LrIS4"/>
+</div>
+<div>
+<h3 class="font-bold text-primary text-base">Dr. Elena Rodriguez</h3>
+<p class="text-xs text-outline font-medium">ID: ADM-2024-001</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-secondary-container text-on-secondary-container text-[10px] font-bold rounded-md uppercase tracking-wider">Active</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<span class="text-[10px] uppercase font-bold text-outline-variant tracking-wider">Department</span>
+<p class="text-sm font-semibold text-on-surface">College of Medicine</p>
+</div>
+<div>
+<span class="text-[10px] uppercase font-bold text-outline-variant tracking-wider">Role</span>
+<p class="text-sm font-semibold text-on-surface">Academic Dean</p>
+</div>
+</div>
+<div class="flex border-t border-outline-variant/10 pt-4 gap-2">
+<button class="flex-1 py-2 rounded-lg bg-surface-container-high text-primary font-bold text-xs uppercase tracking-widest active:scale-95 transition-all">Details</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-high text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col gap-4 relative overflow-hidden group">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-surface-container-high border border-outline-variant/30 overflow-hidden">
+<img alt="Marcus Thorne" class="w-full h-full object-cover" data-alt="Senior male university official in a classic study environment, warm sepia tones, authoritative lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBobcNhOvFp1UaqdPavP2Y8TzbyajwQewpPiY8ZuY0X7jHF0_m0aXzZkB_6SEcXOTsSR_PQpaFKU5WJEaKYzawySVbDvpF_IpAzsgklzEAj-c4OmmGvFxbisVWVDHAJvh4Nb-Th1hGqYRgAUAFRVaRXm2VlVKo67CAGCR2SxbWZCHuyXMmawiK9g3OecTNJGjyYg3BnE4v-irxTEwAgwXotOlrcEEPQyAcZHXrKRzsJj9k0hMXGAgpQOmTrCFyuE12XwGhFpjZv-CI"/>
+</div>
+<div>
+<h3 class="font-bold text-primary text-base">Marcus Thorne</h3>
+<p class="text-xs text-outline font-medium">ID: ADM-2024-008</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-tertiary-container text-on-tertiary-container text-[10px] font-bold rounded-md uppercase tracking-wider">On Leave</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<span class="text-[10px] uppercase font-bold text-outline-variant tracking-wider">Department</span>
+<p class="text-sm font-semibold text-on-surface">Admin &amp; Finance</p>
+</div>
+<div>
+<span class="text-[10px] uppercase font-bold text-outline-variant tracking-wider">Role</span>
+<p class="text-sm font-semibold text-on-surface">Chief Bursar</p>
+</div>
+</div>
+<div class="flex border-t border-outline-variant/10 pt-4 gap-2">
+<button class="flex-1 py-2 rounded-lg bg-surface-container-high text-primary font-bold text-xs uppercase tracking-widest active:scale-95 transition-all">Details</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-high text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col gap-4 relative overflow-hidden group">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-surface-container-high border border-outline-variant/30 overflow-hidden">
+<img alt="Julian Sterling" class="w-full h-full object-cover" data-alt="Younger male academic administrator, sharp business attire, minimalist campus background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYGx4pRra66xnxQ9fe-wr2oLdtljd6hM_O6kehPV3YOQaNx0NovOXnArdHjx3obVBQMiLS4xGllLNn4Ks4Hi3o7nKa6f7_ZX77HMZXFkRzrCb1P23Qn-h7sUsI7rEhq6teIasSMNrGkziXg29Nl97ajnhSKSaWO6k6MJaDhwyREQOhTiotMHyTl4CsMWIfoChTBQ5bxGXZUjaqiHgJra01cLiisLBWzCmgOXhaCojLX9wp4pGPr-8ASbVwbrfwgbKPdQrcipmY2dw"/>
+</div>
+<div>
+<h3 class="font-bold text-primary text-base">Julian Sterling</h3>
+<p class="text-xs text-outline font-medium">ID: ADM-2024-012</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-secondary-container text-on-secondary-container text-[10px] font-bold rounded-md uppercase tracking-wider">Active</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<span class="text-[10px] uppercase font-bold text-outline-variant tracking-wider">Department</span>
+<p class="text-sm font-semibold text-on-surface">Registrar Office</p>
+</div>
+<div>
+<span class="text-[10px] uppercase font-bold text-outline-variant tracking-wider">Role</span>
+<p class="text-sm font-semibold text-on-surface">Senior Registrar</p>
+</div>
+</div>
+<div class="flex border-t border-outline-variant/10 pt-4 gap-2">
+<button class="flex-1 py-2 rounded-lg bg-surface-container-high text-primary font-bold text-xs uppercase tracking-widest active:scale-95 transition-all">Details</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-high text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant/15 flex flex-col gap-4 relative overflow-hidden group">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full bg-surface-container-high border border-outline-variant/30 overflow-hidden">
+<img alt="Sarah Jenkins" class="w-full h-full object-cover" data-alt="Experienced female educator in modern glass-walled office, soft morning light, editorial business portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-ymZVUgybzKQO2qzj0ZL9EiCPHLJVmOSawq95yOJVcYJV6IzsLHHU3V1CX7zU2ykDtgUxrPqNH8-fD_d8hh3-nRqa6rJq90n_MRhRBZYd8ibsayimOrGYE-TE34G9435Ks4kzkZi9dXOQF8A-GTApKIODNOllSeymMVrHtG3Tq9v3dZH1cbO74bEWvDQ0wn-_wGsNx-Xf1CvikeDaNpkFgR6YfP1PSfoEsMFqEFYGaUzbB5yw4siEoq6cPObs3_jq7iZxqjqcNWQ"/>
+</div>
+<div>
+<h3 class="font-bold text-primary text-base">Sarah Jenkins</h3>
+<p class="text-xs text-outline font-medium">ID: ADM-2024-025</p>
+</div>
+</div>
+<span class="px-2 py-1 bg-error-container text-on-error-container text-[10px] font-bold rounded-md uppercase tracking-wider">Suspended</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<span class="text-[10px] uppercase font-bold text-outline-variant tracking-wider">Department</span>
+<p class="text-sm font-semibold text-on-surface">Information Tech</p>
+</div>
+<div>
+<span class="text-[10px] uppercase font-bold text-outline-variant tracking-wider">Role</span>
+<p class="text-sm font-semibold text-on-surface">Systems Admin</p>
+</div>
+</div>
+<div class="flex border-t border-outline-variant/10 pt-4 gap-2">
+<button class="flex-1 py-2 rounded-lg bg-surface-container-high text-primary font-bold text-xs uppercase tracking-widest active:scale-95 transition-all">Details</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-surface-container-high text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Sticky Floating Action Button (As per specific prompt for Admin Management) -->
+<div class="fixed bottom-20 right-4 z-50">
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary w-14 h-14 rounded-full shadow-[0_10px_30px_-5px_rgba(0,54,22,0.3)] flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-2xl" data-icon="person_add">person_add</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 bg-[#003616] dark:bg-[#001a0a] rounded-t-xl shadow-2xl">
+<a class="flex flex-col items-center justify-center text-[#fff9ec]/60 px-4 py-2 transition-colors duration-200 hover:bg-[#1a4d2a]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-inter">Insights</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#1a4d2a] text-[#f5c542] border-l-4 border-[#f5c542] px-4 py-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-inter">Directory</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#fff9ec]/60 px-4 py-2 transition-colors duration-200 hover:bg-[#1a4d2a]" href="#">
+<span class="material-symbols-outlined" data-icon="person_add">person_add</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-inter">Manage</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#fff9ec]/60 px-4 py-2 transition-colors duration-200 hover:bg-[#1a4d2a]" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-inter">Reports</span>
+</a>
+</nav>
+</body></html>

@@ -20,6 +20,8 @@ class Complaint extends Model
         'image_path',
         'extra_images',
         'status',
+        'assigned_to',
+        'rating',
         'submitted_at',
         'resolved_at',
     ];
@@ -33,6 +35,11 @@ class Complaint extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function assignedTo()
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 
     public function messages()

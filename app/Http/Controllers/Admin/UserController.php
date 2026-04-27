@@ -10,8 +10,12 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->get('search');
+        $department = $request->get('department');
+        $status = $request->get('status', 'all');
+
         // Online users (last 5 minutes activity in sessions table)
         $onlineUsersCount = DB::table('sessions')
             ->where('last_activity', '>=', now()->subMinutes(5)->getTimestamp())
@@ -25,15 +29,56 @@ class UserController extends Controller
             ->groupBy('course')
             ->get();
 
-        // Banned users
-        $bannedUsers = User::where('is_blocked', true)
+        // Base query for all users
+        $query = User::where('role', 'student');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('id_number', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%");
+            });
+        }
+
+        if ($department) {
+            $query->where('course', $department);
+        }
+
+        if ($status === 'banned') {
+            $query->where(function($q) {
+                $q->where('is_blocked', true)
+                  ->orWhere(function($sq) {
+                      $sq->whereNotNull('banned_until')
+                        ->where('banned_until', '>', now());
+                  });
+            });
+        } elseif ($status === 'active') {
+            $query->where('is_blocked', false)
+                  ->where(function($q) {
+                      $q->whereNull('banned_until')
+                        ->orWhere('banned_until', '<=', now());
+                  });
+        }
+
+        $allUsers = $query->latest()->paginate(15)->withQueryString();
+
+        // Keep banned users for the stats/sidebar if needed, but the list will be allUsers
+        $bannedUsersCount = User::where('is_blocked', true)
             ->orWhere(function($query) {
                 $query->whereNotNull('banned_until')
                       ->where('banned_until', '>', now());
             })
-            ->get();
+            ->count();
 
-        return view('users-management', compact('onlineUsersCount', 'usersPerDepartment', 'bannedUsers'));
+        return view('users-management', compact(
+            'onlineUsersCount', 
+            'usersPerDepartment', 
+            'allUsers', 
+            'bannedUsersCount',
+            'search',
+            'department',
+            'status'
+        ));
     }
 
     public function import(Request $request)
@@ -56,12 +101,8 @@ class UserController extends Controller
             }
         } elseif ($extension === 'csv') {
             if (($handle = fopen($file->getRealPath(), "r")) !== FALSE) {
-                // Check if it's the 25-1(1).xlsx style row structure (headers start late)
-                // or standard simple CSV (headers at row 1)
                 $headers = fgetcsv($handle, 1000, ","); 
-                
                 while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-                    // Mapping columns: 0:id, 1:name, 2:email, 3:course, 4:role
                     $this->processUser([
                         'id_number' => $data[0] ?? null,
                         'name' => $data[1] ?? 'Unknown',
@@ -92,8 +133,25 @@ class UserController extends Controller
                     'role' => $data['role'] ?? 'student',
                     'course' => $data['course'] ?? null,
                     'is_blocked' => false,
+                    'is_first_login' => true,
+                    'temporary_pin' => $data['password'] ?? substr($data['id_number'], -4),
                 ]
             );
         }
+    }
+
+    public function blockUser(User $user)
+    {
+        $user->update(['is_blocked' => true]);
+        return back()->with('success', 'User account permanently blocked.');
+    }
+
+    public function unblockUser(User $user)
+    {
+        $user->update([
+            'is_blocked' => false,
+            'banned_until' => null
+        ]);
+        return back()->with('success', 'User account restored.');
     }
 }

@@ -33,6 +33,8 @@ class UserImportSeeder extends Seeder
                     'email' => $userData['email'],
                     'password' => Hash::make($rawPassword),
                     'role' => $userData['role'] ?? 'student',
+                    'is_first_login' => true,
+                    'temporary_pin' => $rawPassword,
                     'course' => $userData['course'] ?? null,
                     'is_blocked' => false,
                     'complaints_today' => 0,

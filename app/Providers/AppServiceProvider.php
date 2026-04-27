@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
         view()->composer('*', function ($view) {
             // Share base64 logo safely
             $logoBase64 = '';
-            $logoPath = public_path('img/ac_logo.png');
+            $logoPath = resource_path('images/ac_logo.png');
             if (file_exists($logoPath)) {
                 $logoBase64 = base64_encode(file_get_contents($logoPath));
             }

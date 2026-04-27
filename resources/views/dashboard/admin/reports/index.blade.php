@@ -3,34 +3,34 @@
 @section('content')
 <div class="max-w-full mx-auto pb-20" x-data="reportManager()">
     <!-- Header -->
-    <div class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+    <div class="mb-8 lg:mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-            <h2 class="text-4xl font-black text-[#163a24] tracking-tight uppercase mb-2">Reports & Analytics</h2>
-            <p class="text-gray-500 font-bold text-sm leading-relaxed max-w-2xl">Visualized data insights and institutional metrics for complaints and polls.</p>
+            <h2 class="text-2xl lg:text-4xl font-black text-[#163a24] tracking-tight uppercase mb-2">Reports & Analytics</h2>
+            <p class="text-gray-500 font-bold text-xs lg:text-sm leading-relaxed max-w-2xl">Visualized data insights and institutional metrics for complaints and polls.</p>
         </div>
-        <div class="flex flex-wrap gap-4">
-            <a href="{{ route('admin.reports.export.csv', request()->all()) }}" class="bg-[#163a24] text-white px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:bg-[#1a4d2a] transition-all flex items-center gap-2">
+        <div class="flex flex-wrap gap-3 lg:gap-4 w-full lg:w-auto">
+            <a href="{{ route('admin.reports.export.csv', request()->all()) }}" class="flex-1 lg:flex-none justify-center bg-[#163a24] text-white px-4 lg:px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[9px] lg:text-[10px] shadow-lg hover:bg-[#1a4d2a] transition-all flex items-center gap-2">
                 <i class="fas fa-file-csv"></i> Export CSV
             </a>
-            <a href="{{ route('admin.reports.export.pdf', request()->all()) }}" target="_blank" class="bg-[#f3bc3e] text-[#163a24] px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:bg-yellow-400 transition-all flex items-center gap-2">
+            <a href="{{ route('admin.reports.export.pdf', request()->all()) }}" target="_blank" class="flex-1 lg:flex-none justify-center bg-[#f3bc3e] text-[#163a24] px-4 lg:px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[9px] lg:text-[10px] shadow-lg hover:bg-yellow-400 transition-all flex items-center gap-2">
                 <i class="fas fa-file-pdf"></i> Generate PDF
             </a>
         </div>
     </div>
 
     <!-- Filters Section -->
-    <div class="bg-white rounded-[2.5rem] shadow-xl p-8 border border-[#163a24]/5 mb-12">
-        <form action="{{ route('admin.reports.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="bg-white rounded-3xl lg:rounded-[2.5rem] shadow-xl p-6 lg:p-8 border border-[#163a24]/5 mb-8 lg:mb-12">
+        <form action="{{ route('admin.reports.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
             <div>
-                <label class="text-[10px] font-black text-[#163a24] uppercase tracking-widest mb-2 block">Start Date</label>
+                <label class="text-[9px] lg:text-[10px] font-black text-[#163a24] uppercase tracking-widest mb-2 block">Start Date</label>
                 <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full bg-[#fef9e1] border-none rounded-xl px-4 py-3 text-sm font-bold text-[#163a24] focus:ring-2 focus:ring-[#f3bc3e]">
             </div>
             <div>
-                <label class="text-[10px] font-black text-[#163a24] uppercase tracking-widest mb-2 block">End Date</label>
+                <label class="text-[9px] lg:text-[10px] font-black text-[#163a24] uppercase tracking-widest mb-2 block">End Date</label>
                 <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full bg-[#fef9e1] border-none rounded-xl px-4 py-3 text-sm font-bold text-[#163a24] focus:ring-2 focus:ring-[#f3bc3e]">
             </div>
             <div>
-                <label class="text-[10px] font-black text-[#163a24] uppercase tracking-widest mb-2 block">Category</label>
+                <label class="text-[9px] lg:text-[10px] font-black text-[#163a24] uppercase tracking-widest mb-2 block">Category</label>
                 <select name="category" class="w-full bg-[#fef9e1] border-none rounded-xl px-4 py-3 text-sm font-bold text-[#163a24] focus:ring-2 focus:ring-[#f3bc3e]">
                     <option value="">All Categories</option>
                     @php 
@@ -42,7 +42,7 @@
                 </select>
             </div>
             <div class="flex items-end">
-                <button type="submit" class="w-full bg-[#163a24] text-white py-3 rounded-xl font-black uppercase tracking-widest text-[10px] shadow-lg hover:bg-[#1a4d2a] transition-all">
+                <button type="submit" class="w-full bg-[#163a24] text-white py-3 lg:py-4 rounded-xl font-black uppercase tracking-widest text-[9px] lg:text-[10px] shadow-lg hover:bg-[#1a4d2a] transition-all">
                     Generate Data View
                 </button>
             </div>
@@ -50,17 +50,17 @@
     </div>
 
     <!-- Analytics Charts -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-20">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-10 mb-12 lg:mb-20">
         <!-- 1. Category Chart (Replaced Status Chart) -->
-        <div class="bg-white rounded-[2.5rem] shadow-xl border border-[#163a24]/5 p-10">
-            <h3 class="text-lg font-black text-[#163a24] uppercase tracking-tight mb-10">Complaints by Category</h3>
+        <div class="bg-white rounded-3xl lg:rounded-[2.5rem] shadow-xl border border-[#163a24]/5 p-6 lg:p-10">
+            <h3 class="text-base lg:text-lg font-black text-[#163a24] uppercase tracking-tight mb-8 lg:mb-10">Complaints by Category</h3>
             
-            <div class="relative flex justify-center mb-10">
-                <div class="w-48 h-48 rounded-full border-[1.2rem] border-[#163a24] flex flex-col items-center justify-center">
-                    <p class="text-3xl font-black text-[#163a24] leading-none">{{ array_sum($categoryStats) }}</p>
-                    <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1">Total Files</p>
+            <div class="relative flex justify-center mb-8 lg:mb-10">
+                <div class="w-32 h-32 lg:w-48 lg:h-48 rounded-full border-[0.8rem] lg:border-[1.2rem] border-[#163a24] flex flex-col items-center justify-center">
+                    <p class="text-xl lg:text-3xl font-black text-[#163a24] leading-none">{{ array_sum($categoryStats) }}</p>
+                    <p class="text-[7px] lg:text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1">Total Files</p>
                 </div>
-                <div class="absolute inset-0 w-48 h-48 mx-auto rounded-full border-[1.2rem] border-transparent border-t-[#f3bc3e] border-r-transparent rotate-[45deg]"></div>
+                <div class="absolute inset-0 w-32 h-32 lg:w-48 lg:h-48 mx-auto rounded-full border-[0.8rem] lg:border-[1.2rem] border-transparent border-t-[#f3bc3e] border-r-transparent rotate-[45deg]"></div>
             </div>
 
             <div class="space-y-4">
@@ -77,12 +77,12 @@
                 @forelse($categoryStats as $category => $count)
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <span class="w-3 h-3 rounded-full {{ $catColors[$category] ?? 'bg-gray-400' }}"></span>
-                        <span class="text-xs font-bold text-[#163a24]">{{ $category }}</span>
+                        <span class="w-2.5 h-2.5 lg:w-3 lg:h-3 rounded-full {{ $catColors[$category] ?? 'bg-gray-400' }}"></span>
+                        <span class="text-[10px] lg:text-xs font-bold text-[#163a24]">{{ $category }}</span>
                     </div>
                     <div class="text-right">
-                        <span class="text-xs font-black text-[#163a24]">{{ $totalComplaints > 0 ? round(($count / $totalComplaints) * 100) : 0 }}%</span>
-                        <p class="text-[9px] font-bold text-gray-300 tracking-tighter">{{ $count }} items</p>
+                        <span class="text-[10px] lg:text-xs font-black text-[#163a24]">{{ $totalComplaints > 0 ? round(($count / $totalComplaints) * 100) : 0 }}%</span>
+                        <p class="text-[8px] lg:text-[9px] font-bold text-gray-300 tracking-tighter">{{ $count }} items</p>
                     </div>
                 </div>
                 @empty
@@ -92,12 +92,12 @@
         </div>
 
         <!-- 2. Department Chart -->
-        <div class="bg-white rounded-[2.5rem] shadow-xl border border-[#163a24]/5 p-10">
-            <h3 class="text-lg font-black text-[#163a24] uppercase tracking-tight mb-10">Department Analytics</h3>
+        <div class="bg-white rounded-3xl lg:rounded-[2.5rem] shadow-xl border border-[#163a24]/5 p-6 lg:p-10">
+            <h3 class="text-base lg:text-lg font-black text-[#163a24] uppercase tracking-tight mb-8 lg:mb-10">Department Analytics</h3>
             
-            <div class="relative flex justify-center mb-10">
-                <div class="w-48 h-48 rounded-full border-[1.2rem] border-[#163a24] flex flex-col items-center justify-center">
-                    <p class="text-3xl font-black text-[#163a24] leading-none">{{ count($departmentStats) }}</p>
+            <div class="relative flex justify-center mb-8 lg:mb-10">
+                <div class="w-32 h-32 lg:w-48 lg:h-48 rounded-full border-[0.8rem] lg:border-[1.2rem] border-[#163a24] flex flex-col items-center justify-center">
+                    <p class="text-xl lg:text-3xl font-black text-[#163a24] leading-none">{{ count($departmentStats) }}</p>
                     <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1">Departments</p>
                 </div>
                 <div class="absolute inset-0 w-48 h-48 mx-auto rounded-full border-[1.2rem] border-transparent border-t-green-400 border-l-transparent -rotate-[120deg]"></div>

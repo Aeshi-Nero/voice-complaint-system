@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aldersgate Superadmin - Create Account</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#95d59e",
+                    "on-surface": "#201c02",
+                    "surface-tint": "#376943",
+                    "on-primary-fixed-variant": "#1e502d",
+                    "outline-variant": "#c1c9be",
+                    "outline": "#717970",
+                    "tertiary": "#3b2c00",
+                    "secondary-fixed": "#b0f2b9",
+                    "primary-fixed-dim": "#9dd3a5",
+                    "on-primary-fixed": "#00210b",
+                    "primary": "#003616",
+                    "surface-container-highest": "#ede3b8",
+                    "primary-container": "#1a4d2a",
+                    "secondary-container": "#adefb6",
+                    "primary-fixed": "#b8f0c0",
+                    "surface-bright": "#fff9ec",
+                    "tertiary-fixed-dim": "#f0c03e",
+                    "on-primary-container": "#88bd90",
+                    "on-error-container": "#93000a",
+                    "error-container": "#ffdad6",
+                    "surface": "#fff9ec",
+                    "tertiary-fixed": "#ffdf95",
+                    "on-secondary-container": "#326f41",
+                    "background": "#fff9ec",
+                    "surface-dim": "#e5dab0",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#564100",
+                    "surface-variant": "#ede3b8",
+                    "on-tertiary-container": "#d8ab28",
+                    "on-secondary-fixed-variant": "#115227",
+                    "secondary": "#2d6a3d",
+                    "inverse-primary": "#9dd3a5",
+                    "inverse-on-surface": "#fcf1c5",
+                    "surface-container": "#f9eec2",
+                    "on-background": "#201c02",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#594400",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed": "#00210a",
+                    "inverse-surface": "#363113",
+                    "surface-container-low": "#fff4c8",
+                    "surface-container-high": "#f3e8bd",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed": "#251a00",
+                    "on-surface-variant": "#414941"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "display": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .paper-texture {
+            background-image: linear-gradient(to bottom, #fef3c7, #ffffff);
+        }
+        .signature-gradient {
+            background: linear-gradient(135deg, #003616 0%, #1a4d2a 100%);
+        }
+        .glass-panel {
+            background: rgba(255, 249, 236, 0.8);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body selection:bg-tertiary-fixed selection:text-on-tertiary-fixed min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-[#fff9ec] shadow-[0_10px_30px_-5px_rgba(0,54,22,0.08)] docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-6 py-4">
+<div class="flex items-center gap-4">
+<button class="transition-all duration-300 active:scale-95 text-[#003616] p-1">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-bold text-lg tracking-tight font-inter text-[#003616] uppercase">Aldersgate Superadmin</h1>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden">
+<img alt="Superadmin" data-alt="Professional headshot of a university administrator with a confident expression and neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn1h342Mr0-4UbPD75l18h_CmxdibI4SgFvKlbw6I2SaVJZwnUBEfn7lpaqKtXw9qKei-frhT-pdVtqX7jMwXZJzHrGYrtZteFj-HzTx5QKN-fZAfiv4hI1Z-kQo-ecq52Fy1ViPQJe334dQa8bX-lFyO1F8isRGUfUDFhJwYIaTO1wDPXa85fs2KFEYl1F8JrQZJX9QFLDVxYISyErmdtg9XJe3yhZif4ahI8M2lfXA2nsYBCxA-eSqtII84OIHfqED0jx7of1QU"/>
+</div>
+</div>
+</header>
+<main class="paper-texture min-h-[calc(100vh-144px)] pb-24">
+<!-- Brand Section -->
+<section class="px-6 pt-8 pb-4 text-center">
+<div class="flex justify-center mb-6">
+<div class="w-24 h-24 relative">
+<div class="absolute inset-0 bg-primary opacity-5 rounded-full scale-125"></div>
+<img alt="University Seal" class="w-full h-full object-contain mix-blend-multiply" data-alt="Intricate golden university seal with heraldic symbols and Latin text on a parchment background style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrA-xllm8VSWdScVG6TsleQSC17HPAGKzx0S7PviE5oQHefhxwzciYRuC_64R0YTeXRJ4MoGqASRbr9tR4Feoas-PDETDur1o6YJy8bXOadkSxqcj7kPVGRfzs11kcC8bt1tYAeYiFrEg8MV-641-hcjy31I0eYHd8bLMSi3LfDHQucQ6WxLTMhtLJ6zMlfw0hErqpftc37IQ23TYeaNm5POyEQsXhDLsKYOs3Jpl7R07YgD7E4UsI4KDr5AN5OrcFO5WBWc-fYjc"/>
+</div>
+</div>
+<h2 class="display-sm font-black text-primary tracking-tight text-3xl mb-2">Create Admin Account</h2>
+<p class="text-on-surface-variant body-md opacity-80 px-4">Register a new administrative profile for the Aldersgate institutional database.</p>
+</section>
+<!-- Form Section -->
+<section class="px-6 mt-4">
+<div class="space-y-6">
+<!-- Profile Section -->
+<div class="space-y-4">
+<h3 class="label-md font-bold uppercase tracking-widest text-primary border-b border-outline-variant/30 pb-2">Institutional Identity</h3>
+<div class="space-y-4">
+<div class="relative">
+<label class="label-md text-primary font-semibold mb-1 block">Full Name</label>
+<input class="w-full bg-surface-container-low border-none border-b-2 border-outline-variant focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3 transition-colors" placeholder="e.g. Dr. Julianne Sterling" type="text"/>
+</div>
+<div class="relative">
+<label class="label-md text-primary font-semibold mb-1 block">Institutional ID</label>
+<input class="w-full bg-surface-container-low border-none border-b-2 border-outline-variant focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3 transition-colors" placeholder="AG-2024-0000" type="text"/>
+</div>
+<div class="relative">
+<label class="label-md text-primary font-semibold mb-1 block">Email Address</label>
+<input class="w-full bg-surface-container-low border-none border-b-2 border-outline-variant focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3 transition-colors" placeholder="j.sterling@aldersgate.edu" type="email"/>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<div class="relative">
+<label class="label-md text-primary font-semibold mb-1 block">Department</label>
+<select class="w-full bg-surface-container-low border-none border-b-2 border-outline-variant focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3 transition-colors appearance-none">
+<option>Select Department</option>
+<option>Faculty of Humanities</option>
+<option>School of Applied Sciences</option>
+<option>Registrar's Office</option>
+<option>Finance &amp; Budget</option>
+</select>
+</div>
+<div class="relative">
+<label class="label-md text-primary font-semibold mb-1 block">Administrative Role</label>
+<select class="w-full bg-surface-container-low border-none border-b-2 border-outline-variant focus:border-primary focus:ring-0 rounded-t-lg px-4 py-3 transition-colors appearance-none">
+<option>Select Role</option>
+<option>Department Head</option>
+<option>Academic Coordinator</option>
+<option>Senior Registrar</option>
+<option>IT Administrator</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- Permissions Section -->
+<div class="space-y-4 pt-4">
+<h3 class="label-md font-bold uppercase tracking-widest text-primary border-b border-outline-variant/30 pb-2">Access Privileges</h3>
+<div class="grid grid-cols-1 gap-3">
+<label class="flex items-center p-4 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10 active:scale-[0.98] transition-transform">
+<input checked="" class="w-6 h-6 rounded border-outline text-primary focus:ring-primary-container" type="checkbox"/>
+<div class="ml-4">
+<span class="block font-bold text-on-surface">Academic Records View</span>
+<span class="text-xs text-on-surface-variant">Access to student transcripts and grading</span>
+</div>
+</label>
+<label class="flex items-center p-4 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10 active:scale-[0.98] transition-transform">
+<input class="w-6 h-6 rounded border-outline text-primary focus:ring-primary-container" type="checkbox"/>
+<div class="ml-4">
+<span class="block font-bold text-on-surface">Faculty Management</span>
+<span class="text-xs text-on-surface-variant">Manage staff profiles and assignments</span>
+</div>
+</label>
+<label class="flex items-center p-4 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/10 active:scale-[0.98] transition-transform">
+<input class="w-6 h-6 rounded border-outline text-primary focus:ring-primary-container" type="checkbox"/>
+<div class="ml-4">
+<span class="block font-bold text-on-surface">System Audit Logs</span>
+<span class="text-xs text-on-surface-variant">Review historical changes and login data</span>
+</div>
+</label>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-3 pt-8">
+<button class="signature-gradient text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition-all text-center">
+                        Create Admin Account
+                    </button>
+<button class="bg-surface-container-high text-primary font-bold py-4 rounded-xl active:scale-95 transition-all text-center">
+                        Cancel
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 bg-[#003616] rounded-t-xl shadow-2xl">
+<a class="flex flex-col items-center justify-center text-[#fff9ec]/60 px-4 py-2 transition-colors duration-200 hover:bg-[#1a4d2a]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-inter">Insights</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#1a4d2a] text-[#f5c542] border-l-4 border-[#f5c542] px-4 py-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person_add" style="font-variation-settings: 'FILL' 1;">person_add</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-inter">Manage</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#fff9ec]/60 px-4 py-2 transition-colors duration-200 hover:bg-[#1a4d2a]" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-inter">Directory</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#fff9ec]/60 px-4 py-2 transition-colors duration-200 hover:bg-[#1a4d2a]" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-inter">Reports</span>
+</a>
+</nav>
+<!-- Background Decoration -->
+<div class="fixed top-20 right-[-10%] w-64 h-64 bg-primary opacity-[0.03] rounded-full blur-3xl -z-10"></div>
+<div class="fixed bottom-20 left-[-10%] w-80 h-80 bg-tertiary-fixed opacity-[0.05] rounded-full blur-3xl -z-10"></div>
+</body></html>

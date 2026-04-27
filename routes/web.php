@@ -21,11 +21,16 @@ Route::get("/migrate", function() {
     try {
         $output = "";
         
-        // 1. Run migrations
-        Artisan::call('migrate', ['--force' => true]);
-        $output .= "Migrate output: " . Artisan::output() . "\n\n";
+        // 0. Clear Cache first to pick up .env changes
+        Artisan::call('config:clear');
+        Artisan::call('cache:clear');
+        $output .= "Cache cleared.\n\n";
 
-        // 2. Run Seeders (Initial data)
+        // 1. Run migrations fresh (drops existing tables in the cloud)
+        Artisan::call('migrate:fresh', ['--force' => true]);
+        $output .= "Migrate Fresh output: " . Artisan::output() . "\n\n";
+
+        // 2. Run Seeders
         Artisan::call('db:seed', ['--force' => true]);
         $output .= "Seed output: " . Artisan::output() . "\n\n";
         
@@ -201,6 +206,11 @@ Route::get("/import-users", function() {
 Route::get("/login", [LoginController::class, "showLoginForm"])->name("login");
 Route::post("/login", [LoginController::class, "login"]);
 Route::post("/logout", [LoginController::class, "logout"])->name("logout");
+Route::post("/forgot-password", [LoginController::class, "forgotPassword"])->name("password.forgot");
+
+// Claim Account Routes
+Route::post("/claim-account/check", [\App\Http\Controllers\Auth\ClaimAccountController::class, "check"])->name("claim.check");
+Route::post("/claim-account/verify", [\App\Http\Controllers\Auth\ClaimAccountController::class, "verify"])->name("claim.verify");
 
 // Profile Routes
 Route::post("/profile/update", [ProfileController::class, "update"])->name("profile.update")->middleware('auth');
@@ -251,4 +261,22 @@ Route::middleware(["auth", \App\Http\Middleware\AdminMiddleware::class])->prefix
     Route::get("/reports/export/pdf", [\App\Http\Controllers\Admin\ReportController::class, "exportPdf"])->name("reports.export.pdf");
     Route::get("/reports/polls/export/csv", [\App\Http\Controllers\Admin\ReportController::class, "exportPollsCsv"])->name("reports.polls.csv");
     Route::get("/reports/polls/export/pdf", [\App\Http\Controllers\Admin\ReportController::class, "exportPollsPdf"])->name("reports.polls.pdf");
+});
+
+// Superadmin Routes
+Route::middleware(["auth", \App\Http\Middleware\SuperAdminMiddleware::class])->prefix("superadmin")->name("superadmin.")->group(function () {
+    Route::get("/dashboard", [\App\Http\Controllers\SuperAdmin\DashboardController::class, "index"])->name("dashboard");
+    
+    // Complaint Management & Assignment
+    Route::get("/complaints", [\App\Http\Controllers\SuperAdmin\ComplaintController::class, "index"])->name("complaints.index");
+    Route::post("/complaints/{complaint}/assign", [\App\Http\Controllers\SuperAdmin\ComplaintController::class, "assign"])->name("complaints.assign");
+    Route::post("/complaints/auto-assign", [\App\Http\Controllers\SuperAdmin\ComplaintController::class, "autoAssign"])->name("complaints.auto_assign");
+    
+    // Admin Management
+    Route::get("/admins", [\App\Http\Controllers\SuperAdmin\AdminManagementController::class, "index"])->name("admins.index");
+    Route::get("/admins/create", [\App\Http\Controllers\SuperAdmin\AdminManagementController::class, "create"])->name("admins.create");
+    Route::post("/admins", [\App\Http\Controllers\SuperAdmin\AdminManagementController::class, "store"])->name("admins.store");
+    Route::get("/admins/{admin}/performance", [\App\Http\Controllers\SuperAdmin\AdminManagementController::class, "performance"])->name("admins.performance");
+    Route::post("/admins/{admin}/block", [\App\Http\Controllers\SuperAdmin\AdminManagementController::class, "block"])->name("admins.block");
+    Route::post("/admins/{admin}/unblock", [\App\Http\Controllers\SuperAdmin\AdminManagementController::class, "unblock"])->name("admins.unblock");
 });

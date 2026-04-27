@@ -5,19 +5,27 @@
     
     <div x-data="complaintForm()" class="flex-1 flex flex-col">
         
-        <!-- Center Hero Text -->
+        <!-- Center Hero Section -->
         <div class="flex-1 flex items-center justify-center px-4"
              x-show="!expanded"
              x-transition:leave="transition ease-in duration-300"
              x-transition:leave-start="opacity-100 scale-100"
              x-transition:leave-end="opacity-0 scale-95">
-            <div class="text-center">
-                <h1 class="text-6xl md:text-8xl font-black text-[#163a24] tracking-tightest leading-[0.85] mb-8">
-                    Voice your<br>complaint now
+            <div class="text-center space-y-4">
+                <div class="inline-block bg-[#163a24]/5 text-[#163a24] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-2">Institutional Feedback Portal</div>
+                <h1 class="text-5xl md:text-7xl font-black text-[#163a24] tracking-tight leading-none mb-6">
+                    Voice <span class="text-[#f3bc3e] italic">complaint</span> now.
                 </h1>
-                <p class="text-sm md:text-base font-black text-[#163a24]/20 uppercase tracking-[0.5em]">
-                    You have {{ auth()->user()->getRemainingComplaints() }} submissions left today
-                </p>
+                <div class="flex flex-col items-center gap-2">
+                    <p class="text-xs md:text-sm font-bold text-[#163a24]/40 uppercase tracking-[0.3em]">
+                        {{ auth()->user()->getRemainingComplaints() }} submissions remaining
+                    </p>
+                    <div class="flex gap-1">
+                        @for($i = 0; $i < 6; $i++)
+                            <div class="w-8 h-1 rounded-full {{ $i < auth()->user()->getRemainingComplaints() ? 'bg-[#00a651]' : 'bg-gray-200' }}"></div>
+                        @endfor
+                    </div>
+                </div>
             </div>
         </div>
 

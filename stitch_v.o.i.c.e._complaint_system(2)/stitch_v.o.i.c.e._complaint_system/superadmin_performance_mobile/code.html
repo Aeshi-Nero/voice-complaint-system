@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aldersgate Superadmin Performance Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#95d59e",
+                        "on-surface": "#201c02",
+                        "surface-tint": "#376943",
+                        "on-primary-fixed-variant": "#1e502d",
+                        "outline-variant": "#c1c9be",
+                        "outline": "#717970",
+                        "tertiary": "#3b2c00",
+                        "secondary-fixed": "#b0f2b9",
+                        "primary-fixed-dim": "#9dd3a5",
+                        "on-primary-fixed": "#00210b",
+                        "primary": "#003616",
+                        "surface-container-highest": "#ede3b8",
+                        "primary-container": "#1a4d2a",
+                        "secondary-container": "#adefb6",
+                        "primary-fixed": "#b8f0c0",
+                        "surface-bright": "#fff9ec",
+                        "tertiary-fixed-dim": "#f0c03e",
+                        "on-primary-container": "#88bd90",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "surface": "#fff9ec",
+                        "tertiary-fixed": "#ffdf95",
+                        "on-secondary-container": "#326f41",
+                        "background": "#fff9ec",
+                        "surface-dim": "#e5dab0",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#564100",
+                        "surface-variant": "#ede3b8",
+                        "on-tertiary-container": "#d8ab28",
+                        "on-secondary-fixed-variant": "#115227",
+                        "secondary": "#2d6a3d",
+                        "inverse-primary": "#9dd3a5",
+                        "inverse-on-surface": "#fcf1c5",
+                        "surface-container": "#f9eec2",
+                        "on-background": "#201c02",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#594400",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#00210a",
+                        "inverse-surface": "#363113",
+                        "surface-container-low": "#fff4c8",
+                        "surface-container-high": "#f3e8bd",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#251a00",
+                        "on-surface-variant": "#414941"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "display": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .signature-gradient {
+            background: linear-gradient(135deg, #003616 0%, #1a4d2a 100%);
+        }
+        .glass-panel {
+            background: rgba(255, 249, 236, 0.8);
+            backdrop-filter: blur(12px);
+        }
+        .scrolling-hide::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#fff9ec] font-body text-on-surface overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="bg-[#fff9ec] shadow-[0_10px_30px_-5px_rgba(0,54,22,0.08)] flex justify-between items-center w-full px-6 py-4 sticky top-0 z-40">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#003616]">menu</span>
+<h1 class="font-inter font-bold text-lg tracking-tight text-[#003616]">Aldersgate Superadmin</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-container">
+<img alt="Superadmin Profile" class="w-full h-full object-cover" data-alt="professional portrait of a university administrator in a classic suit, soft natural indoor lighting, academic background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhVz4nZQBcIs4AZSwecTU64vmXGiaNxMsQOmWG9hMVbJN9Tw_KHGZ-Qb8ZW9P6bg-WcmonHf0tt64bhxe5K920IB6nQva3iZdfvAWqyC98SLo6SEqKg72fYAwo0fZZGRLDY_P_pleAsOFjGaC_ZXs2_b3e1c-HW6x4CYWg3tyKqvQ7frdP4ZvZjpNxeJo9A0amH4hUNl3v08R7eXAIa6G-Id-GKkEGVPofTwNxk3BvMdSf3h8i6EorK1VqH4Ts7-BbECxZPWbZvww"/>
+</div>
+</header>
+<main class="px-6 py-8 pb-24 max-w-md mx-auto space-y-8">
+<!-- Welcome Section -->
+<section>
+<p class="text-label-md uppercase tracking-widest text-primary/70 font-bold mb-1">System Audit</p>
+<h2 class="text-3xl font-black text-primary tracking-tight">Performance Overview</h2>
+</section>
+<!-- Vertical Metrics Cards -->
+<section class="grid grid-cols-1 gap-4">
+<!-- Total Admins -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15 flex items-center justify-between transition-all active:scale-95">
+<div>
+<span class="text-label-md uppercase tracking-wider font-semibold text-on-surface-variant">Total Admins</span>
+<div class="text-4xl font-black text-primary mt-1">42</div>
+<div class="flex items-center gap-1 mt-2 text-secondary font-bold text-sm">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12% vs last month</span>
+</div>
+</div>
+<div class="w-14 h-14 rounded-full bg-primary-container flex items-center justify-center text-tertiary-fixed">
+<span class="material-symbols-outlined text-3xl">group</span>
+</div>
+</div>
+<!-- Avg Resolution -->
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/15 flex items-center justify-between transition-all active:scale-95">
+<div>
+<span class="text-label-md uppercase tracking-wider font-semibold text-on-surface-variant">Avg Resolution</span>
+<div class="text-4xl font-black text-primary mt-1">1.4h</div>
+<div class="flex items-center gap-1 mt-2 text-secondary font-bold text-sm">
+<span class="material-symbols-outlined text-sm">bolt</span>
+<span>-15min improvement</span>
+</div>
+</div>
+<div class="w-14 h-14 rounded-full bg-primary-container flex items-center justify-center text-tertiary-fixed">
+<span class="material-symbols-outlined text-3xl">timer</span>
+</div>
+</div>
+<!-- System Health -->
+<div class="signature-gradient p-6 rounded-xl shadow-lg flex items-center justify-between transition-all active:scale-95">
+<div>
+<span class="text-label-md uppercase tracking-wider font-semibold text-on-primary-container/80">System Health</span>
+<div class="text-4xl font-black text-tertiary-fixed mt-1">99.8%</div>
+<div class="flex items-center gap-1 mt-2 text-secondary-fixed font-bold text-sm">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+<span>Optimal Operations</span>
+</div>
+</div>
+<div class="w-14 h-14 rounded-full bg-on-primary-fixed-variant flex items-center justify-center text-tertiary-fixed">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">health_and_safety</span>
+</div>
+</div>
+</section>
+<!-- Resolution Trends Chart (Simplified Editorial Style) -->
+<section class="bg-surface-container-low p-6 rounded-xl overflow-hidden relative">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h3 class="text-xl font-bold text-primary">Resolution Trends</h3>
+<p class="text-sm text-on-surface-variant">Daily complaint completions</p>
+</div>
+<div class="bg-primary/5 px-3 py-1 rounded-full text-xs font-bold text-primary uppercase tracking-tighter">7 Days</div>
+</div>
+<div class="flex items-end justify-between h-32 gap-3 relative">
+<!-- Simple Geometric Chart Representation -->
+<div class="w-full bg-primary/20 rounded-t-lg h-2/3 relative group">
+<div class="absolute bottom-0 w-full bg-primary rounded-t-lg h-full transition-all group-hover:h-[80%]"></div>
+</div>
+<div class="w-full bg-primary/20 rounded-t-lg h-1/2 relative group">
+<div class="absolute bottom-0 w-full bg-primary rounded-t-lg h-full transition-all group-hover:h-[60%]"></div>
+</div>
+<div class="w-full bg-primary/20 rounded-t-lg h-3/4 relative group">
+<div class="absolute bottom-0 w-full bg-primary rounded-t-lg h-full transition-all group-hover:h-[90%]"></div>
+</div>
+<div class="w-full bg-primary/20 rounded-t-lg h-full relative group">
+<div class="absolute bottom-0 w-full bg-primary rounded-t-lg h-full transition-all group-hover:h-[110%]"></div>
+</div>
+<div class="w-full bg-primary/20 rounded-t-lg h-2/3 relative group">
+<div class="absolute bottom-0 w-full bg-primary rounded-t-lg h-full transition-all group-hover:h-[75%]"></div>
+</div>
+<div class="w-full bg-primary/20 rounded-t-lg h-5/6 relative group">
+<div class="absolute bottom-0 w-full bg-primary rounded-t-lg h-full transition-all group-hover:h-[95%]"></div>
+</div>
+<div class="w-full bg-primary/20 rounded-t-lg h-3/4 relative group">
+<div class="absolute bottom-0 w-full bg-primary rounded-t-lg h-full transition-all group-hover:h-[85%]"></div>
+</div>
+</div>
+<div class="flex justify-between mt-3 text-[10px] font-black text-on-surface-variant uppercase tracking-widest opacity-60">
+<span>Mon</span>
+<span>Tue</span>
+<span>Wed</span>
+<span>Thu</span>
+<span>Fri</span>
+<span>Sat</span>
+<span>Sun</span>
+</div>
+</section>
+<!-- Performance Leaderboard -->
+<section>
+<div class="flex justify-between items-center mb-6">
+<h3 class="text-2xl font-black text-primary tracking-tight">Admin Leaderboard</h3>
+<button class="text-sm font-bold text-secondary-container bg-primary px-4 py-2 rounded-lg">View All</button>
+</div>
+<div class="space-y-4">
+<!-- Leaderboard Item 1 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border-l-4 border-f5c542 flex items-center gap-4">
+<div class="relative">
+<img alt="Admin Dr. Sarah" class="w-12 h-12 rounded-lg object-cover" data-alt="professional portrait of an educator, diverse woman with glasses smiling warmly, bright academic office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCw__I8Ily4UOE31MAWBueQAsh6cE3IEXI-ckLtfdV3jUdYue6gOiuG0VE6R5MdfQqQyErngdp7W1-0STMdrk_PpnvBVkKuRR8k-x6O_75XgeP5mXoyhoNsncIigDa9f0f06rh2rn0sJfje7DKu3G0kwzYQhbL44fD3F-lKuPFNmKDA81UO4s_r6Gi-brpoUJyXSsYSA7q68gqG51zqr9KDD62M9AL2TAByIi7sdAOqSrT_8k3k17fObjutm-Oa3sVBIOoDErrIGKU"/>
+<div class="absolute -top-2 -left-2 bg-tertiary-fixed text-on-tertiary-fixed w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black border-2 border-surface">1</div>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-primary">Dr. Sarah Thompson</h4>
+<p class="text-xs text-on-surface-variant font-medium">Faculty of Arts</p>
+</div>
+<div class="text-right">
+<div class="text-secondary font-black">98.4%</div>
+<div class="bg-secondary-container px-2 py-0.5 rounded text-[10px] font-bold text-on-secondary-container inline-block">EXCELLED</div>
+</div>
+</div>
+<!-- Leaderboard Item 2 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4">
+<div class="relative">
+<img alt="Admin Mr. David" class="w-12 h-12 rounded-lg object-cover" data-alt="corporate portrait of a male administrator, professional attire, modern minimalist background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeBsR_DHg7m2Z_tSM5QLmxv_csG_JDitZhh1g3W3aMolst74kF0Z4rYB2gon3t-F3j35iX9q1YfBgCkL61_OYk3QeayYFgQt6Mu7uP7q5O8rqpBa5GBGIWhu2QSoUsES7TBab-1CROFRMnIiWpDI6X1GVsyYaBT7slWXQn3q4qqo0BStW9syGjR65VYtFvTsIf2jsf71DnDPCIafmdypLqv3MC8Z3tQs_8P55I4kPG61tg13mVPEiQRFueoQJVpfDc34ncV_7Th5w"/>
+<div class="absolute -top-2 -left-2 bg-outline-variant text-on-surface-variant w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black border-2 border-surface">2</div>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-primary">Prof. David Chen</h4>
+<p class="text-xs text-on-surface-variant font-medium">Science Dept</p>
+</div>
+<div class="text-right">
+<div class="text-secondary font-black">94.2%</div>
+<div class="bg-tertiary-fixed px-2 py-0.5 rounded text-[10px] font-bold text-on-tertiary-fixed inline-block">CONSISTENT</div>
+</div>
+</div>
+<!-- Leaderboard Item 3 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl flex items-center gap-4">
+<div class="relative">
+<img alt="Admin Ms. Elena" class="w-12 h-12 rounded-lg object-cover" data-alt="headshot of a female professor, warm lighting, natural professional look, library background blur" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpVXBo8euK_bv6w4XGwNV6lsK8XHnaYtvHm-M67YPdlwxop8KxOgeXJ3TLvci5iorBxsXoWuwQkxDN2SC9nbfFi_XOv4v0RWkvPeiQmbPeYjROYVEQGShufBXl-pKMcAD0PjKZlWbptO9WP64If8xjm0xKZyosdc5q95LQf0JBX9cB78wfCir7MuZGxGnlKyltPFz6gXdjG7D6O964xAAH0ziYeE4olFXJVROyt0sJ0xp6RsJjwVHYhM6BWpEEEYHQVPreeJjQihY"/>
+<div class="absolute -top-2 -left-2 bg-on-tertiary-fixed-variant text-tertiary-fixed w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black border-2 border-surface">3</div>
+</div>
+<div class="flex-1">
+<h4 class="font-bold text-primary">Ms. Elena Rodriguez</h4>
+<p class="text-xs text-on-surface-variant font-medium">Student Affairs</p>
+</div>
+<div class="text-right">
+<div class="text-secondary font-black">91.8%</div>
+<div class="bg-tertiary-fixed px-2 py-0.5 rounded text-[10px] font-bold text-on-tertiary-fixed inline-block">CONSISTENT</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 bg-[#003616] dark:bg-[#001a0a] rounded-t-xl shadow-2xl">
+<!-- Active: Insights (Closest to Dashboard) -->
+<a class="flex flex-col items-center justify-center bg-[#1a4d2a] text-[#f5c542] border-l-4 border-[#f5c542] px-4 py-2 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-inter mt-1">Insights</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#fff9ec]/60 px-4 py-2 hover:bg-[#1a4d2a] transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-inter mt-1">Directory</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#fff9ec]/60 px-4 py-2 hover:bg-[#1a4d2a] transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">person_add</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-inter mt-1">Manage</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#fff9ec]/60 px-4 py-2 hover:bg-[#1a4d2a] transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px] font-bold uppercase tracking-widest font-inter mt-1">Reports</span>
+</a>
+</nav>
+</body></html>
