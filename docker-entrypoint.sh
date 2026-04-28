@@ -8,19 +8,22 @@ export SESSION_DRIVER=${SESSION_DRIVER:-database}
 mkdir -p storage/framework/{sessions,views,cache}
 chmod -R 775 storage bootstrap/cache
 
-# Run standard optimization
-php artisan config:clear
-php artisan cache:clear
-
 if [ "$APP_ENV" = "production" ]; then
-    echo "Running in Production (Hugging Face)"
+    echo "Running in Production (Hugging Face) - Applying Speed Optimizations..."
     
-    # Initialize storage and start PHP
+    # Initialize storage
     php artisan storage:link --force || true
     
     # Run migrations automatically
-    echo "Running cloud migrations..."
+    echo "Syncing cloud database..."
     php artisan migrate --force || true
+    
+    # SPEED OPTIMIZATIONS:
+    # -------------------
+    echo "Pre-compiling application logic..."
+    php artisan config:cache   # Merge all configs
+    php artisan route:cache    # Pre-load all URLs
+    php artisan view:cache     # Pre-compile all UI templates
     
     php-fpm -D
     
@@ -34,10 +37,14 @@ if [ "$APP_ENV" = "production" ]; then
     cp /var/www/nginx/default.conf /etc/nginx/sites-available/default
     ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
     
-    echo "Launching Nginx on Port 7860..."
+    echo "Launching Optimized V.O.I.C.E. on Port 7860..."
     exec nginx -g "daemon off;"
 else
     echo "Running in Development (Local)"
+    # Clear caches in local to prevent dev issues
+    php artisan config:clear
+    php artisan route:clear
+    php artisan view:clear
     php artisan storage:link --force || true
     exec php-fpm
 fi
