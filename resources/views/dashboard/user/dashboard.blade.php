@@ -14,7 +14,7 @@
             <div class="text-center space-y-4">
                 <div class="inline-block bg-[#163a24]/5 text-[#163a24] px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-2">Institutional Feedback Portal</div>
                 <h1 class="text-5xl md:text-7xl font-black text-[#163a24] tracking-tight leading-none mb-6">
-                    Voice <span class="text-[#f3bc3e] italic">complaint</span> now.
+                    Voice your complaints now.
                 </h1>
                 <div class="flex flex-col items-center gap-2">
                     <p class="text-xs md:text-sm font-bold text-[#163a24]/40 uppercase tracking-[0.3em]">

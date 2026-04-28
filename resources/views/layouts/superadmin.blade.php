@@ -101,8 +101,8 @@
         <div class="p-6 lg:p-8 mb-4">
             <div class="flex justify-between items-center lg:block">
                 <div class="flex items-center gap-4">
-                    <div class="bg-white w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center overflow-hidden border-2 border-[#f3bc3e] shadow-inner shrink-0">
-                        <img src="data:image/png;base64,{{ $logoBase64 ?? '' }}" alt="Logo" class="w-full h-full object-cover">
+                    <div class="bg-white w-10 h-10 lg:w-14 lg:h-14 rounded-full flex items-center justify-center overflow-hidden border-2 border-[#f3bc3e] shadow-inner shrink-0 p-1">
+                        <img src="data:image/png;base64,{{ $logoBase64 ?? '' }}" alt="Logo" class="w-full h-full object-contain">
                     </div>
                     <div>
                         <h2 class="text-2xl font-black tracking-tighter leading-none uppercase text-white">V.O.I.C.E.</h2>
