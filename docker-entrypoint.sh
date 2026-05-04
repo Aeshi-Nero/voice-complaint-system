@@ -2,7 +2,8 @@
 
 # Force DB connection to mysql if not set (to prevent sqlite 500 error)
 export DB_CONNECTION=${DB_CONNECTION:-mysql}
-export SESSION_DRIVER=${SESSION_DRIVER:-database}
+export SESSION_DRIVER=${SESSION_DRIVER:-cookie}
+export BROADCAST_CONNECTION=${BROADCAST_CONNECTION:-log}
 
 # Ensure storage directories exist and are writable
 mkdir -p storage/framework/{sessions,views,cache}

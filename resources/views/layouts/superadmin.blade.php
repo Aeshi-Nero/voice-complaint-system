@@ -69,13 +69,12 @@
             <button @click="sidebarOpen = true" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
                 <i class="fas fa-bars"></i>
             </button>
+            
+            <h1 class="text-xl font-black tracking-tightest uppercase text-tertiary">V.O.I.C.E.</h1>
 
-            <div class="flex items-center gap-3">
-                <span class="text-xs font-black uppercase tracking-widest text-white">Welcome, {{ auth()->user()->name }}</span>
-                <button class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
-                    <i class="fas fa-bell"></i>
-                </button>
-            </div>
+            <button class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
+                <i class="fas fa-bell"></i>
+            </button>
         @endauth
     </div>
 
@@ -97,16 +96,15 @@
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
         class="fixed inset-y-0 left-0 z-[70] w-64 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl lg:translate-x-0"
     >
-        <!-- Logo -->
-        <div class="p-6 lg:p-8 mb-4">
+        <div class="hidden lg:block p-6 lg:p-8 mb-4">
             <div class="flex justify-between items-center lg:block">
                 <div class="flex items-center gap-4">
-                    <div class="bg-white w-10 h-10 lg:w-14 lg:h-14 rounded-full flex items-center justify-center overflow-hidden border-2 border-[#f3bc3e] shadow-inner shrink-0 p-1">
+                    <div class="hidden lg:flex bg-white w-10 h-10 lg:w-14 lg:h-14 rounded-2xl items-center justify-center overflow-hidden border-2 border-[#f3bc3e] shadow-inner shrink-0 p-1">
                         <img src="data:image/png;base64,{{ $logoBase64 ?? '' }}" alt="Logo" class="w-full h-full object-contain">
                     </div>
                     <div>
                         <h2 class="text-2xl font-black tracking-tighter leading-none uppercase text-white">V.O.I.C.E.</h2>
-                        <p class="text-[9px] font-bold text-[#f3bc3e] tracking-tight uppercase opacity-80 mt-1">Virtual Outlet for Institutional Complaint Engagement</p>
+                        <p class="text-[9px] font-bold text-[#f3bc3e] tracking-tight uppercase opacity-80 mt-1">Virtual Outlet</p>
                     </div>
                 </div>
                 <button @click="sidebarOpen = false" class="lg:hidden text-white/60 hover:text-white">
@@ -203,7 +201,7 @@
             @endauth
         </div>
 
-        <div class="p-4 lg:p-8">
+        <div class="p-4 sm:p-6 lg:p-8">
             @if(session('success'))
                 <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-lg shadow-sm">
                     <div class="flex items-center gap-3">

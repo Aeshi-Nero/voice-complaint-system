@@ -15,11 +15,13 @@ class ComplaintMessage extends Model
         'message',
         'is_admin',
         'images',
+        'audio_paths',
     ];
 
     protected $casts = [
         'is_admin' => 'boolean',
         'images' => 'array',
+        'audio_paths' => 'array',
     ];
 
     public function complaint()

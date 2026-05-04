@@ -19,32 +19,39 @@
     </div>
 
     <!-- Filters Section -->
-    <div class="bg-white rounded-3xl lg:rounded-[2.5rem] shadow-xl p-6 lg:p-8 border border-[#163a24]/5 mb-8 lg:mb-12">
-        <form action="{{ route('admin.reports.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
-            <div>
-                <label class="text-[9px] lg:text-[10px] font-black text-[#163a24] uppercase tracking-widest mb-2 block">Start Date</label>
-                <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full bg-[#fef9e1] border-none rounded-xl px-4 py-3 text-sm font-bold text-[#163a24] focus:ring-2 focus:ring-[#f3bc3e]">
-            </div>
-            <div>
-                <label class="text-[9px] lg:text-[10px] font-black text-[#163a24] uppercase tracking-widest mb-2 block">End Date</label>
-                <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full bg-[#fef9e1] border-none rounded-xl px-4 py-3 text-sm font-bold text-[#163a24] focus:ring-2 focus:ring-[#f3bc3e]">
-            </div>
-            <div>
-                <label class="text-[9px] lg:text-[10px] font-black text-[#163a24] uppercase tracking-widest mb-2 block">Category</label>
-                <select name="category" class="w-full bg-[#fef9e1] border-none rounded-xl px-4 py-3 text-sm font-bold text-[#163a24] focus:ring-2 focus:ring-[#f3bc3e]">
-                    <option value="">All Categories</option>
-                    @php 
-                        $cats = ['Academic', 'Faculty', 'Administrative', 'IT/Technical', 'Health & Safety'];
-                    @endphp
-                    @foreach($cats as $cat)
-                        <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="flex items-end">
-                <button type="submit" class="w-full bg-[#163a24] text-white py-3 lg:py-4 rounded-xl font-black uppercase tracking-widest text-[9px] lg:text-[10px] shadow-lg hover:bg-[#1a4d2a] transition-all">
-                    Generate Data View
-                </button>
+    <div class="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-sm p-6 md:p-10 border border-[#163a24]/5 mb-10 md:mb-16">
+        <form action="{{ route('admin.reports.index') }}" method="GET" class="space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-[#163a24]/40 uppercase tracking-widest ml-1">Start Date</label>
+                    <input type="date" name="start_date" value="{{ request('start_date') }}" 
+                           class="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-sm font-bold text-[#163a24] focus:ring-4 focus:ring-[#f3bc3e]/20 transition-all">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-[#163a24]/40 uppercase tracking-widest ml-1">End Date</label>
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" 
+                           class="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-sm font-bold text-[#163a24] focus:ring-4 focus:ring-[#f3bc3e]/20 transition-all">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-[#163a24]/40 uppercase tracking-widest ml-1">Category Filter</label>
+                    <div class="relative">
+                        <select name="category" class="w-full bg-gray-50 border-none rounded-2xl px-6 py-4 text-sm font-bold text-[#163a24] focus:ring-4 focus:ring-[#f3bc3e]/20 transition-all appearance-none cursor-pointer">
+                            <option value="">All Categories</option>
+                            @php 
+                                $cats = ['Academic', 'Faculty', 'Administrative', 'IT/Technical', 'Health & Safety'];
+                            @endphp
+                            @foreach($cats as $cat)
+                                <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                            @endforeach
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-6 top-1/2 -translate-y-1/2 text-[#163a24]/20 pointer-events-none"></i>
+                    </div>
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-[#163a24] text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-[#163a24]/20 hover:bg-[#1a4d2a] active:scale-[0.98] transition-all">
+                        Update Report
+                    </button>
+                </div>
             </div>
         </form>
     </div>

@@ -46,9 +46,9 @@
     </div>
 
     <!-- Complaints Display -->
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
         <!-- Desktop Table View -->
-        <div class="hidden md:block overflow-x-auto">
+        <div class="hidden lg:block overflow-x-auto">
             <table class="w-full text-left">
                 <thead>
                     <tr class="bg-gray-50/50 border-b border-gray-100">
@@ -120,49 +120,55 @@
         </div>
 
         <!-- Mobile Card View -->
-        <div class="md:hidden space-y-4 p-4 bg-gray-50">
+        <div class="lg:hidden divide-y divide-gray-50">
             @forelse($complaints as $complaint)
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+                <div class="p-6 space-y-6">
                     <div class="flex justify-between items-start">
                         <div>
-                            <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest">#{{ $complaint->complaint_number }}</p>
-                            <h3 class="font-black text-[#163a24] text-lg mt-1">{{ $complaint->title }}</h3>
+                            <p class="text-[10px] font-black text-gray-300 uppercase tracking-widest mb-1">ID: #{{ $complaint->complaint_number }}</p>
+                            <h3 class="font-black text-[#163a24] text-lg leading-tight">{{ $complaint->title }}</h3>
                         </div>
-                        <span class="text-[9px] font-bold text-white uppercase px-2 py-1 rounded
-                            @if($complaint->status === 'pending') bg-orange-500 @elseif($complaint->status === 'in_progress') bg-blue-500 @elseif($complaint->status === 'resolved') bg-green-500 @else bg-red-500 @endif">
+                        <span class="text-[9px] font-black text-white uppercase px-3 py-1.5 rounded-xl shadow-sm
+                            @if($complaint->status === 'pending') bg-orange-500 shadow-orange-500/20 @elseif($complaint->status === 'in_progress') bg-blue-500 shadow-blue-500/20 @elseif($complaint->status === 'resolved') bg-green-500 shadow-green-500/20 @else bg-red-500 shadow-red-500/20 @endif">
                             {{ $complaint->status }}
                         </span>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-6 bg-gray-50/50 p-4 rounded-2xl">
                         <div>
-                            <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Submitter</p>
-                            <p class="text-xs font-bold text-[#163a24]">{{ $complaint->user->name }}</p>
+                            <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Submitter</p>
+                            <p class="text-xs font-black text-[#163a24] truncate">{{ $complaint->user->name }}</p>
                         </div>
                         <div>
-                            <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Assigned To</p>
-                            <p class="text-xs font-bold text-primary">{{ $complaint->assignedTo ? $complaint->assignedTo->name : 'Unassigned' }}</p>
+                            <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Assigned To</p>
+                            @if($complaint->assignedTo)
+                                <p class="text-xs font-black text-primary truncate">{{ $complaint->assignedTo->name }}</p>
+                            @else
+                                <p class="text-[10px] font-black text-red-400 uppercase tracking-tighter italic">Unassigned</p>
+                            @endif
                         </div>
                     </div>
 
-                    <form action="{{ route('superadmin.complaints.assign', $complaint) }}" method="POST" class="pt-4 border-t border-gray-50 flex flex-col gap-3">
+                    <form action="{{ route('superadmin.complaints.assign', $complaint) }}" method="POST" class="space-y-3">
                         @csrf
-                        <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Update Assignment</p>
-                        <div class="flex gap-2">
-                            <select name="admin_id" required class="flex-1 text-xs border-gray-200 rounded-xl py-2 focus:ring-primary">
-                                <option value="">Select Administrator</option>
-                                @foreach($admins as $admin)
-                                    <option value="{{ $admin->id }}" {{ $complaint->assigned_to == $admin->id ? 'selected' : '' }}>{{ $admin->name }}</option>
-                                @endforeach
-                            </select>
-                            <button type="submit" class="px-4 py-2 bg-primary text-white rounded-xl shadow-md">
-                                <i class="fas fa-check"></i>
-                            </button>
+                        <div class="flex flex-col gap-3">
+                            <label class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Update Assignment</label>
+                            <div class="flex gap-2">
+                                <select name="admin_id" required class="flex-1 text-xs font-bold border-gray-100 bg-gray-50 rounded-xl py-3 px-4 focus:ring-primary">
+                                    <option value="">Select Administrator</option>
+                                    @foreach($admins as $admin)
+                                        <option value="{{ $admin->id }}" {{ $complaint->assigned_to == $admin->id ? 'selected' : '' }}>{{ $admin->name }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="w-12 h-12 bg-primary text-white rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center transition-transform active:scale-90">
+                                    <i class="fas fa-user-plus text-xs"></i>
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
             @empty
-                <div class="p-10 text-center text-gray-400 italic">No complaints found.</div>
+                <div class="p-16 text-center text-gray-400 font-black uppercase tracking-widest text-xs italic">No complaints found.</div>
             @endforelse
         </div>
     </div>

@@ -34,12 +34,12 @@ class ComplaintModerationController extends Controller
         }
 
         if ($course !== 'all') {
-            $query->whereHas('user', function($q) use ($course) {
-                $q->where('course', $course);
-            });
+            $query->join('users', 'complaints.user_id', '=', 'users.id')
+                ->where('users.course', $course)
+                ->select('complaints.*'); // Avoid column conflicts
         }
         
-        $complaints = $query->orderBy('created_at', 'desc')->paginate(20);
+        $complaints = $query->orderBy('complaints.created_at', 'desc')->paginate(20);
         
         return view('dashboard.admin.complaints.index', compact('complaints', 'status', 'course'));
     }

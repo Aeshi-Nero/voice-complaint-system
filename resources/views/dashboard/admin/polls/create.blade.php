@@ -12,23 +12,23 @@
 
     <form action="{{ route('admin.polls.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <div class="flex flex-col lg:flex-row gap-10">
+        <div class="flex flex-col lg:flex-row gap-8 md:gap-10">
             <!-- Form Canvas -->
-            <div class="flex-1 bg-white p-10 rounded-[2.5rem] shadow-xl border border-[#163a24]/5">
-                <div class="space-y-10">
+            <div class="flex-1 bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[2.5rem] shadow-xl border border-[#163a24]/5">
+                <div class="space-y-8 md:space-y-10">
                     <!-- Title & Objective -->
-                    <section class="space-y-8">
+                    <section class="space-y-6 md:space-y-8">
                         <div class="space-y-2">
                             <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-[#163a24]/60 ml-1">Poll Title</label>
                             <input name="title" value="{{ old('title') }}" required
-                                   class="w-full px-0 py-4 border-b-2 border-gray-100 bg-transparent focus:border-[#f3bc3e] focus:ring-0 text-2xl font-black text-[#163a24] transition-all placeholder-gray-200" 
+                                   class="w-full px-0 py-3 md:py-4 border-b-2 border-gray-100 bg-transparent focus:border-[#f3bc3e] focus:ring-0 text-xl md:text-2xl font-black text-[#163a24] transition-all placeholder-gray-200" 
                                    placeholder="e.g., Campus Library Hours Extension" type="text"/>
                             @error('title') <p class="text-red-500 text-[10px] font-black mt-2 uppercase">{{ $message }}</p> @enderror
                         </div>
                         <div class="space-y-2">
                             <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-[#163a24]/60 ml-1">Description/Objective</label>
                             <textarea name="description" required rows="4"
-                                      class="w-full p-6 rounded-3xl bg-[#fef9e1] border-none focus:ring-2 focus:ring-[#f3bc3e] font-bold text-[#163a24] leading-relaxed placeholder-[#163a24]/20 resize-none" 
+                                      class="w-full p-5 md:p-6 rounded-[1.5rem] md:rounded-3xl bg-[#fef9e1] border-none focus:ring-2 focus:ring-[#f3bc3e] font-bold text-[#163a24] leading-relaxed placeholder-[#163a24]/20 resize-none text-sm md:text-base" 
                                       placeholder="Explain the purpose of this poll and how the results will be used...">{{ old('description') }}</textarea>
                             @error('description') <p class="text-red-500 text-[10px] font-black mt-2 uppercase">{{ $message }}</p> @enderror
                         </div>
@@ -51,22 +51,23 @@
                     }" class="space-y-6">
                         <div class="flex justify-between items-center mb-4">
                             <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-[#163a24]/60 ml-1">Poll Options</label>
-                            <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Min. 2 options required</span>
+                            <span class="text-[9px] md:text-[10px] text-gray-400 font-black uppercase tracking-widest">Min. 2 options</span>
                         </div>
                         
-                        <div class="space-y-6">
+                        <div class="space-y-4 md:space-y-6">
                             <template x-for="(i, index) in optionsCount" :key="index">
-                                <div class="space-y-3 p-6 bg-[#fef9e1] rounded-[2rem] border border-[#163a24]/5 group relative">
-                                    <div class="flex items-center gap-4">
-                                        <span class="text-[10px] font-black text-[#163a24]/40" x-text="String(index + 1).padStart(2, '0')"></span>
+                                <div class="space-y-3 p-5 md:p-6 bg-[#fef9e1] rounded-[1.5rem] md:rounded-[2rem] border border-[#163a24]/5 group relative">
+                                    <div class="flex items-center gap-3 md:gap-4">
+                                        <span class="text-[9px] md:text-[10px] font-black text-[#163a24]/40" x-text="String(index + 1).padStart(2, '0')"></span>
                                         <input :name="'options[' + index + ']'" required
-                                               class="flex-1 bg-transparent border-none focus:ring-0 font-black text-[#163a24] placeholder-[#163a24]/20" 
+                                               class="flex-1 bg-transparent border-none focus:ring-0 font-black text-[#163a24] placeholder-[#163a24]/20 text-sm md:text-base" 
                                                placeholder="Enter option text..." type="text"/>
                                         <button type="button" @click="if(optionsCount > 2) { optionsCount--; previews.splice(index, 1); }" 
                                                 class="p-2 text-red-300 hover:text-red-500 transition-colors">
-                                            <i class="fas fa-times"></i>
+                                            <i class="fas fa-times text-xs"></i>
                                         </button>
                                     </div>
+...
                                     
                                     <div class="flex flex-col gap-4 pt-4 border-t border-[#163a24]/5">
                                         <div class="flex items-center gap-4">

@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::table('complaint_messages', function (Blueprint $table) {
             $table->json('images')->nullable()->after('message');
+            $table->string('audio_path')->nullable()->after('images');
         });
 
         Schema::table('users', function (Blueprint $table) {
@@ -20,7 +21,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('complaint_messages', function (Blueprint $table) {
-            $table->dropColumn('images');
+            $table->dropColumn(['images', 'audio_path']);
         });
 
         Schema::table('users', function (Blueprint $table) {

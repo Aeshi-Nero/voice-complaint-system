@@ -22,7 +22,7 @@
 
     <!-- Form Card -->
     <div class="bg-white rounded-[2.5rem] shadow-xl p-10 lg:p-16 border border-[#163a24]/5">
-        <form method="POST" action="{{ route('user.complaints.update', $complaint) }}" enctype="multipart/form-data" class="space-y-10">
+        <form method="POST" action="{{ route('user.complaints.update', $complaint) }}" enctype="multipart/form-data" class="space-y-10" @submit="submitForm($event)">
             @csrf
             @method('PUT')
             
@@ -96,20 +96,22 @@
                                     :class="isRecording ? 'bg-red-500 text-white' : 'bg-[#f3bc3e] text-[#163a24]'"
                                     class="flex items-center gap-2 px-4 py-2 rounded-xl transition-all active:scale-95 shadow-lg shadow-black/5">
                                 <i class="fas" :class="isRecording ? 'fa-stop animate-pulse' : 'fa-microphone'"></i>
-                                <span class="text-[10px] font-black uppercase tracking-widest" x-text="isRecording ? formatTime(recordingTime) : (audioBlob ? 'Rec. Ready' : 'Voice Rec.')"></span>
+                                <span class="text-[10px] font-black uppercase tracking-widest" x-text="isRecording ? formatTime(recordingTime) : (audioFiles.length > 0 ? audioFiles.length + ' Recorded' : 'Voice Rec.')"></span>
                             </button>
 
-                            <!-- Play/Delete New Recording -->
-                            <template x-if="audioBlob && !isRecording">
-                                <div class="flex items-center gap-2 border-l border-[#163a24]/10 pl-4 ml-2">
-                                    <button type="button" @click="playRecording()" class="w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center hover:bg-blue-600 transition shadow-md">
-                                        <i class="fas" :class="isPlaying ? 'fa-pause' : 'fa-play'"></i>
-                                    </button>
-                                    <button type="button" @click="deleteRecording()" class="w-8 h-8 bg-red-50 text-red-500 rounded-lg flex items-center justify-center hover:bg-red-100 transition border border-red-100">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </div>
-                            </template>
+                            <!-- Play/Delete New Recordings -->
+                            <div class="flex flex-wrap gap-2 border-l border-[#163a24]/10 pl-4 ml-2">
+                                <template x-for="(audio, index) in audioPreviews" :key="index">
+                                    <div class="flex items-center gap-2 bg-white/30 p-1 rounded-lg">
+                                        <button type="button" @click="playRecording(index)" class="w-8 h-8 bg-blue-500 text-white rounded-lg flex items-center justify-center hover:bg-blue-600 transition shadow-md">
+                                            <i class="fas" :class="activePlayer === audio.audio ? 'fa-pause' : 'fa-play'"></i>
+                                        </button>
+                                        <button type="button" @click="deleteRecording(index)" class="w-8 h-8 bg-red-50 text-red-500 rounded-lg flex items-center justify-center hover:bg-red-100 transition border border-red-100">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
 
                         <div class="flex items-center gap-3 text-gray-400">
@@ -146,14 +148,24 @@
                 </div>
                 @endif
 
-                @if($complaint->audio_path)
-                <div class="p-6 bg-[#f3bc3e]/5 rounded-3xl border-2 border-dashed border-[#f3bc3e]/20 flex flex-col justify-center">
-                    <p class="text-[10px] font-black text-[#163a24]/40 uppercase tracking-widest mb-3 flex items-center gap-2">
+                @if($complaint->audio_paths)
+                <div class="p-6 bg-[#f3bc3e]/5 rounded-3xl border-2 border-dashed border-[#f3bc3e]/20 flex flex-col justify-center space-y-4">
+                    <p class="text-[10px] font-black text-[#163a24]/40 uppercase tracking-widest mb-1 flex items-center gap-2">
                         <i class="fas fa-volume-up"></i> Existing Audio
                     </p>
-                    <audio controls class="w-full h-10 filter sepia brightness-90">
-                        <source src="{{ asset('storage/' . $complaint->audio_path) }}" type="audio/mpeg">
-                    </audio>
+                    @foreach($complaint->audio_paths as $index => $path)
+                    <div class="flex items-center gap-3">
+                        <audio controls class="flex-1 h-10 filter sepia brightness-90">
+                            <source src="{{ asset('storage/' . $path) }}" type="audio/webm">
+                        </audio>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" name="deleted_audio[]" value="{{ $path }}" id="del_audio_{{ $index }}" class="hidden peer">
+                            <label for="del_audio_{{ $index }}" class="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center cursor-pointer hover:bg-red-500 hover:text-white transition-all peer-checked:bg-red-500 peer-checked:text-white">
+                                <i class="fas fa-trash-alt text-xs"></i>
+                            </label>
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
                 @endif
             </div>
@@ -179,13 +191,13 @@ function complaintEditor() {
     return {
         imageCount: 0,
         isRecording: false,
-        isPlaying: false,
         recordingTime: 0,
-        audioBlob: null,
+        audioFiles: [],
+        audioPreviews: [],
         mediaRecorder: null,
         audioChunks: [],
         timer: null,
-        audioPlayer: new Audio(),
+        activePlayer: null,
 
         formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
@@ -204,8 +216,14 @@ function complaintEditor() {
                 };
 
                 this.mediaRecorder.onstop = () => {
-                    this.audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
-                    this.attachAudioToForm();
+                    const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const file = new File([audioBlob], `recording_${Date.now()}.webm`, { type: 'audio/webm' });
+                    const audioObj = new Audio(audioUrl);
+                    audioObj.onended = () => { if(this.activePlayer === audioObj) this.activePlayer = null; };
+
+                    this.audioFiles.push(file);
+                    this.audioPreviews.push({ url: audioUrl, audio: audioObj });
                 };
 
                 this.mediaRecorder.start();
@@ -226,29 +244,64 @@ function complaintEditor() {
             clearInterval(this.timer);
         },
 
-        playRecording() {
-            if (this.isPlaying) {
-                this.audioPlayer.pause();
-                this.isPlaying = false;
+        playRecording(index) {
+            const preview = this.audioPreviews[index];
+            if (!preview) return;
+
+            if (this.activePlayer && this.activePlayer !== preview.audio) {
+                this.activePlayer.pause();
+                this.activePlayer.currentTime = 0;
+            }
+
+            if (preview.audio.paused) {
+                preview.audio.play();
+                this.activePlayer = preview.audio;
             } else {
-                const url = URL.createObjectURL(this.audioBlob);
-                this.audioPlayer.src = url;
-                this.audioPlayer.play();
-                this.isPlaying = true;
-                this.audioPlayer.onended = () => { this.isPlaying = false; };
+                preview.audio.pause();
+                this.activePlayer = null;
             }
         },
 
-        deleteRecording() {
-            this.audioBlob = null;
-            document.getElementById('audioInput').value = '';
+        deleteRecording(index) {
+            const preview = this.audioPreviews[index];
+            if (preview) {
+                preview.audio.pause();
+                if (this.activePlayer === preview.audio) this.activePlayer = null;
+                URL.revokeObjectURL(preview.url);
+            }
+            this.audioFiles.splice(index, 1);
+            this.audioPreviews.splice(index, 1);
         },
 
-        attachAudioToForm() {
-            const file = new File([this.audioBlob], "recording.webm", { type: 'audio/webm' });
-            const container = new DataTransfer();
-            container.items.add(file);
-            document.getElementById('audioInput').files = container.files;
+        async submitForm(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            this.audioFiles.forEach(file => {
+                formData.append('audio[]', file);
+            });
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                if (response.ok) {
+                    window.location.href = "{{ route('user.complaints.index') }}";
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Error updating complaint');
+                }
+            } catch (err) {
+                console.error('Error submitting form:', err);
+                alert('An error occurred. Please try again.');
+            }
         }
     }
 }

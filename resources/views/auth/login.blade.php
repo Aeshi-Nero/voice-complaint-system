@@ -4,37 +4,37 @@
 <!-- Add Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@900&display=swap" rel="stylesheet">
 
-<div x-data="loginManager()" class="min-h-screen bg-[#fef9e1] flex flex-col items-center justify-center py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden -m-4 lg:-m-10">
+<div x-data="loginManager()" class="min-h-screen bg-[#fef9e1] flex flex-col items-center justify-center py-6 md:py-12 px-4 relative overflow-hidden -m-4 sm:m-0">
     
     <!-- Top Logo Section -->
-    <div class="mb-12 text-center px-4 max-w-2xl">
-        <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-full flex items-center justify-center shadow-2xl mx-auto mb-8 overflow-hidden border-4 border-white bg-white p-4">
+    <div class="mb-8 md:mb-12 text-center px-4 max-w-2xl">
+        <div class="w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center shadow-2xl mx-auto mb-6 md:mb-8 overflow-hidden border-4 border-white bg-white p-4">
             @if($logoBase64)
                 <img src="data:image/png;base64,{{ $logoBase64 }}" alt="Aldersgate Logo" class="w-full h-full object-contain">
             @else
-                <i class="fas fa-university text-[#163a24] text-4xl"></i>
+                <i class="fas fa-university text-[#163a24] text-3xl"></i>
             @endif
         </div>
         
         <div class="space-y-2">
-            <h1 class="text-4xl sm:text-6xl font-black text-[#163a24] tracking-[0.5em] uppercase leading-none font-['Poppins'] drop-shadow-md">V.O.I.C.E</h1>
-            <div class="flex items-center justify-center gap-6 pt-2">
-                <div class="h-0.5 w-16 bg-[#163a24]/10 rounded-full"></div>
-                <p class="text-[10px] sm:text-xs font-black text-[#163a24] tracking-[0.25em] uppercase opacity-60 leading-relaxed italic">
-                    Virtual Outlet for Institutional Complaint Engagement
+            <h1 class="text-3xl md:text-5xl font-black text-[#163a24] tracking-[0.3em] md:tracking-[0.5em] uppercase leading-none font-['Poppins'] drop-shadow-md">V.O.I.C.E</h1>
+            <div class="flex items-center justify-center gap-4 md:gap-6 pt-1 md:pt-2">
+                <div class="h-px w-10 md:w-16 bg-[#163a24]/10 rounded-full"></div>
+                <p class="text-[8px] md:text-xs font-black text-[#163a24] tracking-[0.2em] md:tracking-[0.25em] uppercase opacity-60 leading-relaxed italic">
+                    Institutional Feedback Terminal
                 </p>
-                <div class="h-0.5 w-16 bg-[#163a24]/10 rounded-full"></div>
+                <div class="h-px w-10 md:w-16 bg-[#163a24]/10 rounded-full"></div>
             </div>
         </div>
     </div>
 
     <div class="relative max-w-md w-full">
         <!-- Main Card -->
-        <div class="bg-[#163a24] rounded-[4rem] shadow-[0_50px_100px_rgba(22,58,36,0.5)] p-8 sm:p-14 text-left relative border-4 border-white/5">
+        <div class="bg-[#163a24] rounded-[2.5rem] md:rounded-[4rem] shadow-2xl p-8 md:p-12 text-left relative border-4 border-white/5">
             
-            <div class="mb-12 text-center">
-                <h2 class="text-4xl sm:text-5xl font-black text-white tracking-tightest mb-2 italic">Welcome</h2>
-                <p class="text-[#9db6a1] text-xs sm:text-sm font-bold uppercase tracking-widest opacity-80">Institutional Access Terminal</p>
+            <div class="mb-10 text-center">
+                <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight mb-2">Welcome</h2>
+                <p class="text-[#9db6a1] text-[10px] md:text-xs font-bold uppercase tracking-widest opacity-80">Please insert credentials</p>
             </div>
 
             <!-- Forgot Password Module (Green Overlay style) -->

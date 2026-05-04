@@ -1,23 +1,24 @@
-@extends("layouts.app")
+@extends(auth()->user()->role === 'superadmin' ? 'layouts.superadmin' : 'layouts.app')
 
 @section("content")
 <div class="max-w-7xl mx-auto pb-20">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+    <div class="flex flex-col gap-8 mb-10">
         <div>
             <h2 class="text-3xl lg:text-5xl font-black text-[#163a24] tracking-tight uppercase mb-2">User Registry</h2>
-            <p class="text-gray-500 font-medium text-sm lg:text-base italic">Institutional directory, activity monitoring, and access control.</p>
+            <p class="text-gray-500 font-medium text-sm lg:text-base italic">Institutional directory and activity monitoring.</p>
         </div>
         
-        <div class="bg-[#163a24] rounded-3xl shadow-xl p-6 text-white overflow-hidden relative group max-w-xl w-full">
-            <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div class="text-center sm:text-left">
-                    <h3 class="text-lg font-black uppercase tracking-tight">Bulk Import</h3>
+        <div class="bg-[#163a24] rounded-[2rem] md:rounded-3xl shadow-xl p-6 md:p-8 text-white overflow-hidden relative group w-full">
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="text-center md:text-left">
+                    <h3 class="text-lg md:text-xl font-black uppercase tracking-tight">Bulk Import</h3>
                     <p class="text-white/40 text-[10px] uppercase font-bold tracking-widest mt-1">Excel, CSV, or JSON</p>
                 </div>
-                <form action="{{ route('admin.users.import') }}" method="POST" enctype="multipart/form-data" class="flex gap-2">
+                <form action="{{ route('admin.users.import') }}" method="POST" enctype="multipart/form-data" class="flex gap-2 w-full md:w-auto">
                     @csrf
-                    <label class="bg-white/10 hover:bg-white/20 border-2 border-dashed border-white/30 rounded-2xl p-4 cursor-pointer transition-all flex items-center justify-center gap-2 group">
-                        <i class="fas fa-file-upload text-yellow-400 group-hover:scale-110 transition-transform"></i>
+                    <label class="w-full md:w-auto bg-white/10 hover:bg-white/20 border-2 border-dashed border-white/30 rounded-2xl p-5 cursor-pointer transition-all flex items-center justify-center gap-3 group">
+                        <i class="fas fa-file-upload text-yellow-400 text-xl group-hover:scale-110 transition-transform"></i>
+                        <span class="text-[10px] font-black uppercase tracking-widest md:hidden">Choose File</span>
                         <input type="file" name="file" class="hidden" accept=".csv,.json" onchange="this.form.submit()">
                     </label>
                 </form>
@@ -27,83 +28,133 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <div class="bg-white rounded-[2.5rem] shadow-sm p-8 border-4 border-white group hover:shadow-xl transition-all">
-            <div class="flex items-center justify-between mb-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        <div class="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-sm p-8 border-4 border-white group hover:shadow-xl transition-all">
+            <div class="flex items-center justify-between mb-6">
                 <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest">Active Now</p>
                 <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-green-500 shadow-inner">
                     <i class="fas fa-signal"></i>
                 </div>
             </div>
             <div class="flex items-end gap-3">
-                <p class="text-4xl font-black text-[#163a24]">{{ $onlineUsersCount }}</p>
-                <span class="text-[10px] font-bold text-green-500 uppercase mb-1">Live Session</span>
+                <p class="text-4xl md:text-5xl font-black text-[#163a24]">{{ $onlineUsersCount }}</p>
+                <span class="text-[10px] font-bold text-green-500 uppercase mb-1.5">Live Session</span>
             </div>
         </div>
 
-        <div class="bg-white rounded-[2.5rem] shadow-sm p-8 border-4 border-white group hover:shadow-xl transition-all">
-            <div class="flex items-center justify-between mb-4">
+        <div class="bg-white rounded-[2rem] md:rounded-[2.5rem] shadow-sm p-8 border-4 border-white group hover:shadow-xl transition-all">
+            <div class="flex items-center justify-between mb-6">
                 <p class="text-gray-400 text-[10px] font-black uppercase tracking-widest">Restricted</p>
                 <div class="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-500 shadow-inner">
                     <i class="fas fa-user-slash"></i>
                 </div>
             </div>
             <div class="flex items-end gap-3">
-                <p class="text-4xl font-black text-red-600">{{ $bannedUsersCount }}</p>
-                <span class="text-[10px] font-bold text-red-400 uppercase mb-1">Accounts</span>
+                <p class="text-4xl md:text-5xl font-black text-red-600">{{ $bannedUsersCount }}</p>
+                <span class="text-[10px] font-bold text-red-400 uppercase mb-1.5">Accounts</span>
             </div>
         </div>
 
-        <div class="bg-[#163a24] rounded-[2.5rem] shadow-xl p-8 border-4 border-white/5 text-white">
-            <div class="flex items-center justify-between mb-4">
+        <div class="bg-[#163a24] rounded-[2rem] md:rounded-[2.5rem] shadow-xl p-8 border-4 border-white/5 text-white sm:col-span-2 lg:col-span-1">
+            <div class="flex items-center justify-between mb-6">
                 <p class="text-white/40 text-[10px] font-black uppercase tracking-widest">Global Reach</p>
                 <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-[#f3bc3e]">
                     <i class="fas fa-globe"></i>
                 </div>
             </div>
             <div class="flex items-end gap-3">
-                <p class="text-4xl font-black">{{ $usersPerDepartment->count() }}</p>
-                <span class="text-[10px] font-bold text-white/40 uppercase mb-1">Departments</span>
+                <p class="text-4xl md:text-5xl font-black">{{ $usersPerDepartment->count() }}</p>
+                <span class="text-[10px] font-bold text-white/40 uppercase mb-1.5">Departments</span>
             </div>
         </div>
     </div>
 
     <!-- Filters & Search -->
-    <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100 mb-8">
-        <form action="{{ route('admin.users.index') }}" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="md:col-span-2 relative">
+    <div class="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-sm border border-gray-100 mb-8">
+        <form action="{{ route('admin.users.index') }}" method="GET" class="flex flex-col lg:flex-row gap-4">
+            <div class="flex-1 relative">
                 <span class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
                     <i class="fas fa-search"></i>
                 </span>
-                <input type="text" name="search" value="{{ $search }}" placeholder="Search by Name, ID, or Email..." 
-                       class="w-full pl-14 pr-6 py-4 bg-gray-50 border-none rounded-2xl font-bold text-[#163a24] focus:ring-2 focus:ring-[#00a651] outline-none">
+                <input type="text" name="search" value="{{ $search }}" placeholder="Search users..." 
+                       class="w-full pl-14 pr-6 py-4 bg-gray-50 border-none rounded-2xl font-bold text-[#163a24] focus:ring-2 focus:ring-[#00a651] outline-none text-sm md:text-base">
             </div>
             
-            <select name="department" class="px-6 py-4 bg-gray-50 border-none rounded-2xl font-bold text-[#163a24] focus:ring-2 focus:ring-[#00a651] outline-none appearance-none">
-                <option value="">All Departments</option>
-                @foreach($usersPerDepartment as $dept)
-                    <option value="{{ $dept->course }}" {{ $department === $dept->course ? 'selected' : '' }}>{{ $dept->course ?: 'Unknown' }}</option>
-                @endforeach
-            </select>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:w-1/2">
+                <select name="department" class="px-6 py-4 bg-gray-50 border-none rounded-2xl font-bold text-[#163a24] focus:ring-2 focus:ring-[#00a651] outline-none appearance-none text-sm cursor-pointer">
+                    <option value="">All Departments</option>
+                    @foreach($usersPerDepartment as $dept)
+                        <option value="{{ $dept->course }}" {{ $department === $dept->course ? 'selected' : '' }}>{{ $dept->course ?: 'Unknown' }}</option>
+                    @endforeach
+                </select>
 
-            <select name="status" class="px-6 py-4 bg-gray-50 border-none rounded-2xl font-bold text-[#163a24] focus:ring-2 focus:ring-[#00a651] outline-none appearance-none">
-                <option value="all" {{ $status === 'all' ? 'selected' : '' }}>All Status</option>
-                <option value="active" {{ $status === 'active' ? 'selected' : '' }}>Active Only</option>
-                <option value="banned" {{ $status === 'banned' ? 'selected' : '' }}>Restricted Only</option>
-            </select>
+                <select name="status" class="px-6 py-4 bg-gray-50 border-none rounded-2xl font-bold text-[#163a24] focus:ring-2 focus:ring-[#00a651] outline-none appearance-none text-sm cursor-pointer">
+                    <option value="all" {{ $status === 'all' ? 'selected' : '' }}>All Status</option>
+                    <option value="active" {{ $status === 'active' ? 'selected' : '' }}>Active Only</option>
+                    <option value="banned" {{ $status === 'banned' ? 'selected' : '' }}>Restricted Only</option>
+                </select>
+            </div>
         </form>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
         <!-- Main User List -->
         <div class="lg:col-span-2">
-            <div class="bg-white rounded-[3rem] shadow-sm border border-outline-variant/10 overflow-hidden">
-                <div class="p-8 border-b border-gray-50 flex justify-between items-center">
-                    <h3 class="text-xl font-black text-[#163a24] uppercase tracking-tight">System Users</h3>
-                    <span class="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">{{ $allUsers->total() }} Total</span>
+            <div class="bg-white rounded-[2rem] md:rounded-[3rem] shadow-sm border border-outline-variant/10 overflow-hidden">
+                <div class="p-6 md:p-8 border-b border-gray-50 flex justify-between items-center">
+                    <h3 class="text-lg md:text-xl font-black text-[#163a24] uppercase tracking-tight">System Users</h3>
+                    <span class="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">{{ $allUsers->total() }} Records</span>
                 </div>
                 
-                <div class="overflow-x-auto">
+                <!-- Mobile User Cards -->
+                <div class="lg:hidden divide-y divide-gray-50">
+                    @forelse($allUsers as $user)
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-2xl bg-[#163a24]/5 flex items-center justify-center font-black text-[#163a24] text-sm overflow-hidden">
+                                    @if($user->profile_image)
+                                        <img src="{{ asset('storage/' . $user->profile_image) }}" class="w-full h-full object-cover">
+                                    @else
+                                        {{ substr($user->name, 0, 2) }}
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="text-sm font-black text-[#163a24] uppercase">{{ $user->name }}</p>
+                                    <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{{ $user->course ?: 'General' }}</p>
+                                </div>
+                            </div>
+                            
+                            @if($user->is_blocked || ($user->banned_until && $user->banned_until->isFuture()))
+                                <form action="{{ route('admin.users.unblock', $user) }}" method="POST">
+                                    @csrf
+                                    <button class="w-10 h-10 bg-[#00a651] text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                                        <i class="fas fa-undo-alt text-xs"></i>
+                                    </button>
+                                </form>
+                            @else
+                                <form action="{{ route('admin.users.block', $user) }}" method="POST" onsubmit="return confirm('Restrict access for this user?')">
+                                    @csrf
+                                    <button class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-user-slash text-xs"></i>
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                        <div class="flex justify-between items-center pl-16">
+                            <div class="space-y-0.5">
+                                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">{{ $user->id_number }}</p>
+                                <p class="text-[9px] text-gray-300 uppercase tracking-tighter">{{ $user->email }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    @empty
+                    <div class="p-20 text-center text-gray-300 font-bold italic uppercase tracking-widest text-xs">No matching users</div>
+                    @endforelse
+                </div>
+
+                <!-- Desktop Table View -->
+                <div class="hidden lg:block overflow-x-auto">
                     <table class="w-full text-left">
                         <thead class="bg-gray-50/50">
                             <tr>
@@ -117,9 +168,9 @@
                             <tr class="hover:bg-gray-50/30 transition group">
                                 <td class="px-8 py-6">
                                     <div class="flex items-center gap-4">
-                                        <div class="w-12 h-12 rounded-2xl bg-[#163a24]/5 flex items-center justify-center font-black text-[#163a24] text-sm shadow-inner group-hover:bg-[#163a24] group-hover:text-white transition-all">
+                                        <div class="w-12 h-12 rounded-2xl bg-[#163a24]/5 flex items-center justify-center font-black text-[#163a24] text-sm shadow-inner group-hover:bg-[#163a24] group-hover:text-white transition-all overflow-hidden">
                                             @if($user->profile_image)
-                                                <img src="{{ asset('storage/' . $user->profile_image) }}" class="w-full h-full object-cover rounded-2xl">
+                                                <img src="{{ asset('storage/' . $user->profile_image) }}" class="w-full h-full object-cover">
                                             @else
                                                 {{ substr($user->name, 0, 2) }}
                                             @endif

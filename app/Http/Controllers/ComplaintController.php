@@ -25,7 +25,7 @@ class ComplaintController extends Controller
         $user->last_messages_viewed_at = now();
         $user->save();
 
-        $query = $user->complaints();
+        $query = $user->complaints()->with('messages'); // Eager load to avoid N+1 if needed
 
         if ($request->has('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
@@ -51,20 +51,29 @@ class ComplaintController extends Controller
         }
 
         $complaints = $query->paginate(10)->withQueryString();
-        $totalCount = Auth::user()->complaints()->count();
+        $totalCount = $user->complaints()->count();
         
         return view("dashboard.user.complaints-index", compact("complaints", "totalCount"));
     }
 
     public function dashboard()
     {
-        $complaints = Auth::user()->complaints()->latest()->take(4)->get();
+        $user = Auth::user();
+        $complaints = $user->complaints()->latest()->take(4)->get();
+        
+        $statsRaw = $user->complaints()
+            ->select('status', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
+            ->groupBy('status')
+            ->get()
+            ->pluck('count', 'status')
+            ->toArray();
+
         $stats = [
-            "total" => Auth::user()->complaints()->count(),
-            "pending" => Auth::user()->complaints()->where("status", "pending")->count(),
-            "in_progress" => Auth::user()->complaints()->where("status", "in_progress")->count(),
-            "resolved" => Auth::user()->complaints()->where("status", "resolved")->count(),
-            "rejected" => Auth::user()->complaints()->where("status", "rejected")->count(),
+            "total" => array_sum($statsRaw),
+            "pending" => $statsRaw['pending'] ?? 0,
+            "in_progress" => $statsRaw['in_progress'] ?? 0,
+            "resolved" => $statsRaw['resolved'] ?? 0,
+            "rejected" => $statsRaw['rejected'] ?? 0,
         ];
         
         return view("dashboard.user.dashboard", compact("complaints", "stats"));
@@ -119,6 +128,9 @@ class ComplaintController extends Controller
     public function store(Request $request)
     {
         if (!Auth::user()->canSubmitComplaint()) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['message' => 'You have reached your submission limit for today (6).'], 403);
+            }
             return redirect()->route("user.dashboard")->with("error", "You have reached your submission limit for today (6).");
         }
 
@@ -127,7 +139,8 @@ class ComplaintController extends Controller
             "title" => "required|string|max:255",
             "description" => "required|string",
             "images.*" => "nullable|image|mimes:jpeg,png,jpg,gif|max:5120", // 5MB per image
-            "audio" => "nullable|mimes:webm,mp3,wav,ogg|max:10240", // 10MB
+            "audio" => "nullable", 
+            "audio.*" => "nullable|max:10240", // 10MB per audio file
         ]);
 
         // Check for profanity
@@ -142,6 +155,11 @@ class ComplaintController extends Controller
                 $user->profanity_count = 0; // Reset after ban
                 $user->save();
                 
+                if ($request->ajax() || $request->wantsJson()) {
+                    Auth::logout();
+                    return response()->json(['message' => 'Your account has been banned for 24 hours due to multiple violations of our community standards (Profanity).'], 403);
+                }
+
                 Auth::logout();
                 return redirect()->route('login')->with('error', 'Your account has been banned for 24 hours due to multiple violations of our community standards (Profanity).');
             }
@@ -153,8 +171,14 @@ class ComplaintController extends Controller
                 ? "One more violation and you will be banned for 24 hours." 
                 : "{$remainingStrikes} more violations until you are banned for 24 hours.";
             
+            $errorMessage = "Your complaint contains inappropriate language. Strike {$user->profanity_count}/3. {$strikeMessage}";
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['message' => $errorMessage], 422);
+            }
+
             return back()->withErrors([
-                "profanity" => "Your complaint contains inappropriate language. Strike {$user->profanity_count}/3. {$strikeMessage}"
+                "profanity" => $errorMessage
             ])->withInput();
         }
 
@@ -165,29 +189,48 @@ class ComplaintController extends Controller
             }
         }
 
-        $audioPath = null;
+        $audioPaths = [];
         if ($request->hasFile("audio")) {
-            $audioPath = $request->file("audio")->store("complaints/audio", "public");
+            $audioFiles = is_array($request->file("audio")) ? $request->file("audio") : [$request->file("audio")];
+            foreach ($audioFiles as $audio) {
+                $audioPaths[] = $audio->store("complaints/audio", "public");
+            }
         }
 
-        $complaint = Complaint::create([
-            "user_id" => Auth::id(),
-            "complaint_number" => $this->complaintNumberService->generate(),
-            "category" => $request->category,
-            "priority" => "Medium", // Default priority
-            "title" => $request->title,
-            "description" => $request->description,
-            "audio_path" => $audioPath,
-            "image_path" => $imagePaths[0] ?? null,
-            "extra_images" => count($imagePaths) > 1 ? array_slice($imagePaths, 1) : null,
-            "status" => "pending",
-            "submitted_at" => now(),
-        ]);
+        try {
+            $complaint = Complaint::create([
+                "user_id" => Auth::id(),
+                "complaint_number" => $this->complaintNumberService->generate(),
+                "category" => $request->category,
+                "priority" => "Medium", // Default priority
+                "title" => $request->title,
+                "description" => $request->description,
+                "audio_paths" => !empty($audioPaths) ? $audioPaths : null,
+                "image_path" => $imagePaths[0] ?? null,
+                "extra_images" => count($imagePaths) > 1 ? array_slice($imagePaths, 1) : null,
+                "status" => "pending",
+                "submitted_at" => now(),
+            ]);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Complaint creation failed: " . $e->getMessage());
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['message' => 'Failed to save complaint. Please ensure the database is up to date by visiting /fix-db'], 500);
+            }
+            return back()->with("error", "Failed to save complaint. Please try again later.")->withInput();
+        }
 
         // Increment user's daily count
         $user = Auth::user();
         $user->complaints_today += 1;
         $user->save();
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Complaint #{$complaint->complaint_number} submitted successfully!",
+                'redirect' => route("user.dashboard")
+            ]);
+        }
 
         return redirect()->route("user.dashboard")->with("success", "Complaint #{$complaint->complaint_number} submitted successfully!");
     }
@@ -221,7 +264,7 @@ class ComplaintController extends Controller
             "title" => "required|string|max:255",
             "description" => "required|string",
             "images.*" => "nullable|image|mimes:jpeg,png,jpg,gif|max:5120",
-            "audio" => "nullable|mimes:webm,mp3,wav,ogg,bin|max:10240",
+            "audio" => "nullable|max:10240", // Flexible audio recorded blobs
         ]);
 
         // Check for profanity
@@ -232,8 +275,14 @@ class ComplaintController extends Controller
             $user->profanity_count += 1;
             $user->save();
             
+            $errorMessage = "Your update contains inappropriate language. Strike {$user->profanity_count}/3.";
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json(['message' => $errorMessage], 422);
+            }
+
             return back()->withErrors([
-                "profanity" => "Your update contains inappropriate language. Strike {$user->profanity_count}/3."
+                "profanity" => $errorMessage
             ])->withInput();
         }
 
@@ -243,22 +292,67 @@ class ComplaintController extends Controller
             "description" => $request->description,
         ];
 
+        // Handle deletions
+        $deletedImages = $request->deleted_images;
+        if (is_string($deletedImages)) {
+            $deletedImages = json_decode($deletedImages, true) ?? [];
+        }
+        $deletedImages = $deletedImages ?? [];
+
+        $currentImages = $complaint->extra_images ? array_merge([$complaint->image_path], $complaint->extra_images) : ($complaint->image_path ? [$complaint->image_path] : []);
+        
+        // Remove deleted images from the list
+        $remainingImages = array_values(array_filter($currentImages, function($img) use ($deletedImages) {
+            return !in_array($img, $deletedImages);
+        }));
+
+        // Handle audio deletions
+        $deletedAudio = $request->deleted_audio;
+        if (is_string($deletedAudio)) {
+            $deletedAudio = json_decode($deletedAudio, true) ?? [];
+        }
+        $deletedAudio = $deletedAudio ?? [];
+
+        $currentAudio = $complaint->audio_paths ?? [];
+        $remainingAudio = array_values(array_filter($currentAudio, function($audio) use ($deletedAudio) {
+            return !in_array($audio, $deletedAudio);
+        }));
+
+        if ($request->delete_audio) {
+            $remainingAudio = [];
+        }
+
         // Handle new images
         if ($request->hasFile("images")) {
-            $imagePaths = [];
+            $newImagePaths = [];
             foreach ($request->file("images") as $image) {
-                $imagePaths[] = $image->store("complaints/images", "public");
+                $newImagePaths[] = $image->store("complaints/images", "public");
             }
-            $data["image_path"] = $imagePaths[0];
-            $data["extra_images"] = count($imagePaths) > 1 ? array_slice($imagePaths, 1) : null;
+            $remainingImages = array_merge($remainingImages, $newImagePaths);
         }
+
+        // Re-assign images
+        $data["image_path"] = !empty($remainingImages) ? $remainingImages[0] : null;
+        $data["extra_images"] = count($remainingImages) > 1 ? array_slice($remainingImages, 1) : null;
 
         // Handle new audio
         if ($request->hasFile("audio")) {
-            $data["audio_path"] = $request->file("audio")->store("complaints/audio", "public");
+            $audioFiles = is_array($request->file("audio")) ? $request->file("audio") : [$request->file("audio")];
+            foreach ($audioFiles as $audio) {
+                $remainingAudio[] = $audio->store("complaints/audio", "public");
+            }
         }
+        $data["audio_paths"] = !empty($remainingAudio) ? $remainingAudio : null;
 
         $complaint->update($data);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Complaint updated successfully!',
+                'complaint' => $complaint
+            ]);
+        }
 
         return redirect()->route("user.complaints.index")->with("success", "Complaint updated successfully!");
     }

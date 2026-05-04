@@ -142,22 +142,54 @@
 
         <!-- Recent Complaints Registry -->
         <div class="lg:col-span-2 bg-white rounded-[2.5rem] shadow-xl border border-[#163a24]/5 overflow-hidden">
-            <div class="p-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-                <h3 class="text-2xl font-black text-[#163a24]">Recent Complaints</h3>
+            <div class="p-6 md:p-10 flex flex-col gap-6">
+                <h3 class="text-xl md:text-2xl font-black text-[#163a24] uppercase tracking-tight">Recent Complaints</h3>
                 
-                <div class="flex flex-wrap items-center gap-2">
-                    <a href="{{ route('admin.dashboard', ['status' => 'all']) }}" 
-                       class="px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition {{ $status === 'all' ? 'bg-[#112d1c] text-[#f3bc3e]' : 'text-gray-400 hover:text-[#163a24]' }}">All</a>
-                    <a href="{{ route('admin.dashboard', ['status' => 'pending']) }}" 
-                       class="px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition {{ $status === 'pending' ? 'bg-[#112d1c] text-[#f3bc3e]' : 'text-gray-400 hover:text-[#163a24]' }}">Pending</a>
-                    <a href="{{ route('admin.dashboard', ['status' => 'in_progress']) }}" 
-                       class="px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition {{ $status === 'in_progress' ? 'bg-[#112d1c] text-[#f3bc3e]' : 'text-gray-400 hover:text-[#163a24]' }}">In Progress</a>
-                    <a href="{{ route('admin.dashboard', ['status' => 'resolved']) }}" 
-                       class="px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition {{ $status === 'resolved' ? 'bg-[#112d1c] text-[#f3bc3e]' : 'text-gray-400 hover:text-[#163a24]' }}">Resolved</a>
+                <div class="overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide">
+                    <div class="flex items-center gap-2 min-w-max">
+                        <a href="{{ route('admin.dashboard', ['status' => 'all']) }}" 
+                           class="px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ $status === 'all' ? 'bg-[#112d1c] text-[#f3bc3e] shadow-lg' : 'text-gray-400 hover:text-[#163a24] hover:bg-gray-50' }}">All</a>
+                        <a href="{{ route('admin.dashboard', ['status' => 'pending']) }}" 
+                           class="px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ $status === 'pending' ? 'bg-[#112d1c] text-[#f3bc3e] shadow-lg' : 'text-gray-400 hover:text-[#163a24] hover:bg-gray-50' }}">Pending</a>
+                        <a href="{{ route('admin.dashboard', ['status' => 'in_progress']) }}" 
+                           class="px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ $status === 'in_progress' ? 'bg-[#112d1c] text-[#f3bc3e] shadow-lg' : 'text-gray-400 hover:text-[#163a24] hover:bg-gray-50' }}">In Progress</a>
+                        <a href="{{ route('admin.dashboard', ['status' => 'resolved']) }}" 
+                           class="px-5 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition {{ $status === 'resolved' ? 'bg-[#112d1c] text-[#f3bc3e] shadow-lg' : 'text-gray-400 hover:text-[#163a24] hover:bg-gray-50' }}">Resolved</a>
+                    </div>
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
+            <!-- Mobile Card View -->
+            <div class="lg:hidden divide-y divide-gray-50">
+                @forelse($recentComplaints as $complaint)
+                <div class="p-6 hover:bg-gray-50 transition-colors cursor-pointer" onclick="window.location='{{ route('admin.complaints.show', $complaint) }}'">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#163a24]/5 flex items-center justify-center font-black text-[#163a24] text-[10px]">
+                                {{ strtoupper(substr($complaint->category, 0, 1)) }}{{ strtoupper(substr($complaint->category, -1, 1)) }}
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-black text-[#163a24] tracking-tight">{{ $complaint->title }}</h4>
+                                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">ID: {{ $complaint->complaint_number }}</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-200 text-xs"></i>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode($complaint->user->name) }}&background=163a24&color=fff" class="w-5 h-5 rounded-full">
+                            <span class="text-[10px] font-black text-[#163a24] opacity-60">{{ $complaint->user->name }}</span>
+                        </div>
+                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ $complaint->created_at->format('M d, Y') }}</span>
+                    </div>
+                </div>
+                @empty
+                <div class="p-12 text-center text-gray-400 font-black uppercase tracking-widest text-xs italic">No Recent Activity</div>
+                @endforelse
+            </div>
+
+            <!-- Desktop Table View -->
+            <div class="hidden lg:block overflow-x-auto">
                 <table class="w-full">
                     <thead class="bg-[#fef9e1]/50 border-y border-gray-50">
                         <tr class="text-left">
@@ -210,7 +242,7 @@
                 </table>
             </div>
 
-            <div class="px-10 py-8 bg-[#fef9e1]/20 flex flex-col sm:flex-row justify-between items-center gap-6 border-t border-gray-50">
+            <div class="p-6 md:p-10 bg-[#fef9e1]/20 flex flex-col md:flex-row justify-between items-center gap-6 border-t border-gray-50">
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tight">
                     Showing {{ $recentComplaints->firstItem() }} to {{ $recentComplaints->lastItem() }} of {{ $recentComplaints->total() }} records
                 </p>
@@ -218,6 +250,7 @@
                     {{ $recentComplaints->appends(['status' => $status])->links() }}
                 </div>
             </div>
+        </div>
         </div>
     </div>
 </div>

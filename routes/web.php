@@ -13,7 +13,77 @@ use App\Http\Controllers\ComplaintMessageController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 
-Route::get("/", function () {
+Route::get('/fix-db', function () {
+    try {
+        $output = "";
+        
+        // 1. Fix audio_paths column in complaint_messages
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('complaint_messages', 'audio_paths')) {
+            \Illuminate\Support\Facades\Schema::table('complaint_messages', function ($table) {
+                $table->json('audio_paths')->nullable()->after('images');
+            });
+            $output .= "Column 'audio_paths' added to complaint_messages. ";
+        }
+
+        // 1.1 Fix audio_paths column in complaints table
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('complaints', 'audio_paths')) {
+            \Illuminate\Support\Facades\Schema::table('complaints', function ($table) {
+                $table->json('audio_paths')->nullable()->after('description');
+            });
+            $output .= "Column 'audio_paths' added to complaints. ";
+
+            // Migrate audio_path to audio_paths if it exists
+            if (\Illuminate\Support\Facades\Schema::hasColumn('complaints', 'audio_path')) {
+                $complaintsWithAudio = \Illuminate\Support\Facades\DB::table('complaints')
+                    ->whereNotNull('audio_path')
+                    ->get();
+                
+                foreach ($complaintsWithAudio as $complaint) {
+                    \Illuminate\Support\Facades\DB::table('complaints')
+                        ->where('id', $complaint->id)
+                        ->update([
+                            'audio_paths' => json_encode([$complaint->audio_path])
+                        ]);
+                }
+                $output .= "Migrated existing audio_path to audio_paths. ";
+            }
+        }
+
+        // 2. Create jobs table if missing
+        if (!\Illuminate\Support\Facades\Schema::hasTable('jobs')) {
+            \Illuminate\Support\Facades\Schema::create('jobs', function ($table) {
+                $table->bigIncrements('id');
+                $table->string('queue')->index();
+                $table->longText('payload');
+                $table->unsignedTinyInteger('attempts');
+                $table->unsignedInteger('reserved_at')->nullable();
+                $table->unsignedInteger('available_at');
+                $table->unsignedInteger('created_at');
+            });
+            $output .= "Table 'jobs' created. ";
+        }
+
+        // 3. Create failed_jobs table if missing
+        if (!\Illuminate\Support\Facades\Schema::hasTable('failed_jobs')) {
+            \Illuminate\Support\Facades\Schema::create('failed_jobs', function ($table) {
+                $table->id();
+                $table->string('uuid')->unique();
+                $table->text('connection');
+                $table->text('queue');
+                $table->longText('payload');
+                $table->longText('exception');
+                $table->timestamp('failed_at')->useCurrent();
+            });
+            $output .= "Table 'failed_jobs' created. ";
+        }
+
+        return $output ?: "Database structure is already up to date!";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
+Route::get('/', function () {
     return redirect("/login");
 });
 
@@ -218,6 +288,7 @@ Route::post("/profile/update", [ProfileController::class, "update"])->name("prof
 // Message Routes
 Route::middleware(["auth"])->group(function () {
     Route::post("/complaints/{complaint}/messages", [ComplaintMessageController::class, "store"])->name("complaints.messages.store");
+    Route::put("/complaints/messages/{message}", [ComplaintMessageController::class, "update"])->name("complaints.messages.update");
     Route::get("/complaints/{complaint}/messages", [ComplaintMessageController::class, "getMessages"])->name("complaints.messages.get");
 });
 

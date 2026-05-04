@@ -2,88 +2,146 @@
 
 @section("content")
 <div class="max-w-full mx-auto">
-    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8">
+    <div class="flex flex-col gap-6 mb-8">
         <div>
-            <h2 class="text-4xl font-black text-[#163a24] tracking-tight uppercase mb-2">All Complaints</h2>
-            <p class="text-gray-500 font-medium">Manage and moderate submitted complaints.</p>
+            <h2 class="text-3xl md:text-4xl font-black text-[#163a24] tracking-tight uppercase mb-2">All Complaints</h2>
+            <p class="text-gray-500 font-medium text-sm">Manage and moderate submitted complaints.</p>
         </div>
         
-        <div class="flex flex-wrap items-center gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100">
-            <a href="{{ route("admin.complaints", ["status" => "all"]) }}" 
-               class="px-5 py-2 rounded-xl text-xs font-bold transition {{ $status === "all" ? "bg-[#00a651] text-white shadow-md" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50" }}">
-                ALL
-            </a>
-            <a href="{{ route("admin.complaints", ["status" => "pending"]) }}" 
-               class="px-5 py-2 rounded-xl text-xs font-bold transition {{ $status === "pending" ? "bg-orange-500 text-white shadow-md" : "text-gray-400 hover:text-orange-500 hover:bg-orange-50" }}">
-                PENDING
-            </a>
-            <a href="{{ route("admin.complaints", ["status" => "in_progress"]) }}" 
-               class="px-5 py-2 rounded-xl text-xs font-bold transition {{ $status === "in_progress" ? "bg-blue-500 text-white shadow-md" : "text-gray-400 hover:text-blue-500 hover:bg-blue-50" }}">
-                IN PROGRESS
-            </a>
-            <a href="{{ route("admin.complaints", ["status" => "resolved"]) }}" 
-               class="px-5 py-2 rounded-xl text-xs font-bold transition {{ $status === "resolved" ? "bg-green-600 text-white shadow-md" : "text-gray-400 hover:text-green-600 hover:bg-green-50" }}">
-                RESOLVED
-            </a>
-            <a href="{{ route("admin.complaints", ["status" => "rejected"]) }}" 
-               class="px-5 py-2 rounded-xl text-xs font-bold transition {{ $status === "rejected" ? "bg-red-500 text-white shadow-md" : "text-gray-400 hover:text-red-500 hover:bg-red-50" }}">
-                REJECTED
-            </a>
+        <div class="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+            <div class="flex items-center gap-2 bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100 min-w-max">
+                <a href="{{ route("admin.complaints", ["status" => "all"]) }}" 
+                   class="px-5 py-2 rounded-xl text-[10px] md:text-xs font-black transition {{ $status === "all" ? "bg-[#00a651] text-white shadow-md" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50" }}">
+                    ALL
+                </a>
+                <a href="{{ route("admin.complaints", ["status" => "pending"]) }}" 
+                   class="px-5 py-2 rounded-xl text-[10px] md:text-xs font-black transition {{ $status === "pending" ? "bg-orange-500 text-white shadow-md" : "text-gray-400 hover:text-orange-500 hover:bg-orange-50" }}">
+                    PENDING
+                </a>
+                <a href="{{ route("admin.complaints", ["status" => "in_progress"]) }}" 
+                   class="px-5 py-2 rounded-xl text-[10px] md:text-xs font-black transition {{ $status === "in_progress" ? "bg-blue-500 text-white shadow-md" : "text-gray-400 hover:text-blue-500 hover:bg-blue-50" }}">
+                    IN PROGRESS
+                </a>
+                <a href="{{ route("admin.complaints", ["status" => "resolved"]) }}" 
+                   class="px-5 py-2 rounded-xl text-[10px] md:text-xs font-black transition {{ $status === "resolved" ? "bg-green-600 text-white shadow-md" : "text-gray-400 hover:text-green-600 hover:bg-green-50" }}">
+                    RESOLVED
+                </a>
+                <a href="{{ route("admin.complaints", ["status" => "rejected"]) }}" 
+                   class="px-5 py-2 rounded-xl text-[10px] md:text-xs font-black transition {{ $status === "rejected" ? "bg-red-500 text-white shadow-md" : "text-gray-400 hover:text-red-500 hover:bg-red-50" }}">
+                    REJECTED
+                </a>
+            </div>
         </div>
     </div>
     
     <div class="mb-8">
-        <div class="flex flex-wrap items-center gap-1 bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
-            @php
-                $courses = [
-                    'all' => 'All',
-                    'BSED' => 'BSED',
-                    'BSIT' => 'BSIT',
-                    'CBMA' => 'CBMA',
-                    'HM' => 'HM',
-                    'SMS' => 'SMS',
-                    'CRIM' => 'CRIM',
-                    'CET' => 'CET',
-                    'Pre-School' => 'Pre-School',
-                    'Elementary' => 'Elementary',
-                    'High School' => 'High School',
-                    'Teaching' => 'Teaching',
-                    'Non-Teaching' => 'Non-Teaching'
-                ];
-            @endphp
-            
-            @foreach($courses as $key => $label)
-                <div class="flex items-center gap-1">
-                    <a href="{{ route('admin.complaints', ['status' => $status, 'course' => $key]) }}" 
-                       class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition flex items-center gap-2 {{ $course === $key ? 'bg-gray-100 text-[#00a651]' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50' }}">
-                        {{ $label }}
-                        
-                        {{-- Show glowing badge only if NOT current selection and count > 0 --}}
-                        @if($key !== 'all' && $course !== $key && isset($deptComplaintsCount[$key]) && $deptComplaintsCount[$key] > 0)
-                            <div class="flex h-2.5 w-2.5 relative">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] flex items-center justify-center">
-                                    <span class="text-[6px] text-white">{{ $deptComplaintsCount[$key] }}</span>
-                                </span>
-                            </div>
-                        @elseif($key === 'all' && $course !== 'all' && ($totalComplaintsCount ?? 0) > 0)
-                            <div class="flex h-2.5 w-2.5 relative">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] flex items-center justify-center">
-                                    <span class="text-[6px] text-white">{{ $totalComplaintsCount }}</span>
-                                </span>
-                            </div>
-                        @endif
-                    </a>
-                </div>
-                @if(!$loop->last)
-                    <span class="text-gray-200 font-thin">|</span>
-                @endif
-            @endforeach
+        <div class="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+            <div class="flex items-center gap-1 bg-white p-2 rounded-2xl shadow-sm border border-gray-100 min-w-max">
+                @php
+                    $courses = [
+                        'all' => 'All',
+                        'BSED' => 'BSED',
+                        'BSIT' => 'BSIT',
+                        'CBMA' => 'CBMA',
+                        'HM' => 'HM',
+                        'SMS' => 'SMS',
+                        'CRIM' => 'CRIM',
+                        'CET' => 'CET',
+                        'Pre-School' => 'Pre-School',
+                        'Elementary' => 'Elementary',
+                        'High School' => 'High School',
+                        'Teaching' => 'Teaching',
+                        'Non-Teaching' => 'Non-Teaching'
+                    ];
+                @endphp
+                
+                @foreach($courses as $key => $label)
+                    <div class="flex items-center gap-1">
+                        <a href="{{ route('admin.complaints', ['status' => $status, 'course' => $key]) }}" 
+                           class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition flex items-center gap-2 whitespace-nowrap {{ $course === $key ? 'bg-gray-100 text-[#00a651]' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50' }}">
+                            {{ $label }}
+                            
+                            {{-- Show glowing badge only if NOT current selection and count > 0 --}}
+                            @if($key !== 'all' && $course !== $key && isset($deptComplaintsCount[$key]) && $deptComplaintsCount[$key] > 0)
+                                <div class="flex h-2.5 w-2.5 relative">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] flex items-center justify-center">
+                                        <span class="text-[6px] text-white">{{ $deptComplaintsCount[$key] }}</span>
+                                    </span>
+                                </div>
+                            @elseif($key === 'all' && $course !== 'all' && ($totalComplaintsCount ?? 0) > 0)
+                                <div class="flex h-2.5 w-2.5 relative">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] flex items-center justify-center">
+                                        <span class="text-[6px] text-white">{{ $totalComplaintsCount }}</span>
+                                    </span>
+                                </div>
+                            @endif
+                        </a>
+                    </div>
+                    @if(!$loop->last)
+                        <span class="text-gray-200 font-thin mx-1">|</span>
+                    @endif
+                @endforeach
+            </div>
         </div>
     </div>
     
-    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="space-y-4 lg:hidden">
+        @forelse($complaints as $complaint)
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 active:scale-[0.98] transition-all cursor-pointer" onclick="window.location='{{ route("admin.complaints.show", $complaint) }}'">
+            <div class="flex justify-between items-start mb-4">
+                <div class="flex items-center gap-3">
+                    @if($complaint->user->profile_image)
+                        <div class="w-10 h-10 rounded-2xl overflow-hidden border-2 border-gray-50 shadow-sm">
+                            <img src="{{ asset('storage/' . $complaint->user->profile_image) }}" class="w-full h-full object-cover">
+                        </div>
+                    @else
+                        <div class="w-10 h-10 rounded-2xl bg-[#163a24]/5 flex items-center justify-center text-xs font-black text-[#163a24]">
+                            {{ strtoupper(substr($complaint->user->name, 0, 1)) }}
+                        </div>
+                    @endif
+                    <div>
+                        <p class="text-sm font-black text-[#163a24] uppercase tracking-tight">{{ $complaint->user->name }}</p>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ $complaint->user->course ?? 'N/A' }}</p>
+                    </div>
+                </div>
+                @if($complaint->status === 'pending')
+                    <span class="w-2.5 h-2.5 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.5)]"></span>
+                @elseif($complaint->status === 'in_progress')
+                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_8_rgba(59,130,246,0.5)]"></span>
+                @elseif($complaint->status === 'resolved')
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>
+                @else
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]"></span>
+                @endif
+            </div>
+            
+            <div class="mb-4">
+                <h4 class="text-lg font-black text-[#163a24] leading-tight mb-1">{{ $complaint->title }}</h4>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">ID: {{ $complaint->complaint_number }}</p>
+            </div>
+            
+            <div class="flex items-center justify-between pt-4 border-t border-gray-50">
+                <span class="px-3 py-1 bg-green-50 text-green-600 text-[9px] font-black uppercase rounded-lg">
+                    {{ $complaint->category }}
+                </span>
+                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                    {{ $complaint->created_at->format("M d, Y") }}
+                </span>
+            </div>
+        </div>
+        @empty
+        <div class="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm">
+            <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-search text-gray-200 text-xl"></i>
+            </div>
+            <p class="text-gray-400 font-black uppercase tracking-widest text-xs">No complaints found</p>
+        </div>
+        @endforelse
+    </div>
+
+    <div class="hidden lg:block bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left">
                 <thead>
@@ -147,7 +205,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-8 py-20 text-center">
+                        <td colspan="6" class="px-8 py-20 text-center">
                             <div class="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i class="fas fa-search text-gray-200 text-xl"></i>
                             </div>
@@ -158,10 +216,10 @@
                 </tbody>
             </table>
         </div>
-        
-        <div class="px-8 py-6 bg-gray-50/30 border-t border-gray-100">
-            {{ $complaints->appends(["status" => $status, "course" => $course])->links() }}
-        </div>
+    </div>
+    
+    <div class="mt-8">
+        {{ $complaints->appends(["status" => $status, "course" => $course])->links() }}
     </div>
 </div>
 @endsection

@@ -16,7 +16,7 @@ class Complaint extends Model
         'priority',
         'title',
         'description',
-        'audio_path',
+        'audio_paths',
         'image_path',
         'extra_images',
         'status',
@@ -30,6 +30,7 @@ class Complaint extends Model
         'submitted_at' => 'datetime',
         'resolved_at' => 'datetime',
         'extra_images' => 'array',
+        'audio_paths' => 'array',
     ];
 
     public function user()

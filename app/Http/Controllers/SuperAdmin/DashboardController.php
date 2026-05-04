@@ -20,18 +20,14 @@ class DashboardController extends Controller
         // 2. Complaint Stats
         $activeCases = Complaint::whereIn('status', ['pending', 'in_progress'])->count();
         
-        // 3. Average Resolution Time
-        $resolvedComplaints = Complaint::whereNotNull('resolved_at')
+        // 3. Average Resolution Time (Calculated in DB)
+        $avgResolutionTime = Complaint::whereNotNull('resolved_at')
             ->whereNotNull('submitted_at')
-            ->get();
+            ->select(DB::raw('AVG(TIMESTAMPDIFF(HOUR, submitted_at, resolved_at)) as avg_hours'))
+            ->first()
+            ->avg_hours ?? 0;
             
-        $avgResolutionTime = 0;
-        if ($resolvedComplaints->count() > 0) {
-            $totalHours = $resolvedComplaints->reduce(function($carry, $complaint) {
-                return $carry + $complaint->submitted_at->diffInHours($complaint->resolved_at);
-            }, 0);
-            $avgResolutionTime = round($totalHours / $resolvedComplaints->count() / 24, 1); // Days
-        }
+        $avgResolutionTime = round($avgResolutionTime / 24, 1); // Convert hours to days
 
         // 4. Departmental Breakdown (based on users who submitted)
         $deptStats = Complaint::join('users', 'complaints.user_id', '=', 'users.id')

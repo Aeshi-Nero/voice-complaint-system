@@ -27,6 +27,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copy custom PHP configuration
+COPY php/custom.ini /usr/local/etc/php/conf.d/custom.ini
+
 # Set working directory
 WORKDIR /var/www
 

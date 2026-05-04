@@ -12,11 +12,17 @@ class DashboardController extends Controller
     {
         $status = $request->get('status', 'all');
 
+        $statsQuery = Complaint::select('status', DB::raw('count(*) as count'))
+            ->groupBy('status')
+            ->get()
+            ->pluck('count', 'status')
+            ->toArray();
+
         $stats = [
-            "pending" => Complaint::where("status", "pending")->count(),
-            "in_progress" => Complaint::where("status", "in_progress")->count(),
-            "resolved" => Complaint::where("status", "resolved")->count(),
-            "rejected" => Complaint::where("status", "rejected")->count(),
+            "pending" => $statsQuery['pending'] ?? 0,
+            "in_progress" => $statsQuery['in_progress'] ?? 0,
+            "resolved" => $statsQuery['resolved'] ?? 0,
+            "rejected" => $statsQuery['rejected'] ?? 0,
         ];
         
         $categoryStats = Complaint::select("category", DB::raw("count(*) as total"))

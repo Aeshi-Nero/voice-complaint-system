@@ -51,12 +51,11 @@
             <!-- Mobile Header -->
             <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[60] shadow-lg">
                 @auth
-                    <div class="flex items-center gap-3">
-                        <button @click="sidebarOpen = true" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <span class="text-xs font-black uppercase tracking-widest text-white">Welcome, {{ auth()->user()->name }}</span>
-                    </div>
+                    <button @click="sidebarOpen = true" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    
+                    <h1 class="text-xl font-black tracking-tightest uppercase">V.O.I.C.E.</h1>
 
                     <button class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
                         <i class="fas fa-bell"></i>
@@ -83,16 +82,21 @@
                 :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
                 class="fixed inset-y-0 left-0 z-50 w-80 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl"
             >
-                <!-- Logo -->
+                <!-- Logo Section -->
                 <div class="p-8 mb-4">
-                    <div class="flex items-center gap-4">
-                        <div class="bg-white w-14 h-14 rounded-full flex items-center justify-center overflow-hidden border-2 border-[#f3bc3e] shadow-inner p-1">
-                            <img src="data:image/png;base64,{{ $logoBase64 ?? '' }}" alt="Logo" class="w-full h-full object-contain">
+                    <div class="flex items-center justify-between lg:justify-start gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="hidden lg:flex bg-white w-12 h-12 lg:w-14 lg:h-14 rounded-2xl items-center justify-center overflow-hidden border-2 border-[#f3bc3e] shadow-inner p-1">
+                                <img src="data:image/png;base64,{{ $logoBase64 ?? '' }}" alt="Logo" class="w-full h-full object-contain">
+                            </div>
+                            <div>
+                                <h2 class="text-xl lg:text-2xl font-black tracking-tighter leading-none uppercase text-white">V.O.I.C.E.</h2>
+                                <p class="text-[8px] lg:text-[9px] font-bold text-[#f3bc3e] tracking-tight uppercase opacity-80 mt-1">Virtual Outlet</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 class="text-2xl font-black tracking-tighter leading-none uppercase text-white">V.O.I.C.E.</h2>
-                            <p class="text-[9px] font-bold text-[#f3bc3e] tracking-tight uppercase opacity-80 mt-1">Virtual Outlet for Institutional Complaint Engagement</p>
-                        </div>
+                        <button @click="sidebarOpen = false" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -253,7 +257,7 @@
                     @endauth
                 </div>
 
-                <div class="p-8 lg:p-12">
+                <div class="p-4 sm:p-6 lg:p-12">
                     @if(session('success'))
                         <div class="mb-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded-lg shadow-sm">
                             <div class="flex items-center gap-3">
