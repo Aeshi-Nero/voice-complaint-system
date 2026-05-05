@@ -59,24 +59,36 @@ class ComplaintController extends Controller
     public function dashboard()
     {
         $user = Auth::user();
-        $complaints = $user->complaints()->latest()->take(4)->get();
         
-        $statsRaw = $user->complaints()
-            ->select('status', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
-            ->groupBy('status')
-            ->get()
-            ->pluck('count', 'status')
-            ->toArray();
+        // Cache the entire dashboard data array for 60 seconds per user
+        $dashboardData = \Illuminate\Support\Facades\Cache::remember("user_{$user->id}_dashboard", 60, function() use ($user) {
+            $complaints = $user->complaints()->latest()->take(4)->get();
+            
+            $statsRaw = $user->complaints()
+                ->select('status', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
+                ->groupBy('status')
+                ->get()
+                ->pluck('count', 'status')
+                ->toArray();
 
-        $stats = [
-            "total" => array_sum($statsRaw),
-            "pending" => $statsRaw['pending'] ?? 0,
-            "in_progress" => $statsRaw['in_progress'] ?? 0,
-            "resolved" => $statsRaw['resolved'] ?? 0,
-            "rejected" => $statsRaw['rejected'] ?? 0,
-        ];
+            $stats = [
+                "total" => array_sum($statsRaw),
+                "pending" => $statsRaw['pending'] ?? 0,
+                "in_progress" => $statsRaw['in_progress'] ?? 0,
+                "resolved" => $statsRaw['resolved'] ?? 0,
+                "rejected" => $statsRaw['rejected'] ?? 0,
+            ];
+
+            return [
+                'complaints' => $complaints,
+                'stats' => $stats
+            ];
+        });
         
-        return view("dashboard.user.dashboard", compact("complaints", "stats"));
+        return view("dashboard.user.dashboard", [
+            'complaints' => $dashboardData['complaints'],
+            'stats' => $dashboardData['stats']
+        ]);
     }
 
     public function polls()

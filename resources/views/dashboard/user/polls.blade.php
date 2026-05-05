@@ -42,11 +42,25 @@
                     }
                  }"
                  x-init="
+                    // WebSocket listener
                     window.Echo.channel('poll.{{ $poll->id }}')
                         .listen('PollVoteCast', (e) => {
                             this.votes = e.results;
                             this.total = Object.values(e.results).reduce((a, b) => a + b, 0);
                         });
+
+                    // Polling fallback (every 10 seconds)
+                    setInterval(() => {
+                        window.LiveUpdate.check('poll.{{ $poll->id }}', '{{ route('user.polls.live', $poll) }}', (data) => {
+                            // Map incoming options array to our votes object
+                            const newVotes = {};
+                            data.options.forEach(opt => {
+                                newVotes[opt.id] = opt.votes_count;
+                            });
+                            this.votes = newVotes;
+                            this.total = data.total_votes;
+                        });
+                    }, 10000);
                  ">
                 <!-- Image Header -->
                 <div class="relative h-32 lg:h-40 w-full overflow-hidden bg-[#163a24]/5">

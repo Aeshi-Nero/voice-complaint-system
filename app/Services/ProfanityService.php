@@ -4,21 +4,30 @@ namespace App\Services;
 
 use App\Models\ProfanityWord;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ProfanityService
 {
     protected $profanityWords;
+    protected $perspectiveApiKey;
+    protected $perspectiveThreshold;
+    protected $openaiApiKey;
+    protected $openaiThreshold;
 
     public function __construct()
     {
-        // We use a try-catch and check for the cache table to avoid crashes if the database cache is used but not migrated
+        $this->perspectiveApiKey = config('services.perspective.key') ?? env('PERSPECTIVE_API_KEY');
+        $this->perspectiveThreshold = config('services.perspective.threshold') ?? env('PERSPECTIVE_THRESHOLD', 0.7);
+        $this->openaiApiKey = config('services.openai.key') ?? env('OPENAI_API_KEY');
+        $this->openaiThreshold = env('OPENAI_MODERATION_THRESHOLD', 0.1);
+
+        // Keep local words as fallback
         try {
             $this->profanityWords = Cache::remember('profanity_words', 3600, function () {
                 return $this->getWordsFromDatabase();
             });
         } catch (\Exception $e) {
-            // Fallback to direct database query if cache fails (e.g., missing table)
             $this->profanityWords = $this->getWordsFromDatabase();
         }
     }
@@ -28,24 +37,84 @@ class ProfanityService
         try {
             return ProfanityWord::pluck('word')->toArray();
         } catch (\Exception $e) {
-            return []; // Fallback to empty if even DB fails
+            return [];
         }
     }
 
-    public function containsProfanity(string $text, ?string $language = null): bool
+    /**
+     * Check if text contains profanity using multiple AI APIs with local fallback.
+     */
+    public function containsProfanity(string $text): bool
+    {
+        if (empty(trim($text))) {
+            return false;
+        }
+
+        // 1. Try OpenAI Moderation (Best for Dialects & 2026 Ready)
+        if ($this->openaiApiKey) {
+            try {
+                $response = Http::withToken($this->openaiApiKey)
+                    ->post("https://api.openai.com/v1/moderations", [
+                        'input' => $text,
+                        'model' => 'omni-moderation-latest'
+                    ]);
+
+                if ($response->successful()) {
+                    $result = $response->json('results.0');
+                    if ($result['flagged'] ?? false) {
+                        Log::info("OpenAI flagged text as inappropriate.");
+                        return true;
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning("OpenAI Moderation failed: " . $e->getMessage());
+            }
+        }
+
+        // 2. Try Perspective API (Fallback AI)
+        if ($this->perspectiveApiKey) {
+            try {
+                $response = Http::post("https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key={$this->perspectiveApiKey}", [
+                    'comment' => ['text' => $text],
+                    'languages' => ['en', 'tl'],
+                    'requestedAttributes' => [
+                        'TOXICITY' => (object)[],
+                        'PROFANITY' => (object)[],
+                        'INSULT' => (object)[],
+                    ]
+                ]);
+
+                if ($response->successful()) {
+                    $scores = $response->json('attributeScores');
+                    foreach ($scores as $attribute => $data) {
+                        $score = $data['summaryScore']['value'] ?? 0;
+                        if ($score >= $this->perspectiveThreshold) {
+                            Log::info("Perspective API flagged text. Attribute: {$attribute}, Score: {$score}");
+                            return true;
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::warning("Perspective API failed: " . $e->getMessage());
+            }
+        }
+
+        // 3. Fallback to Local List Check
+        return $this->localCheck($text);
+    }
+
+    /**
+     * Original list-based profanity check.
+     */
+    protected function localCheck(string $text): bool
     {
         if (empty($this->profanityWords)) {
             return false;
         }
 
-        // Standardize text: Lowercase and remove excessive whitespace
         $text = mb_strtolower($text, 'UTF-8');
-        
-        // Create a normalized version of the text (remove symbols and punctuation)
-        // This helps catch "f.u.c.k" by turning it into "fuck"
         $normalizedText = preg_replace('/[^\p{L}\p{N}\s]/u', '', $text);
 
-        // Apply basic substitutions to normalized text to catch things like "p0rn"
         $substitutions = [
             '0' => 'o', '1' => 'i', '3' => 'e', '4' => 'a', '5' => 's', '7' => 't', '8' => 'b', '@' => 'a', '$' => 's', '+' => 't'
         ];
@@ -54,27 +123,21 @@ class ProfanityService
         foreach ($this->profanityWords as $word) {
             $word = strtolower($word);
             
-            // 1. Check in normalized and substituted text
             if (str_contains($normalizedText, $word) || str_contains($substitutedText, $word)) {
                 return true;
             }
 
-            // 2. Exact/Word-Boundary match (e.g., "word")
             $pattern = "~\\b" . preg_quote($word, '~') . "\\b~iu";
             if (preg_match($pattern, $text)) {
                 return true;
             }
 
-            // 3. Obfuscated match (e.g., "w.0.r.d")
             $obfuscatedPattern = $this->generateObfuscatedPattern($word);
             if (preg_match($obfuscatedPattern, $text)) {
                 return true;
             }
             
-            // 3. Substring match for dangerous slurs (no word boundaries)
-            // This catches "n1gg@" even if surrounded by other characters or symbols
             if (strlen($word) > 3) {
-                // Generate a "loose" pattern that doesn't care about boundaries
                 $loosePattern = $this->generateObfuscatedPattern($word, false);
                 if (preg_match($loosePattern, $text)) {
                     return true;
@@ -123,7 +186,6 @@ class ProfanityService
             $patternParts[] = $substitutions[$char] ?? preg_quote($char, '~');
         }
 
-        // Allow for optional characters between letters (e.g., f.u.c.k)
         $boundary = $useBoundaries ? '\\b' : '';
         $pattern = '~' . $boundary . implode('[\s\._-]*', $patternParts) . $boundary . '~iu';
         
@@ -140,8 +202,8 @@ class ProfanityService
         try {
             Cache::forget('profanity_words');
         } catch (\Exception $e) {
-            // Ignore cache failures
         }
         $this->profanityWords = $this->getWordsFromDatabase();
     }
 }
+

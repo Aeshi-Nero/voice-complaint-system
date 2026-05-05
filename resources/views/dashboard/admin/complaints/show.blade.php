@@ -413,6 +413,15 @@ function adminComplaintChat() {
                     window.location.reload(); 
                 }
             });
+
+            // Polling fallback (every 15 seconds)
+            setInterval(() => {
+                if (!this.sending) {
+                    window.LiveUpdate.check('complaint.{{ $complaint->id }}', '{{ route('complaints.messages.get', $complaint) }}', (data) => {
+                        window.location.reload();
+                    });
+                }
+            }, 15000);
         },
         scrollToBottom() {
             setTimeout(() => {

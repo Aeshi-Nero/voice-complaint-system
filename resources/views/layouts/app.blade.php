@@ -23,27 +23,42 @@
                 try {
                     const res = await fetch(url);
                     const data = await res.json();
-                    const currentCount = Array.isArray(data) ? data.length : (data.total_votes || 0);
+                    
+                    // Handle different data structures (array for messages, object with total_votes for polls)
+                    let currentCount = 0;
+                    if (Array.isArray(data)) {
+                        currentCount = data.length;
+                    } else if (data && typeof data === 'object') {
+                        currentCount = data.total_votes || Object.values(data.options || {}).reduce((a, b) => a + (b.votes_count || 0), 0) || 0;
+                    }
                     
                     if (this.lastCount[key] !== undefined && currentCount > this.lastCount[key]) {
                         callback(data);
                     }
                     this.lastCount[key] = currentCount;
-                } catch (e) {}
+                } catch (e) {
+                    console.warn("Polling failed for " + key);
+                }
             }
         };
 
         // Initialize Echo
         window.Pusher = Pusher;
-        window.Echo = new Echo({
-            broadcaster: 'reverb',
-            key: '{{ env('REVERB_APP_KEY') }}',
-            wsHost: '{{ env('REVERB_HOST') }}',
-            wsPort: {{ env('REVERB_PORT', 8080) }},
-            wssPort: {{ env('REVERB_PORT', 8080) }},
-            forceTLS: false,
-            enabledTransports: ['ws', 'wss'],
-        });
+        try {
+            window.Echo = new Echo({
+                broadcaster: 'reverb',
+                key: '{{ env('REVERB_APP_KEY') }}',
+                wsHost: '{{ env('REVERB_HOST') }}',
+                wsPort: {{ env('REVERB_PORT', 8080) }},
+                wssPort: {{ env('REVERB_PORT', 8080) }},
+                forceTLS: false,
+                enabledTransports: ['ws', 'wss'],
+            });
+            
+            // Reverb fallback: If connection fails, we could potentially trigger polling globally here
+        } catch (e) {
+            console.error("Echo initialization failed:", e);
+        }
     </script>
 </head>
 <body class="bg-[#fef9e1]">
