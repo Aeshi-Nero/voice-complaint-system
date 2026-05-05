@@ -379,4 +379,25 @@ class ComplaintController extends Controller
 
         return redirect()->route("user.complaints.index")->with("success", "Complaint deleted successfully!");
     }
+
+    public function getUnseenCounts()
+    {
+        $user = Auth::user();
+        $counts = [];
+
+        if ($user->isAdmin()) {
+            $counts['total_complaints'] = \App\Models\Complaint::where('created_at', '>', $user->last_complaints_viewed_at ?? '2000-01-01 00:00:00')->count();
+        } else {
+            $counts['unseen_messages'] = \App\Models\ComplaintMessage::where('is_admin', true)
+                ->whereHas('complaint', fn($q) => $q->where('user_id', $user->id))
+                ->where('created_at', '>', $user->last_messages_viewed_at ?? '2000-01-01 00:00:00')
+                ->count();
+            
+            $counts['new_polls'] = \App\Models\Poll::where('status', 'active')
+                ->where('created_at', '>', $user->last_poll_viewed_at ?? '2000-01-01 00:00:00')
+                ->exists();
+        }
+
+        return response()->json($counts);
+    }
 }

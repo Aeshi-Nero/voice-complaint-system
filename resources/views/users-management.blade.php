@@ -1,7 +1,7 @@
 @extends(auth()->user()->role === 'superadmin' ? 'layouts.superadmin' : 'layouts.app')
 
 @section("content")
-<div class="max-w-7xl mx-auto pb-20">
+<div class="max-w-7xl mx-auto pb-20" x-data="userManagement()">
     <div class="flex flex-col gap-8 mb-10">
         <div>
             <h2 class="text-3xl lg:text-5xl font-black text-[#163a24] tracking-tight uppercase mb-2">User Registry</h2>
@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div class="flex items-end gap-3">
-                <p class="text-4xl md:text-5xl font-black text-red-600">{{ $bannedUsersCount }}</p>
+                <p class="text-4xl md:text-5xl font-black text-red-600" x-text="bannedCount">{{ $bannedUsersCount }}</p>
                 <span class="text-[10px] font-bold text-red-400 uppercase mb-1.5">Accounts</span>
             </div>
         </div>
@@ -109,7 +109,7 @@
                 <!-- Mobile User Cards -->
                 <div class="lg:hidden divide-y divide-gray-50">
                     @forelse($allUsers as $user)
-                    <div class="p-6">
+                    <div class="p-6" x-data="{ isBlocked: {{ $user->is_blocked || ($user->banned_until && $user->banned_until->isFuture()) ? 'true' : 'false' }} }">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-4">
                                 <div class="w-12 h-12 rounded-2xl bg-[#163a24]/5 flex items-center justify-center font-black text-[#163a24] text-sm overflow-hidden">
@@ -125,21 +125,16 @@
                                 </div>
                             </div>
                             
-                            @if($user->is_blocked || ($user->banned_until && $user->banned_until->isFuture()))
-                                <form action="{{ route('admin.users.unblock', $user) }}" method="POST">
-                                    @csrf
-                                    <button class="w-10 h-10 bg-[#00a651] text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                                        <i class="fas fa-undo-alt text-xs"></i>
-                                    </button>
-                                </form>
-                            @else
-                                <form action="{{ route('admin.users.block', $user) }}" method="POST" onsubmit="return confirm('Restrict access for this user?')">
-                                    @csrf
-                                    <button class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center">
-                                        <i class="fas fa-user-slash text-xs"></i>
-                                    </button>
-                                </form>
-                            @endif
+                            <template x-if="isBlocked">
+                                <button @click="toggleUserStatus('{{ route('admin.users.unblock', $user) }}', 'unblock', $data)" class="w-10 h-10 bg-[#00a651] text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                                    <i class="fas fa-undo-alt text-xs"></i>
+                                </button>
+                            </template>
+                            <template x-if="!isBlocked">
+                                <button @click="if(confirm('Restrict access for this user?')) toggleUserStatus('{{ route('admin.users.block', $user) }}', 'block', $data)" class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-user-slash text-xs"></i>
+                                </button>
+                            </template>
                         </div>
                         <div class="flex justify-between items-center pl-16">
                             <div class="space-y-0.5">
@@ -165,7 +160,7 @@
                         </thead>
                         <tbody class="divide-y divide-gray-50">
                             @forelse($allUsers as $user)
-                            <tr class="hover:bg-gray-50/30 transition group">
+                            <tr class="hover:bg-gray-50/30 transition group" x-data="{ isBlocked: {{ $user->is_blocked || ($user->banned_until && $user->banned_until->isFuture()) ? 'true' : 'false' }} }">
                                 <td class="px-8 py-6">
                                     <div class="flex items-center gap-4">
                                         <div class="w-12 h-12 rounded-2xl bg-[#163a24]/5 flex items-center justify-center font-black text-[#163a24] text-sm shadow-inner group-hover:bg-[#163a24] group-hover:text-white transition-all overflow-hidden">
@@ -186,21 +181,16 @@
                                     <p class="text-[9px] text-gray-300 mt-0.5">{{ $user->email }}</p>
                                 </td>
                                 <td class="px-8 py-6 text-right">
-                                    @if($user->is_blocked || ($user->banned_until && $user->banned_until->isFuture()))
-                                        <form action="{{ route('admin.users.unblock', $user) }}" method="POST" class="inline">
-                                            @csrf
-                                            <button class="px-4 py-2 bg-[#00a651] text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20">
-                                                Restore
-                                            </button>
-                                        </form>
-                                    @else
-                                        <form action="{{ route('admin.users.block', $user) }}" method="POST" class="inline" onsubmit="return confirm('Restrict access for this user?')">
-                                            @csrf
-                                            <button class="px-4 py-2 bg-red-50 text-red-500 text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-red-500 hover:text-white transition-all">
-                                                Restrict
-                                            </button>
-                                        </form>
-                                    @endif
+                                    <template x-if="isBlocked">
+                                        <button @click="toggleUserStatus('{{ route('admin.users.unblock', $user) }}', 'unblock', $data)" class="px-4 py-2 bg-[#00a651] text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20">
+                                            Restore
+                                        </button>
+                                    </template>
+                                    <template x-if="!isBlocked">
+                                        <button @click="if(confirm('Restrict access for this user?')) toggleUserStatus('{{ route('admin.users.block', $user) }}', 'block', $data)" class="px-4 py-2 bg-red-50 text-red-500 text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                                            Restrict
+                                        </button>
+                                    </template>
                                 </td>
                             </tr>
                             @empty
@@ -217,6 +207,7 @@
                 </div>
             </div>
         </div>
+
 
         <!-- Sidebar Section -->
         <div class="space-y-8">
@@ -256,4 +247,38 @@
         </div>
     </div>
 </div>
+
+<script>
+function userManagement() {
+    return {
+        bannedCount: {{ $bannedUsersCount }},
+        async toggleUserStatus(url, type, rowData) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (response.ok) {
+                    rowData.isBlocked = (type === 'block');
+                    if (type === 'block') {
+                        this.bannedCount++;
+                    } else {
+                        this.bannedCount--;
+                    }
+                } else {
+                    const data = await response.json();
+                    alert(data.message || 'Action failed');
+                }
+            } catch (e) {
+                console.error('Toggle status error:', e);
+            }
+        }
+    }
+}
+</script>
 @endsection

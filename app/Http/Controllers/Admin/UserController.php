@@ -140,18 +140,28 @@ class UserController extends Controller
         }
     }
 
-    public function blockUser(User $user)
+    public function blockUser(Request $request, User $user)
     {
         $user->update(['is_blocked' => true]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'User restricted successfully.']);
+        }
+
         return back()->with('success', 'User account permanently blocked.');
     }
 
-    public function unblockUser(User $user)
+    public function unblockUser(Request $request, User $user)
     {
         $user->update([
             'is_blocked' => false,
             'banned_until' => null
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'User restored successfully.']);
+        }
+
         return back()->with('success', 'User account restored.');
     }
 }

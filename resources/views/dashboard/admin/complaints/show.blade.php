@@ -47,7 +47,7 @@
 
             <!-- Initial Submission -->
             <div class="flex justify-start max-w-[85%] lg:max-w-[70%]">
-                <div class="bg-white text-gray-800 p-5 lg:p-7 rounded-[2rem] rounded-tl-none shadow-sm border border-gray-200 relative">
+                <div class="bg-white text-gray-800 p-5 lg:p-7 rounded-[2rem] rounded-tl-none shadow-sm border border-gray-100 relative">
                     <div class="flex items-center gap-2 mb-3">
                         <div class="w-2 h-2 rounded-full bg-accent"></div>
                         <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Student Submission</span>
@@ -86,7 +86,7 @@
             @foreach($complaint->messages as $msg)
                 @if($msg->is_admin)
                     <div class="flex justify-end ml-auto max-w-[85%] lg:max-w-[70%]">
-                        <div class="bg-primary text-white p-5 lg:p-7 rounded-[2rem] rounded-tr-none shadow-lg shadow-green-900/10">
+                        <div class="bg-[#00a651] text-white p-5 lg:p-7 rounded-[2rem] rounded-tr-none shadow-lg shadow-green-900/10">
                             <div class="flex items-center gap-2 mb-2 opacity-60">
                                 <span class="text-[10px] font-black uppercase tracking-widest">You • Admin Response</span>
                             </div>
@@ -409,19 +409,32 @@ function adminComplaintChat() {
         init() {
             this.scrollToBottom();
             window.Echo.private('complaint.{{ $complaint->id }}').listen('MessageSent', (e) => { 
-                if (!this.sending) {
-                    window.location.reload(); 
-                }
+                console.log('Message received via Echo:', e);
+                this.fetchMessages();
             });
 
-            // Polling fallback (every 15 seconds)
+            // Polling fallback (every 10 seconds)
             setInterval(() => {
                 if (!this.sending) {
-                    window.LiveUpdate.check('complaint.{{ $complaint->id }}', '{{ route('complaints.messages.get', $complaint) }}', (data) => {
-                        window.location.reload();
-                    });
+                    this.fetchMessages(true); // silent update
                 }
-            }, 15000);
+            }, 10000);
+        },
+        async fetchMessages(silent = false) {
+            try {
+                const response = await fetch('{{ route('complaints.messages.get', $complaint) }}?html=1');
+                if (response.ok) {
+                    const html = await response.text();
+                    const container = document.getElementById('chat-container');
+                    // We check if content is different to avoid unnecessary UI jumps
+                    if (container && container.innerHTML.trim() !== html.trim()) {
+                        container.innerHTML = html;
+                        if (!silent) this.scrollToBottom();
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch messages:", error);
+            }
         },
         scrollToBottom() {
             setTimeout(() => {
@@ -541,7 +554,11 @@ function adminComplaintChat() {
                 } catch (e) {
                     console.error("Failed to parse JSON response");
                     if (response.ok) {
-                        window.location.reload();
+                        await this.fetchMessages();
+                        this.newMessage = '';
+                        this.imageCount = 0;
+                        if (this.$refs.imageInput) this.$refs.imageInput.value = '';
+                        this.clearAllAudio();
                         return;
                     }
                     throw new Error("Server returned an invalid response");
@@ -552,7 +569,9 @@ function adminComplaintChat() {
                     this.imageCount = 0;
                     if (this.$refs.imageInput) this.$refs.imageInput.value = '';
                     this.clearAllAudio();
-                    window.location.reload();
+                    
+                    // Update messages without reload
+                    await this.fetchMessages();
                 } else {
                     console.error("Server error:", data);
                     alert(data.error || data.message || 'Failed to send message');

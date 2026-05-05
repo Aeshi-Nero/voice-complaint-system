@@ -19,23 +19,39 @@
         // Global live update handler
         window.LiveUpdate = {
             lastCount: {},
-            async check(key, url, callback) {
+            async check(key, url, callback, isHtml = false) {
                 try {
-                    const res = await fetch(url);
-                    const data = await res.json();
+                    const finalUrl = isHtml ? (url.includes('?') ? url + '&html=1' : url + '?html=1') : url;
+                    const res = await fetch(finalUrl);
                     
-                    // Handle different data structures (array for messages, object with total_votes for polls)
-                    let currentCount = 0;
-                    if (Array.isArray(data)) {
-                        currentCount = data.length;
-                    } else if (data && typeof data === 'object') {
-                        currentCount = data.total_votes || Object.values(data.options || {}).reduce((a, b) => a + (b.votes_count || 0), 0) || 0;
+                    if (isHtml) {
+                        // For HTML, we check if the content length changed or just rely on the count of items
+                        // A better way: fetch JSON first to check count, THEN fetch HTML if changed.
+                        // But for simplicity, we'll fetch JSON to check, then call callback to fetch HTML.
+                        const jsonRes = await fetch(url.includes('?') ? url.replace('html=1', '') : url);
+                        const data = await jsonRes.json();
+                        let currentCount = Array.isArray(data) ? data.length : 0;
+
+                        if (this.lastCount[key] !== undefined && currentCount > this.lastCount[key]) {
+                            const htmlRes = await fetch(finalUrl);
+                            const html = await htmlRes.text();
+                            callback(html);
+                        }
+                        this.lastCount[key] = currentCount;
+                    } else {
+                        const data = await res.json();
+                        let currentCount = 0;
+                        if (Array.isArray(data)) {
+                            currentCount = data.length;
+                        } else if (data && typeof data === 'object') {
+                            currentCount = data.total_votes || Object.values(data.options || {}).reduce((a, b) => a + (b.votes_count || 0), 0) || 0;
+                        }
+                        
+                        if (this.lastCount[key] !== undefined && currentCount > this.lastCount[key]) {
+                            callback(data);
+                        }
+                        this.lastCount[key] = currentCount;
                     }
-                    
-                    if (this.lastCount[key] !== undefined && currentCount > this.lastCount[key]) {
-                        callback(data);
-                    }
-                    this.lastCount[key] = currentCount;
                 } catch (e) {
                     console.warn("Polling failed for " + key);
                 }
@@ -62,7 +78,7 @@
     </script>
 </head>
 <body class="bg-[#fef9e1]">
-    <div x-data="{ sidebarOpen: false, profileModalOpen: false, profilePreview: null, showCurrentPassword: false, showNewPassword: false }" class="min-h-screen flex flex-col">  
+    <div x-data="globalApp()" class="min-h-screen flex flex-col">  
             <!-- Mobile Header -->
             <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[60] shadow-lg">
                 @auth
@@ -72,8 +88,11 @@
                     
                     <h1 class="text-xl font-black tracking-tightest uppercase">V.O.I.C.E.</h1>
 
-                    <button class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
+                    <button class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition relative">
                         <i class="fas fa-bell"></i>
+                        <template x-if="hasNotifications">
+                            <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_5px_rgba(239,68,68,0.8)]"></span>
+                        </template>
                     </button>
                 @endauth
             </div>
@@ -155,14 +174,12 @@
                                 <i class="fas fa-list-alt w-5 text-center"></i>
                                 <span class="text-sm font-black uppercase tracking-widest">All Complaints</span>
                             </div>
-                            @if(($totalComplaintsCount ?? 0) > 0)
-                            <div class="flex items-center justify-center min-w-[20px] h-5 px-1.5 relative">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-5 w-auto px-1.5 bg-green-500 text-[10px] font-black text-white items-center justify-center shadow-[0_0_8px_rgba(34,197,94,0.6)]">
-                                    {{ $totalComplaintsCount }}
-                                </span>
-                            </div>
-                            @endif
+                            <template x-if="counts.total_complaints > 0">
+                                <div class="flex items-center justify-center min-w-[20px] h-5 px-1.5 relative">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-5 w-auto px-1.5 bg-green-500 text-[10px] font-black text-white items-center justify-center shadow-[0_0_8px_rgba(34,197,94,0.6)]" x-text="counts.total_complaints"></span>
+                                </div>
+                            </template>
                         </a>
                         <a href="{{ route('admin.users.index') }}" 
                            class="flex items-center gap-4 px-6 py-4 rounded-2xl transition group {{ Request::is('admin/users*') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
@@ -191,14 +208,12 @@
                                 <i class="fas fa-list-ul w-5 text-center"></i>
                                 <span class="text-sm font-black uppercase tracking-widest">My Complaints</span>
                             </div>
-                            @if(($unseenMessagesCount ?? 0) > 0)
-                            <div class="flex items-center justify-center min-w-[20px] h-5 px-1.5 relative">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-5 w-auto px-1.5 bg-green-500 text-[10px] font-black text-white items-center justify-center shadow-[0_0_8px_rgba(34,197,94,0.6)]">
-                                    {{ $unseenMessagesCount }}
-                                </span>
-                            </div>
-                            @endif
+                            <template x-if="counts.unseen_messages > 0">
+                                <div class="flex items-center justify-center min-w-[20px] h-5 px-1.5 relative">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-5 w-auto px-1.5 bg-green-500 text-[10px] font-black text-white items-center justify-center shadow-[0_0_8px_rgba(34,197,94,0.6)]" x-text="counts.unseen_messages"></span>
+                                </div>
+                            </template>
                         </a>
                         <a href="{{ route('user.polls') }}" 
                            class="flex items-center justify-between px-6 py-4 rounded-2xl transition group {{ Request::is('user/polls') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
@@ -206,12 +221,12 @@
                                 <i class="fas fa-chart-bar w-5 text-center"></i>
                                 <span class="text-sm font-black uppercase tracking-widest">Polls</span>
                             </div>
-                            @if($hasNewPolls ?? false)
-                            <div class="flex h-2 w-2 relative">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-                            </div>
-                            @endif
+                            <template x-if="counts.new_polls">
+                                <div class="flex h-2 w-2 relative">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+                                </div>
+                            </template>
                         </a>
                     @endif
                 </nav>
@@ -266,8 +281,11 @@
                 <div class="hidden lg:flex bg-[#163a24] text-white p-6 sticky top-0 z-40 shadow-lg items-center justify-between">
                     @auth
                         <span class="text-lg font-black uppercase tracking-widest text-white">Welcome, {{ auth()->user()->name }}</span>
-                        <button class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/10 hover:bg-white/20 transition shadow-lg border border-white/5">
+                        <button class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/10 hover:bg-white/20 transition shadow-lg border border-white/5 relative">
                             <i class="fas fa-bell text-lg"></i>
+                            <template x-if="hasNotifications">
+                                <span class="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.9)]"></span>
+                            </template>
                         </button>
                     @endauth
                 </div>
@@ -429,10 +447,43 @@
                 </button> -->
                 @endauth
             </main>
-    </div>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
+        function globalApp() {
+            return {
+                sidebarOpen: false, 
+                profileModalOpen: false, 
+                profilePreview: null, 
+                showCurrentPassword: false, 
+                showNewPassword: false,
+                counts: {
+                    total_complaints: {{ $totalComplaintsCount ?? 0 }},
+                    unseen_messages: {{ $unseenMessagesCount ?? 0 }},
+                    new_polls: {{ ($hasNewPolls ?? false) ? 'true' : 'false' }}
+                },
+                get hasNotifications() {
+                    return this.counts.total_complaints > 0 || this.counts.unseen_messages > 0 || this.counts.new_polls;
+                },
+                init() {
+                    this.checkNotifications();
+                    // Global real-time listener for notifications
+                    setInterval(() => this.checkNotifications(), 15000); // Check every 15s
+                },
+                async checkNotifications() {
+                    try {
+                        const response = await fetch('{{ route('notifications.counts') }}');
+                        if (response.ok) {
+                            this.counts = await response.json();
+                        }
+                    } catch (e) {
+                        console.error('Notification check failed:', e);
+                    }
+                }
+            }
+        }
+
         function updateClock() {
+    ...
             const clock = document.getElementById('institutional-clock');
             if (clock) {
                 const now = new Date();

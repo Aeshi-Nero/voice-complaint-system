@@ -146,9 +146,15 @@ class ComplaintMessageController extends Controller
         ]);
     }
 
-    public function getMessages(Complaint $complaint)
+    public function getMessages(Request $request, Complaint $complaint)
     {
         $messages = $complaint->messages()->with('user')->get();
+
+        if ($request->query('html')) {
+            // Return just the message loop part of the view
+            return view('dashboard.user.partials.messages', compact('complaint', 'messages'))->render();
+        }
+
         return response()->json($messages);
     }
 }

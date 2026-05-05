@@ -278,6 +278,8 @@ Route::post("/login", [LoginController::class, "login"]);
 Route::post("/logout", [LoginController::class, "logout"])->name("logout");
 Route::post("/forgot-password", [LoginController::class, "forgotPassword"])->name("password.forgot");
 
+Route::get("/notifications/counts", [ComplaintController::class, "getUnseenCounts"])->name("notifications.counts")->middleware('auth');
+
 // Claim Account Routes
 Route::post("/claim-account/check", [\App\Http\Controllers\Auth\ClaimAccountController::class, "check"])->name("claim.check");
 Route::post("/claim-account/verify", [\App\Http\Controllers\Auth\ClaimAccountController::class, "verify"])->name("claim.verify");

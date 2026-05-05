@@ -36,9 +36,40 @@
                  x-data="{ 
                     votes: { @foreach($poll->options as $option) '{{ $option->id }}': {{ $option->votes_count }}, @endforeach },
                     total: {{ $poll->getTotalVotes() }},
+                    voted: {{ auth()->user()->hasVotedInPoll($poll->id) ? 'true' : 'false' }},
+                    selectedOption: null,
+                    submitting: false,
                     getPercentage(optionId) {
                         if (this.total === 0) return 0;
                         return Math.round((this.votes[optionId] / this.total) * 100);
+                    },
+                    async submitVote() {
+                        if (!this.selectedOption || this.submitting) return;
+                        this.submitting = true;
+                        try {
+                            const response = await fetch('{{ route('user.polls.vote', $poll) }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json',
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify({ option_id: this.selectedOption })
+                            });
+                            
+                            if (response.ok) {
+                                this.voted = true;
+                                // Vote count will be updated via Echo or the next poll refresh
+                            } else {
+                                const data = await response.json();
+                                alert(data.message || 'Failed to cast vote');
+                            }
+                        } catch (e) {
+                            console.error('Vote error:', e);
+                        } finally {
+                            this.submitting = false;
+                        }
                     }
                  }"
                  x-init="
@@ -88,7 +119,7 @@
                         @endif
                     </div>
 
-                    @if(auth()->user()->hasVotedInPoll($poll->id))
+                    <div x-show="voted" x-cloak>
                         {{-- Results View --}}
                         <div class="space-y-4 lg:space-y-5 mb-6">
                             @foreach($poll->options as $option)
@@ -114,26 +145,28 @@
                                 Report <i class="fas fa-arrow-right text-[7px]"></i>
                             </a>
                         </div>
-                    @else
+                    </div>
+
+                    <div x-show="!voted" x-cloak>
                         {{-- Voting Form --}}
-                        <form action="{{ route('user.polls.vote', $poll) }}" method="POST" class="space-y-3">
-                            @csrf
+                        <form @submit.prevent="submitVote()" class="space-y-3">
                             <div class="space-y-2 mb-6">
                                 @foreach($poll->options as $option)
                                 <label class="flex items-center gap-3 p-3 lg:p-4 bg-[#fef9e1] rounded-xl lg:rounded-2xl cursor-pointer hover:bg-[#f2e19d] transition-colors group">
-                                    <input type="radio" name="option_id" value="{{ $option->id }}" class="w-4 h-4 text-[#163a24] focus:ring-[#f3bc3e] border-none bg-white" required>
+                                    <input type="radio" name="option_id" value="{{ $option->id }}" x-model="selectedOption" class="w-4 h-4 text-[#163a24] focus:ring-[#f3bc3e] border-none bg-white" required>
                                     <span class="text-[11px] lg:text-sm font-black text-[#163a24] group-hover:translate-x-1 transition-transform">{{ $option->option_text }}</span>
                                 </label>
                                 @endforeach
                             </div>
 
                             <div class="pt-4 border-t border-gray-100">
-                                <button type="submit" class="w-full lg:w-auto bg-[#f3bc3e] text-[#163a24] px-6 py-2.5 rounded-xl font-black uppercase tracking-widest shadow-lg hover:bg-yellow-400 transition-all text-[10px] lg:text-xs">
-                                    Vote Now
+                                <button type="submit" :disabled="!selectedOption || submitting" class="w-full lg:w-auto bg-[#f3bc3e] text-[#163a24] px-6 py-2.5 rounded-xl font-black uppercase tracking-widest shadow-lg hover:bg-yellow-400 transition-all text-[10px] lg:text-xs disabled:opacity-50">
+                                    <span x-show="!submitting">Vote Now</span>
+                                    <span x-show="submitting"><i class="fas fa-spinner fa-spin"></i> Voting...</span>
                                 </button>
                             </div>
                         </form>
-                    @endif
+                    </div>
                 </div>
             </div>
             @endforeach

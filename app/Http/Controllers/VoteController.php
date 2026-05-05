@@ -17,10 +17,16 @@ class VoteController extends Controller
         ]);
         
         if (!$poll->isActive()) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'This poll is no longer active.'], 422);
+            }
             return back()->with('error', 'This poll is no longer active.');
         }
         
         if (Auth::user()->hasVotedInPoll($poll->id)) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'You have already voted in this poll.'], 422);
+            }
             return back()->with('error', 'You have already voted in this poll.');
         }
         
@@ -37,6 +43,22 @@ class VoteController extends Controller
         // Broadcast the update
         PollVoteCast::dispatch($poll);
         
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Your vote has been recorded.',
+                'results' => $poll->options()->pluck('votes_count', 'id')
+            ]);
+        }
+
         return back()->with('success', 'Your vote has been recorded.');
+    }
+
+    public function liveUpdate(Poll $poll)
+    {
+        return response()->json([
+            'total_votes' => $poll->getTotalVotes(),
+            'options' => $poll->options()->select('id', 'votes_count')->get()
+        ]);
     }
 }
