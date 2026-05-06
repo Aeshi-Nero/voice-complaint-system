@@ -67,7 +67,7 @@
     <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[60] shadow-lg">
         @auth
             <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
-                <i class="fas fa-bars"></i>
+                <i class="fas" :class="sidebarOpen ? 'fa-times' : 'fa-bars'"></i>
             </button>
             
             <h1 class="text-xl font-black tracking-tightest uppercase text-tertiary">V.O.I.C.E.</h1>

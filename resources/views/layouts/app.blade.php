@@ -77,13 +77,13 @@
         }
     </script>
 </head>
-<body class="bg-[#fef9e1]">
-    <div x-data="globalApp()" class="min-h-screen flex flex-col">  
+<body class="bg-[#fef9e1]" x-data="globalApp()">
+    <div class="min-h-screen flex flex-col">  
             <!-- Mobile Header -->
             <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[60] shadow-lg">
                 @auth
                     <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
-                        <i class="fas fa-bars"></i>
+                        <i class="fas" :class="sidebarOpen ? 'fa-times' : 'fa-bars'"></i>
                     </button>
                     
                     <h1 class="text-xl font-black tracking-tightest uppercase">V.O.I.C.E.</h1>
@@ -446,7 +446,6 @@
                 </button> -->
                 @endauth
             </main>
-    </div>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
         function globalApp() {
