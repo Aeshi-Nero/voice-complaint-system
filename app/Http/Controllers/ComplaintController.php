@@ -223,6 +223,9 @@ class ComplaintController extends Controller
                 "status" => "pending",
                 "submitted_at" => now(),
             ]);
+
+            // Dispatch real-time event for admins
+            \App\Events\ComplaintSubmitted::dispatch($complaint);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Complaint creation failed: " . $e->getMessage());
             if ($request->ajax() || $request->wantsJson()) {

@@ -82,7 +82,7 @@
             <!-- Mobile Header -->
             <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[60] shadow-lg">
                 @auth
-                    <button @click="sidebarOpen = true" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
+                    <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
                         <i class="fas fa-bars"></i>
                     </button>
                     
@@ -97,7 +97,6 @@
                 @endauth
             </div>
 
-            <!-- Mobile Sidebar Overlay -->
             <div x-show="sidebarOpen" 
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="opacity-0"
@@ -106,7 +105,7 @@
                  x-transition:leave-start="opacity-100"
                  x-transition:leave-end="opacity-0"
                  @click="sidebarOpen = false" 
-                 class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[45] lg:hidden"
+                 class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[65] lg:hidden"
                  x-cloak>
             </div>
 
@@ -114,7 +113,7 @@
             @auth
             <aside 
                 :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-                class="fixed inset-y-0 left-0 z-50 w-80 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl"
+                class="fixed inset-y-0 left-0 z-[70] w-80 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl"
             >
                 <!-- Logo Section -->
                 <div class="p-8 mb-4">
@@ -447,6 +446,7 @@
                 </button> -->
                 @endauth
             </main>
+    </div>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
         function globalApp() {
