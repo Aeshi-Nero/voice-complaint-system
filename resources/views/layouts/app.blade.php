@@ -80,7 +80,7 @@
 <body class="bg-[#fef9e1]" x-data="globalApp()">
     <div class="min-h-screen flex flex-col">  
             <!-- Mobile Header -->
-            <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[60] shadow-lg">
+            <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[80] shadow-lg">
                 @auth
                     <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
                         <i class="fas" :class="sidebarOpen ? 'fa-times' : 'fa-bars'"></i>
@@ -127,7 +127,7 @@
                                 <p class="text-[8px] lg:text-[9px] font-bold text-[#f3bc3e] tracking-tight uppercase opacity-80 mt-1">Virtual Outlet</p>
                             </div>
                         </div>
-                        <button @click="sidebarOpen = false" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 text-white">
+                        <button @click.stop="sidebarOpen = false" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 text-white">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>

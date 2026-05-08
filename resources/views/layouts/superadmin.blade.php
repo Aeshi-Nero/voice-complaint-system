@@ -64,7 +64,7 @@
 <body class="text-on-surface antialiased overflow-x-hidden" x-data="{ sidebarOpen: false, profileModalOpen: false, profilePreview: null, showCurrentPassword: false, showNewPassword: false }">
 
     <!-- Mobile Header -->
-    <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[60] shadow-lg">
+    <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[80] shadow-lg">
         @auth
             <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
                 <i class="fas" :class="sidebarOpen ? 'fa-times' : 'fa-bars'"></i>
@@ -96,7 +96,7 @@
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
         class="fixed inset-y-0 left-0 z-[70] w-64 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl lg:translate-x-0"
     >
-        <div class="hidden lg:block p-6 lg:p-8 mb-4">
+        <div class="p-6 lg:p-8 mb-4">
             <div class="flex justify-between items-center lg:block">
                 <div class="flex items-center gap-4">
                     <div class="hidden lg:flex bg-white w-10 h-10 lg:w-14 lg:h-14 rounded-2xl items-center justify-center overflow-hidden border-2 border-[#f3bc3e] shadow-inner shrink-0 p-1">
@@ -107,8 +107,8 @@
                         <p class="text-[9px] font-bold text-[#f3bc3e] tracking-tight uppercase opacity-80 mt-1">Virtual Outlet</p>
                     </div>
                 </div>
-                <button @click="sidebarOpen = false" class="lg:hidden text-white/60 hover:text-white">
-                    <span class="material-symbols-outlined">close</span>
+                <button @click.stop="sidebarOpen = false" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 text-white">
+                    <i class="fas fa-times"></i>
                 </button>
             </div>
         </div>
