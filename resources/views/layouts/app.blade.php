@@ -82,14 +82,15 @@
             <!-- Mobile Header -->
             <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[80] shadow-lg">
                 @auth
-                    <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
-                        <i class="fas" :class="sidebarOpen ? 'fa-times' : 'fa-bars'"></i>
+                    <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition relative">
+                        <i x-show="!sidebarOpen" class="fa-solid fa-bars text-lg"></i>
+                        <i x-show="sidebarOpen" class="fa-solid fa-xmark text-lg" x-cloak></i>
                     </button>
                     
                     <h1 class="text-xl font-black tracking-tightest uppercase">V.O.I.C.E.</h1>
 
                     <button class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition relative">
-                        <i class="fas fa-bell"></i>
+                        <i class="fa-solid fa-bell text-lg"></i>
                         <template x-if="hasNotifications">
                             <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse shadow-[0_0_5px_rgba(239,68,68,0.8)]"></span>
                         </template>
@@ -113,7 +114,7 @@
             @auth
             <aside 
                 :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-                class="fixed inset-y-0 left-0 z-[70] w-80 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl"
+                class="fixed inset-y-0 left-0 z-[70] w-80 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl pt-20 lg:pt-0"
             >
                 <!-- Logo Section -->
                 <div class="p-8 mb-4">

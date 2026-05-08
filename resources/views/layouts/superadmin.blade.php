@@ -66,14 +66,15 @@
     <!-- Mobile Header -->
     <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[80] shadow-lg">
         @auth
-            <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
-                <i class="fas" :class="sidebarOpen ? 'fa-times' : 'fa-bars'"></i>
+            <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition relative">
+                <i x-show="!sidebarOpen" class="fa-solid fa-bars text-lg"></i>
+                <i x-show="sidebarOpen" class="fa-solid fa-xmark text-lg" x-cloak></i>
             </button>
             
             <h1 class="text-xl font-black tracking-tightest uppercase text-tertiary">V.O.I.C.E.</h1>
 
             <button class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition">
-                <i class="fas fa-bell"></i>
+                <i class="fa-solid fa-bell text-lg"></i>
             </button>
         @endauth
     </div>
@@ -94,7 +95,7 @@
     <!-- Sidebar Navigation -->
     <aside 
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-        class="fixed inset-y-0 left-0 z-[70] w-64 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl lg:translate-x-0"
+        class="fixed inset-y-0 left-0 z-[70] w-64 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl lg:translate-x-0 pt-20 lg:pt-0"
     >
         <div class="p-6 lg:p-8 mb-4">
             <div class="flex justify-between items-center lg:block">
