@@ -77,85 +77,7 @@
         }
     </script>
 </head>
-<body class="bg-[#fef9e1] antialiased overflow-x-hidden" x-data="{ 
-    sidebarOpen: false, 
-    profileModalOpen: false, 
-    ratingModalOpen: false,
-    ratingComplaint: null,
-    currentRating: 0,
-    hoverRating: 0,
-    profilePreview: null, 
-    showCurrentPassword: false, 
-    showNewPassword: false,
-    counts: {
-        total_complaints: {{ $totalComplaintsCount ?? 0 }},
-        unseen_messages: {{ $unseenMessagesCount ?? 0 }},
-        new_polls: {{ ($hasNewPolls ?? false) ? 'true' : 'false' }},
-        resolved_unrated: @json($resolvedUnrated ?? [])
-    },
-    get hasNotifications() {
-        return this.counts.total_complaints > 0 || this.counts.unseen_messages > 0 || this.counts.new_polls || (this.counts.resolved_unrated && this.counts.resolved_unrated.length > 0);
-    },
-    async checkNotifications() {
-        try {
-            const response = await fetch('{{ route('notifications.counts') }}');
-            if (response.ok) {
-                const data = await response.json();
-                this.counts = data;
-                
-                // If there are unrated complaints, open the rating modal for the first one
-                if (!this.ratingModalOpen && data.resolved_unrated && data.resolved_unrated.length > 0) {
-                    this.openRatingModal(data.resolved_unrated[0]);
-                }
-            }
-        } catch (e) {
-            console.error('Notification check failed:', e);
-        }
-    },
-    openRatingModal(complaint) {
-        this.ratingComplaint = complaint;
-        this.currentRating = 0;
-        this.ratingModalOpen = true;
-    },
-    async submitRating() {
-        if (this.currentRating === 0) return;
-        
-        try {
-            const response = await fetch(`/user/complaints/${this.ratingComplaint.id}/rate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ rating: this.currentRating })
-            });
-            
-            if (response.ok) {
-                this.ratingModalOpen = false;
-                // Remove the rated complaint from the list
-                this.counts.resolved_unrated = this.counts.resolved_unrated.filter(c => c.id !== this.ratingComplaint.id);
-                
-                // If there are more, show the next one after a short delay
-                if (this.counts.resolved_unrated.length > 0) {
-                    setTimeout(() => {
-                        this.openRatingModal(this.counts.resolved_unrated[0]);
-                    }, 500);
-                }
-            }
-        } catch (e) {
-            console.error('Rating submission failed:', e);
-        }
-    },
-    init() {
-        // First, check if we already have data from the page load
-        if (this.counts.resolved_unrated && this.counts.resolved_unrated.length > 0) {
-            this.openRatingModal(this.counts.resolved_unrated[0]);
-        }
-        
-        this.checkNotifications();
-        setInterval(() => this.checkNotifications(), 15000);
-    }
-}">
+<body class="bg-[#fef9e1] antialiased overflow-x-hidden" x-data="voiceApp()">
     <div class="min-h-screen flex flex-col">  
             <!-- Mobile Header -->
             <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[110] shadow-lg">
@@ -593,6 +515,88 @@
             </main>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
+        function voiceApp() {
+            return {
+                sidebarOpen: false, 
+                profileModalOpen: false, 
+                ratingModalOpen: false,
+                ratingComplaint: null,
+                currentRating: 0,
+                hoverRating: 0,
+                profilePreview: null, 
+                showCurrentPassword: false, 
+                showNewPassword: false,
+                counts: {
+                    total_complaints: {{ $totalComplaintsCount ?? 0 }},
+                    unseen_messages: {{ $unseenMessagesCount ?? 0 }},
+                    new_polls: {{ ($hasNewPolls ?? false) ? 'true' : 'false' }},
+                    resolved_unrated: @json($resolvedUnrated ?? [])
+                },
+                get hasNotifications() {
+                    return this.counts.total_complaints > 0 || this.counts.unseen_messages > 0 || this.counts.new_polls || (this.counts.resolved_unrated && this.counts.resolved_unrated.length > 0);
+                },
+                async checkNotifications() {
+                    try {
+                        const response = await fetch('{{ route('notifications.counts') }}');
+                        if (response.ok) {
+                            const data = await response.json();
+                            this.counts = data;
+                            
+                            // If there are unrated complaints, open the rating modal for the first one
+                            if (!this.ratingModalOpen && data.resolved_unrated && data.resolved_unrated.length > 0) {
+                                this.openRatingModal(data.resolved_unrated[0]);
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Notification check failed:', e);
+                    }
+                },
+                openRatingModal(complaint) {
+                    this.ratingComplaint = complaint;
+                    this.currentRating = 0;
+                    this.ratingModalOpen = true;
+                },
+                async submitRating() {
+                    if (this.currentRating === 0) return;
+                    
+                    try {
+                        const response = await fetch(`/user/complaints/${this.ratingComplaint.id}/rate`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({ rating: this.currentRating })
+                        });
+                        
+                        if (response.ok) {
+                            this.ratingModalOpen = false;
+                            // Remove the rated complaint from the list
+                            this.counts.resolved_unrated = this.counts.resolved_unrated.filter(c => c.id !== this.ratingComplaint.id);
+                            
+                            // If there are more, show the next one after a short delay
+                            if (this.counts.resolved_unrated.length > 0) {
+                                setTimeout(() => {
+                                    this.openRatingModal(this.counts.resolved_unrated[0]);
+                                }, 500);
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Rating submission failed:', e);
+                    }
+                },
+                init() {
+                    // First, check if we already have data from the page load
+                    if (this.counts.resolved_unrated && this.counts.resolved_unrated.length > 0) {
+                        this.openRatingModal(this.counts.resolved_unrated[0]);
+                    }
+                    
+                    this.checkNotifications();
+                    setInterval(() => this.checkNotifications(), 15000);
+                }
+            }
+        }
+
         function updateClock() {
     ...
             const clock = document.getElementById('institutional-clock');
