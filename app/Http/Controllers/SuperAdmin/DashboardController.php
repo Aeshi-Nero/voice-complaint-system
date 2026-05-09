@@ -42,10 +42,15 @@ class DashboardController extends Controller
 
         // 6. Recent Admins for the Leaderboard
         $adminsForLeaderboard = User::where('role', 'admin')
-            ->withCount(['complaints as assigned_count'])
+            ->withCount(['complaints as assigned_count' => function($q) {
+                $q->whereNotNull('assigned_to');
+            }])
             ->withCount(['complaints as resolved_count' => function($q) {
                 $q->where('status', 'resolved');
             }])
+            ->withAvg(['complaints as avg_rating' => function($q) {
+                $q->whereNotNull('rating');
+            }], 'rating')
             ->get();
 
         return view('dashboard.superadmin.dashboard', compact(

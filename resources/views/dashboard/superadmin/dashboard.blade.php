@@ -187,9 +187,9 @@
                         <p class="text-[8px] font-black text-zinc-400 uppercase tracking-widest mb-1">Efficiency</p>
                         <p class="text-sm font-black text-primary">{{ $efficiency }}%</p>
                     </div>
-                    <div class="text-center p-3 bg-gray-50 rounded-2xl">
+                        <div class="text-center p-3 bg-gray-50 rounded-2xl">
                         <p class="text-[8px] font-black text-zinc-400 uppercase tracking-widest mb-1">Rating</p>
-                        <p class="text-sm font-black text-primary">4.9</p>
+                        <p class="text-sm font-black text-primary">{{ number_format($admin->avg_rating ?? 0, 1) }}</p>
                     </div>
                 </div>
 
@@ -246,7 +246,7 @@
                         </td>
                         <td class="px-6 py-6">
                             <div class="flex items-center justify-center gap-1.5">
-                                <span class="text-sm font-black text-primary">4.9</span>
+                                <span class="text-sm font-black text-primary">{{ number_format($admin->avg_rating ?? 0, 1) }}</span>
                                 <i class="fas fa-star text-accent text-[10px]"></i>
                             </div>
                         </td>

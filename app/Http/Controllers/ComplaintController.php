@@ -383,6 +383,23 @@ class ComplaintController extends Controller
         return redirect()->route("user.complaints.index")->with("success", "Complaint deleted successfully!");
     }
 
+    public function rate(Request $request, Complaint $complaint)
+    {
+        if ($complaint->user_id !== Auth::id() || $complaint->status !== 'resolved') {
+            abort(403);
+        }
+
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+        ]);
+
+        $complaint->update([
+            'rating' => $request->rating,
+        ]);
+
+        return back()->with('success', 'Thank you for your feedback!');
+    }
+
     public function getUnseenCounts()
     {
         $user = Auth::user();
@@ -399,6 +416,12 @@ class ComplaintController extends Controller
             $counts['new_polls'] = \App\Models\Poll::where('status', 'active')
                 ->where('created_at', '>', $user->last_poll_viewed_at ?? '2000-01-01 00:00:00')
                 ->exists();
+
+            $counts['resolved_unrated'] = \App\Models\Complaint::where('user_id', $user->id)
+                ->where('status', 'resolved')
+                ->whereNull('rating')
+                ->with(['user', 'assignedTo'])
+                ->get();
         }
 
         return response()->json($counts);

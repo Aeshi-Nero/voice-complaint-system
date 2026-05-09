@@ -59,6 +59,11 @@ class AdminManagementController extends Controller
             
         $efficiencyRate = $totalManaged > 0 ? round(($totalResolved / $totalManaged) * 100) : 0;
 
+        // Calculate Average Satisfaction Rating
+        $averageRating = Complaint::where('assigned_to', $admin->id)
+            ->whereNotNull('rating')
+            ->avg('rating') ?? 0;
+
         // Mock monthly trend data for the chart
         $monthlyTrends = Complaint::where('assigned_to', $admin->id)
             ->select(DB::raw('count(*) as count'), DB::raw("DATE_FORMAT(created_at, '%b') as month"))
@@ -72,6 +77,7 @@ class AdminManagementController extends Controller
             'totalManaged', 
             'resolvedMonth', 
             'efficiencyRate',
+            'averageRating',
             'monthlyTrends'
         ));
     }

@@ -80,25 +80,70 @@
 <body class="bg-[#fef9e1] antialiased overflow-x-hidden" x-data="{ 
     sidebarOpen: false, 
     profileModalOpen: false, 
+    ratingModalOpen: false,
+    ratingComplaint: null,
+    currentRating: 0,
+    hoverRating: 0,
     profilePreview: null, 
     showCurrentPassword: false, 
     showNewPassword: false,
     counts: {
         total_complaints: {{ $totalComplaintsCount ?? 0 }},
         unseen_messages: {{ $unseenMessagesCount ?? 0 }},
-        new_polls: {{ ($hasNewPolls ?? false) ? 'true' : 'false' }}
+        new_polls: {{ ($hasNewPolls ?? false) ? 'true' : 'false' }},
+        resolved_unrated: []
     },
     get hasNotifications() {
-        return this.counts.total_complaints > 0 || this.counts.unseen_messages > 0 || this.counts.new_polls;
+        return this.counts.total_complaints > 0 || this.counts.unseen_messages > 0 || this.counts.new_polls || this.counts.resolved_unrated.length > 0;
     },
     async checkNotifications() {
         try {
             const response = await fetch('{{ route('notifications.counts') }}');
             if (response.ok) {
-                this.counts = await response.json();
+                const data = await response.json();
+                this.counts = data;
+                
+                // If there are unrated complaints, open the rating modal for the first one
+                if (!this.ratingModalOpen && data.resolved_unrated && data.resolved_unrated.length > 0) {
+                    this.openRatingModal(data.resolved_unrated[0]);
+                }
             }
         } catch (e) {
             console.error('Notification check failed:', e);
+        }
+    },
+    openRatingModal(complaint) {
+        this.ratingComplaint = complaint;
+        this.currentRating = 0;
+        this.ratingModalOpen = true;
+    },
+    async submitRating() {
+        if (this.currentRating === 0) return;
+        
+        try {
+            const response = await fetch(`/user/complaints/${this.ratingComplaint.id}/rate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ rating: this.currentRating })
+            });
+            
+            if (response.ok) {
+                this.ratingModalOpen = false;
+                // Remove the rated complaint from the list
+                this.counts.resolved_unrated = this.counts.resolved_unrated.filter(c => c.id !== this.ratingComplaint.id);
+                
+                // If there are more, show the next one after a short delay
+                if (this.counts.resolved_unrated.length > 0) {
+                    setTimeout(() => {
+                        this.openRatingModal(this.counts.resolved_unrated[0]);
+                    }, 500);
+                }
+            }
+        } catch (e) {
+            console.error('Rating submission failed:', e);
         }
     },
     init() {
@@ -473,6 +518,72 @@
                 <button class="fixed bottom-8 right-8 w-16 h-16 bg-[#004d26] text-white rounded-[1.5rem] flex items-center justify-center shadow-2xl hover:bg-[#003d1e] transition-all transform hover:rotate-6 active:scale-95 group border-4 border-white">
                     <i class="fas fa-question text-xl group-hover:animate-bounce"></i>
                 </button> -->
+
+                <!-- Rating Modal -->
+                <div x-show="ratingModalOpen" 
+                     x-cloak
+                     class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-[#163a24]/90 backdrop-blur-md"
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95">
+                    
+                    <div class="bg-white rounded-[3rem] shadow-2xl w-full max-w-md overflow-hidden border-4 border-[#f3bc3e]/30">
+                        <div class="p-8 text-center bg-[#163a24] text-white relative">
+                            <div class="absolute -top-12 left-1/2 -translate-x-1/2 w-24 h-24 bg-[#f3bc3e] rounded-[2rem] flex items-center justify-center shadow-xl rotate-12">
+                                <i class="fas fa-star text-4xl text-[#163a24]"></i>
+                            </div>
+                            <div class="mt-8">
+                                <h3 class="text-2xl font-black uppercase tracking-tight">Rate our Service</h3>
+                                <p class="text-white/60 text-xs font-bold mt-2 uppercase tracking-widest" x-text="ratingComplaint ? `Case #${ratingComplaint.complaint_number}` : ''"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="p-10 space-y-8">
+                            <div class="text-center">
+                                <p class="text-gray-500 font-bold text-sm mb-6">How would you rate the resolution of your complaint?</p>
+                                
+                                <div class="flex items-center justify-center gap-3">
+                                    <template x-for="i in 5">
+                                        <button @click="currentRating = i" 
+                                                @mouseenter="hoverRating = i" 
+                                                @mouseleave="hoverRating = 0"
+                                                class="text-4xl transition-all transform hover:scale-125 focus:outline-none"
+                                                :class="(hoverRating >= i || currentRating >= i) ? 'text-[#f3bc3e]' : 'text-gray-200'">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    </template>
+                                </div>
+                                <div class="mt-4 h-4">
+                                    <p x-show="currentRating > 0" class="text-[10px] font-black uppercase tracking-widest text-[#163a24]" 
+                                       x-text="['Poor', 'Fair', 'Good', 'Very Good', 'Excellent'][currentRating-1]"></p>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 rounded-2xl p-4 border-2 border-dashed border-gray-100" x-show="ratingComplaint && ratingComplaint.assigned_to">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-xl bg-[#163a24] flex items-center justify-center text-white shrink-0">
+                                        <i class="fas fa-user-shield text-xs"></i>
+                                    </div>
+                                    <div class="flex-1 overflow-hidden">
+                                        <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest">Handled by</p>
+                                        <p class="text-xs font-black text-[#163a24] truncate uppercase" x-text="ratingComplaint && ratingComplaint.assigned_to ? ratingComplaint.assigned_to.name : 'System Administrator'"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button @click="submitRating()" 
+                                    :disabled="currentRating === 0"
+                                    class="w-full bg-[#163a24] text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-[0_8px_0_rgb(10,26,16)] active:shadow-none active:translate-y-[8px] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0">
+                                Submit Feedback
+                            </button>
+                            
+                            <p class="text-[8px] font-bold text-gray-400 text-center uppercase tracking-widest">Your feedback helps us improve our academic services.</p>
+                        </div>
+                    </div>
+                </div>
                 @endauth
             </main>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>

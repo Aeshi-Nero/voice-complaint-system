@@ -69,6 +69,7 @@ class ComplaintModerationController extends Controller
             $complaint->update([
                 'status' => 'in_progress',
                 'admin_notes' => $request->admin_notes,
+                'assigned_to' => auth()->id(),
             ]);
             
             $message = 'Complaint accepted and marked as in progress.';
@@ -77,6 +78,7 @@ class ComplaintModerationController extends Controller
                 'status' => 'rejected',
                 'admin_notes' => $request->admin_notes,
                 'resolved_at' => Carbon::now('Asia/Manila'),
+                'assigned_to' => auth()->id(),
             ]);
             
             // Check if user should be blocked after 3 rejections
@@ -100,6 +102,7 @@ class ComplaintModerationController extends Controller
         $complaint->update([
             'status' => 'resolved',
             'resolved_at' => Carbon::now('Asia/Manila'),
+            'assigned_to' => auth()->id(),
         ]);
         
         return redirect()->route('admin.complaints.show', $complaint)->with('success', 'Complaint marked as resolved.');
