@@ -64,7 +64,7 @@
 <body class="text-on-surface antialiased overflow-x-hidden" x-data="{ sidebarOpen: false, profileModalOpen: false, profilePreview: null, showCurrentPassword: false, showNewPassword: false }">
 
     <!-- Mobile Header -->
-    <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[80] shadow-lg">
+    <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[110] shadow-lg">
         @auth
             <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 transition relative">
                 <i x-show="!sidebarOpen" class="fa-solid fa-bars text-lg"></i>
@@ -88,14 +88,14 @@
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
             @click="sidebarOpen = false" 
-            class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[65] lg:hidden"
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] lg:hidden"
             x-cloak>
     </div>
 
     <!-- Sidebar Navigation -->
     <aside 
         :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-        class="fixed inset-y-0 left-0 z-[70] w-64 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl lg:translate-x-0 pt-20 lg:pt-0"
+        class="fixed inset-y-0 left-0 z-[100] w-64 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl lg:translate-x-0 pt-20 lg:pt-0"
     >
         <div class="p-6 lg:p-8 mb-4">
             <div class="flex justify-between items-center lg:block">
@@ -108,8 +108,8 @@
                         <p class="text-[9px] font-bold text-[#f3bc3e] tracking-tight uppercase opacity-80 mt-1">Virtual Outlet</p>
                     </div>
                 </div>
-                <button @click.stop="sidebarOpen = false" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 text-white">
-                    <i class="fas fa-times"></i>
+                <button @click="sidebarOpen = false" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/20 transition">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
         </div>
@@ -218,7 +218,7 @@
     @auth
     <!-- Profile Modal -->
     <div x-show="profileModalOpen" 
-         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-primary/80 backdrop-blur-sm"
+         class="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-primary/80 backdrop-blur-sm"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
