@@ -144,8 +144,8 @@
                 :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
                 class="fixed inset-y-0 left-0 z-[100] w-80 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl lg:translate-x-0 pt-20 lg:pt-0"
             >
-                <!-- Logo Section -->
-                <div class="p-8 mb-4">
+                <!-- Logo Section (Hidden on mobile as it's redundant with the header) -->
+                <div class="hidden lg:block p-8 mb-4">
                     <div class="flex items-center justify-between lg:justify-start gap-4">
                         <div class="flex items-center gap-4">
                             <div class="hidden lg:flex bg-white w-12 h-12 lg:w-14 lg:h-14 rounded-2xl items-center justify-center overflow-hidden border-2 border-[#f3bc3e] shadow-inner p-1">
