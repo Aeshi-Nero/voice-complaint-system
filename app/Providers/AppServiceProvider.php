@@ -84,6 +84,13 @@ class AppServiceProvider extends ServiceProvider
                                 ->count();
                         });
                     }
+
+                    // Always check for unrated resolved complaints for the current user
+                    $composedData['resolvedUnrated'] = \App\Models\Complaint::where('user_id', $user->id)
+                        ->where('status', 'resolved')
+                        ->whereNull('rating')
+                        ->with('assignedTo')
+                        ->get();
                 }
             }
 

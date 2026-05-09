@@ -91,10 +91,10 @@
         total_complaints: {{ $totalComplaintsCount ?? 0 }},
         unseen_messages: {{ $unseenMessagesCount ?? 0 }},
         new_polls: {{ ($hasNewPolls ?? false) ? 'true' : 'false' }},
-        resolved_unrated: []
+        resolved_unrated: @json($resolvedUnrated ?? [])
     },
     get hasNotifications() {
-        return this.counts.total_complaints > 0 || this.counts.unseen_messages > 0 || this.counts.new_polls || this.counts.resolved_unrated.length > 0;
+        return this.counts.total_complaints > 0 || this.counts.unseen_messages > 0 || this.counts.new_polls || (this.counts.resolved_unrated && this.counts.resolved_unrated.length > 0);
     },
     async checkNotifications() {
         try {
@@ -147,6 +147,11 @@
         }
     },
     init() {
+        // First, check if we already have data from the page load
+        if (this.counts.resolved_unrated && this.counts.resolved_unrated.length > 0) {
+            this.openRatingModal(this.counts.resolved_unrated[0]);
+        }
+        
         this.checkNotifications();
         setInterval(() => this.checkNotifications(), 15000);
     }

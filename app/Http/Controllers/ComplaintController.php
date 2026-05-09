@@ -416,13 +416,13 @@ class ComplaintController extends Controller
             $counts['new_polls'] = \App\Models\Poll::where('status', 'active')
                 ->where('created_at', '>', $user->last_poll_viewed_at ?? '2000-01-01 00:00:00')
                 ->exists();
-
-            $counts['resolved_unrated'] = \App\Models\Complaint::where('user_id', $user->id)
-                ->where('status', 'resolved')
-                ->whereNull('rating')
-                ->with(['user', 'assignedTo'])
-                ->get();
         }
+
+        $counts['resolved_unrated'] = \App\Models\Complaint::where('user_id', $user->id)
+            ->where('status', 'resolved')
+            ->whereNull('rating')
+            ->with(['user', 'assignedTo'])
+            ->get();
 
         return response()->json($counts);
     }
