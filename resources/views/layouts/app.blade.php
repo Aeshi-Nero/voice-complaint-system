@@ -441,10 +441,36 @@
                     </div>
                 </div>
 
-                <!-- Help Button
-                <button class="fixed bottom-8 right-8 w-16 h-16 bg-[#004d26] text-white rounded-[1.5rem] flex items-center justify-center shadow-2xl hover:bg-[#003d1e] transition-all transform hover:rotate-6 active:scale-95 group border-4 border-white">
-                    <i class="fas fa-question text-xl group-hover:animate-bounce"></i>
-                </button> -->
+                <!-- Rating Modal -->
+                <div x-show="ratingModalOpen" x-cloak class="fixed inset-0 z-[200] bg-primary/60 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div @click.away="ratingModalOpen = false" class="bg-white w-full max-w-md rounded-[3rem] p-8 shadow-2xl text-center space-y-6">
+                        <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto">
+                            <i class="fas fa-star text-accent text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-primary uppercase tracking-tight">Rate Your Experience</h3>
+                        <p class="text-sm font-bold text-gray-500">How would you rate the service you received?</p>
+
+                        <div class="flex items-center justify-center gap-2">
+                            <template x-for="star in 5" :key="star">
+                                <button type="button" @click="setRating(star)" @mouseenter="hoverRating = star" @mouseleave="hoverRating = 0" class="text-4xl transition-all duration-150 transform hover:scale-110 focus:outline-none">
+                                    <i class="fas fa-star" :class="star <= (hoverRating || currentRating) ? 'text-accent' : 'text-gray-200'"></i>
+                                </button>
+                            </template>
+                        </div>
+
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest" x-text="currentRating ? 'You selected ' + currentRating + ' out of 5 stars' : 'Click a star to rate'"></p>
+
+                        <div class="flex gap-3 pt-2">
+                            <button type="button" @click="ratingModalOpen = false" class="flex-1 py-4 bg-gray-100 text-gray-500 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-gray-200 transition">
+                                Skip
+                            </button>
+                            <button type="button" @click="submitRating()" :disabled="currentRating === 0" class="flex-1 py-4 bg-accent text-primary rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-accent/20 hover:bg-yellow-300 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 @endauth
             </main>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -456,13 +482,19 @@
                 profilePreview: null, 
                 showCurrentPassword: false, 
                 showNewPassword: false,
+                // Rating state
+                ratingModalOpen: false,
+                ratingComplaint: null,
+                currentRating: 0,
+                hoverRating: 0,
                 counts: {
                     total_complaints: {{ $totalComplaintsCount ?? 0 }},
                     unseen_messages: {{ $unseenMessagesCount ?? 0 }},
-                    new_polls: {{ ($hasNewPolls ?? false) ? 'true' : 'false' }}
+                    new_polls: {{ ($hasNewPolls ?? false) ? 'true' : 'false' }},
+                    resolved_unrated: []
                 },
                 get hasNotifications() {
-                    return this.counts.total_complaints > 0 || this.counts.unseen_messages > 0 || this.counts.new_polls;
+                    return this.counts.total_complaints > 0 || this.counts.unseen_messages > 0 || this.counts.new_polls || (this.counts.resolved_unrated && this.counts.resolved_unrated.length > 0);
                 },
                 init() {
                     this.checkNotifications();
@@ -473,10 +505,47 @@
                     try {
                         const response = await fetch('{{ route('notifications.counts') }}');
                         if (response.ok) {
-                            this.counts = await response.json();
+                            const data = await response.json();
+                            this.counts = data;
+                            if (!this.ratingModalOpen && data.resolved_unrated && data.resolved_unrated.length > 0) {
+                                this.openRatingModal(data.resolved_unrated[0]);
+                            }
                         }
                     } catch (e) {
                         console.error('Notification check failed:', e);
+                    }
+                },
+                openRatingModal(complaint) {
+                    this.ratingComplaint = complaint;
+                    this.currentRating = 0;
+                    this.ratingModalOpen = true;
+                },
+                setRating(val) {
+                    this.currentRating = val;
+                },
+                async submitRating() {
+                    if (this.currentRating === 0) return;
+                    try {
+                        const response = await fetch(`/user/complaints/${this.ratingComplaint.id}/rate`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({ rating: this.currentRating })
+                        });
+                        if (response.ok) {
+                            this.ratingModalOpen = false;
+                            this.counts.resolved_unrated = this.counts.resolved_unrated.filter(c => c.id !== this.ratingComplaint.id);
+                            if (this.counts.resolved_unrated.length > 0) {
+                                setTimeout(() => this.openRatingModal(this.counts.resolved_unrated[0]), 500);
+                            }
+                        } else {
+                            const data = await response.json();
+                            console.error('Rating submission failed:', data);
+                        }
+                    } catch (e) {
+                        console.error('Rating submission failed:', e);
                     }
                 }
             }

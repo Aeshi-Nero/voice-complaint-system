@@ -399,8 +399,32 @@ class ComplaintController extends Controller
             $counts['new_polls'] = \App\Models\Poll::where('status', 'active')
                 ->where('created_at', '>', $user->last_poll_viewed_at ?? '2000-01-01 00:00:00')
                 ->exists();
+
+            $counts['resolved_unrated'] = \App\Models\Complaint::where('user_id', $user->id)
+                ->where('status', 'resolved')
+                ->whereNull('rating')
+                ->get();
         }
 
         return response()->json($counts);
+    }
+
+    public function rate(Request $request, \App\Models\Complaint $complaint)
+    {
+        if ($complaint->user_id !== Auth::id()) {
+            abort(403);
+        }
+        if ($complaint->status !== 'resolved') {
+            return response()->json(['error' => 'Complaint is not resolved'], 422);
+        }
+        if ($complaint->rating !== null) {
+            return response()->json(['error' => 'Already rated'], 422);
+        }
+
+        $request->validate(['rating' => 'required|integer|min:1|max:5']);
+
+        $complaint->update(['rating' => $request->rating]);
+
+        return response()->json(['success' => true]);
     }
 }

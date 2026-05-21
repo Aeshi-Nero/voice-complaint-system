@@ -302,6 +302,7 @@ Route::middleware(["auth"])->prefix("user")->name("user.")->group(function () {
     Route::get("/polls/{poll}/report", [ComplaintController::class, "pollReport"])->name("polls.report");
     Route::get("/polls/{poll}/live", [ComplaintController::class, "livePollResults"])->name("polls.live");
     Route::post("/polls/{poll}/vote", [VoteController::class, "vote"])->name("polls.vote");
+    Route::post("/complaints/{complaint}/rate", [ComplaintController::class, "rate"])->name("complaints.rate");
     Route::resource("complaints", ComplaintController::class);
 });
 
