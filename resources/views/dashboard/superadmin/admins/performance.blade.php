@@ -39,9 +39,6 @@
         <div class="bg-error-container p-6 rounded-xl shadow-sm flex flex-col justify-between">
             <div>
                 <span class="label-md font-bold text-on-error-container uppercase tracking-widest text-[10px]">Active Workload</span>
-                @php 
-                    $activeCount = \App\Models\Complaint::where('assigned_to', $admin->id)->whereIn('status', ['pending', 'in_progress'])->count();
-                @endphp
                 <div class="text-3xl lg:text-4xl font-black text-on-error-container mt-2">{{ $activeCount }}</div>
             </div>
             <div class="mt-4 text-on-error-container/60 text-xs font-medium">Currently in-queue</div>
@@ -51,9 +48,6 @@
             <div>
                 <span class="label-md font-bold text-outline uppercase tracking-widest text-[10px]">Average Rating</span>
                 <div class="flex items-end gap-2 mt-2">
-                    @php
-                        $avgRating = \App\Models\Complaint::where('assigned_to', $admin->id)->whereNotNull('rating')->avg('rating') ?: 0;
-                    @endphp
                     <div class="text-3xl lg:text-4xl font-black text-primary">{{ number_format($avgRating, 1) }}</div>
                     <div class="flex mb-1">
                         @for($i = 1; $i <= 5; $i++)
@@ -118,13 +112,6 @@
                 Recent Actions
             </h3>
             <div class="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                @php
-                    $recentActions = \App\Models\Complaint::where('assigned_to', $admin->id)
-                        ->orderBy('updated_at', 'desc')
-                        ->limit(10)
-                        ->get();
-                @endphp
-                
                 @forelse($recentActions as $action)
                 <div class="flex gap-4 group">
                     <div class="flex flex-col items-center">
@@ -176,7 +163,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div>
                     <span class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-1">Affiliation</span>
-                    <span class="text-sm font-semibold text-primary">{{ $admin->course ?: 'General Admin' }}</span>
+                    <span class="text-sm font-semibold text-primary">{{ $admin->course ?: config('departments.default_label') }}</span>
                 </div>
                 <div>
                     <span class="text-[10px] font-bold text-outline uppercase tracking-widest block mb-1">Account Created</span>

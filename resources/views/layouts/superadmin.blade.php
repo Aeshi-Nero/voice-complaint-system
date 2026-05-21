@@ -187,7 +187,7 @@
                     <div class="flex-1 overflow-hidden">
                         <p class="text-xs font-black text-accent uppercase tracking-widest truncate">{{ auth()->user()?->name }}</p>
                         <p class="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] mt-0.5">
-                            Super Administrator
+                            {{ config('roles.' . auth()->user()->role, auth()->user()->role) }}
                         </p>
                     </div>
                 </button>

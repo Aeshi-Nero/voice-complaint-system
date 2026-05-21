@@ -61,17 +61,16 @@
                     </div>
                     <div class="space-y-1.5">
                         <label class="label-md font-black text-[10px] text-primary uppercase tracking-widest ml-1">Email Address</label>
-                        <input name="email" class="w-full bg-surface-container-highest border-2 border-transparent focus:border-primary focus:bg-surface-bright transition-all p-4 md:p-5 rounded-2xl outline-none text-on-surface placeholder:text-outline-variant font-bold text-sm md:text-base" placeholder="administrator@aldersgate.edu.ph" type="email" required/>
+                        <input name="email" class="w-full bg-surface-container-highest border-2 border-transparent focus:border-primary focus:bg-surface-bright transition-all p-4 md:p-5 rounded-2xl outline-none text-on-surface placeholder:text-outline-variant font-bold text-sm md:text-base" placeholder="administrator@{{ config('app.domain', 'institution.edu.ph') }}" type="email" required/>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                         <div class="space-y-1.5">
                             <label class="label-md font-black text-[10px] text-primary uppercase tracking-widest ml-1">Department</label>
                             <div class="relative">
                                 <select name="course" class="w-full bg-surface-container-highest border-2 border-transparent focus:border-primary focus:bg-surface-bright transition-all p-4 md:p-5 rounded-2xl outline-none text-on-surface appearance-none font-black text-sm md:text-base cursor-pointer">
-                                    <option value="">General Administration</option>
-                                    <option value="BSED">Academic Affairs (BSED)</option>
-                                    <option value="BSIT">IT Bureau (BSIT)</option>
-                                    <option value="Finance">Finance Office</option>
+                                    @foreach(config('departments.options') as $value => $label)
+                                        <option value="{{ $value }}">{{ $label }}</option>
+                                    @endforeach
                                 </select>
                                 <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-primary/20 pointer-events-none text-xs"></i>
                             </div>

@@ -168,7 +168,7 @@
                         </div>
                         <div>
                             <p class="text-sm font-black text-primary uppercase tracking-tight">{{ $admin->name }}</p>
-                            <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ $admin->course ?: 'General Admin' }}</p>
+                            <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ $admin->course ?: config('departments.default_label') }}</p>
                         </div>
                     </div>
                     @if($efficiency >= 90)
@@ -189,7 +189,7 @@
                     </div>
                     <div class="text-center p-3 bg-gray-50 rounded-2xl">
                         <p class="text-[8px] font-black text-zinc-400 uppercase tracking-widest mb-1">Rating</p>
-                        <p class="text-sm font-black text-primary">4.9</p>
+                        <p class="text-sm font-black text-primary">{{ number_format((float) $admin->avg_rating, 1) }}</p>
                     </div>
                 </div>
 
@@ -232,7 +232,7 @@
                                 </div>
                                 <div>
                                     <p class="text-sm font-black text-primary uppercase tracking-tight">{{ $admin->name }}</p>
-                                    <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ $admin->course ?: 'General Admin' }}</p>
+                                    <p class="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{{ $admin->course ?: config('departments.default_label') }}</p>
                                 </div>
                             </div>
                         </td>
@@ -246,7 +246,7 @@
                         </td>
                         <td class="px-6 py-6">
                             <div class="flex items-center justify-center gap-1.5">
-                                <span class="text-sm font-black text-primary">4.9</span>
+                                <span class="text-sm font-black text-primary">{{ number_format((float) $admin->avg_rating, 1) }}</span>
                                 <i class="fas fa-star text-accent text-[10px]"></i>
                             </div>
                         </td>

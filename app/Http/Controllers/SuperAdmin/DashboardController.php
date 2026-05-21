@@ -46,6 +46,10 @@ class DashboardController extends Controller
             ->withCount(['complaints as resolved_count' => function($q) {
                 $q->where('status', 'resolved');
             }])
+            ->addSelect(['avg_rating' => Complaint::selectRaw('COALESCE(AVG(rating), 0)')
+                ->whereColumn('assigned_to', 'users.id')
+                ->whereNotNull('rating')
+            ])
             ->get();
 
         return view('dashboard.superadmin.dashboard', compact(

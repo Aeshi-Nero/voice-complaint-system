@@ -68,11 +68,11 @@
                         </div>
                         <div>
                             <p class="font-black text-primary uppercase tracking-tight text-sm">{{ $admin->name }}</p>
-                            <p class="text-[9px] font-bold text-on-surface-variant uppercase tracking-widest">{{ $admin->course ?: 'General Admin' }}</p>
+                            <p class="text-[9px] font-bold text-on-surface-variant uppercase tracking-widest">{{ $admin->course ?: config('departments.default_label') }}</p>
                         </div>
                     </div>
                     <span class="bg-primary-container/10 text-primary-container text-[8px] font-black uppercase tracking-wider px-2 py-1 rounded">
-                        {{ $admin->role === 'superadmin' ? 'Super' : 'Lead' }}
+                        {{ config('roles.' . $admin->role, $admin->role) }}
                     </span>
                 </div>
 
@@ -151,11 +151,11 @@
                             </div>
                         </td>
                         <td class="px-8 py-6">
-                            <span class="text-sm font-medium">{{ $admin->course ?: 'General Administration' }}</span>
+                            <span class="text-sm font-medium">{{ $admin->course ?: config('departments.default_label') }}</span>
                         </td>
                         <td class="px-8 py-6">
                             <span class="bg-primary-container/10 text-primary-container text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded">
-                                {{ $admin->role === 'superadmin' ? 'Superadmin' : 'Lead Admin' }}
+                                {{ config('roles.' . $admin->role, $admin->role) }}
                             </span>
                         </td>
                         <td class="px-8 py-6">
@@ -237,7 +237,7 @@
                 });
             },
             refreshAdminRating(adminId) {
-                fetch('/superadmin/admins/' + adminId + '/avg-rating')
+                fetch('{{ route('superadmin.admins.avg_rating', ['admin' => ':adminId']) }}'.replace(':adminId', adminId))
                     .then(r => r.json())
                     .then(data => {
                         if (data.avg_rating !== undefined) {

@@ -51,7 +51,6 @@ class AdminManagementController extends Controller
 
     public function performance(User $admin)
     {
-        // Calculate metrics for this specific admin
         $totalManaged = Complaint::where('assigned_to', $admin->id)->count();
         $resolvedMonth = Complaint::where('assigned_to', $admin->id)
             ->where('status', 'resolved')
@@ -64,7 +63,6 @@ class AdminManagementController extends Controller
             
         $efficiencyRate = $totalManaged > 0 ? round(($totalResolved / $totalManaged) * 100) : 0;
 
-        // Mock monthly trend data for the chart
         $monthlyTrends = Complaint::where('assigned_to', $admin->id)
             ->select(DB::raw('count(*) as count'), DB::raw("DATE_FORMAT(created_at, '%b') as month"))
             ->groupBy('month')
@@ -72,12 +70,28 @@ class AdminManagementController extends Controller
             ->pluck('count', 'month')
             ->toArray();
 
+        $activeCount = Complaint::where('assigned_to', $admin->id)
+            ->whereIn('status', ['pending', 'in_progress'])
+            ->count();
+
+        $avgRating = Complaint::where('assigned_to', $admin->id)
+            ->whereNotNull('rating')
+            ->avg('rating') ?: 0;
+
+        $recentActions = Complaint::where('assigned_to', $admin->id)
+            ->orderBy('updated_at', 'desc')
+            ->limit(10)
+            ->get();
+
         return view('dashboard.superadmin.admins.performance', compact(
             'admin', 
             'totalManaged', 
             'resolvedMonth', 
             'efficiencyRate',
-            'monthlyTrends'
+            'monthlyTrends',
+            'activeCount',
+            'avgRating',
+            'recentActions'
         ));
     }
 
