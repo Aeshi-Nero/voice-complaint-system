@@ -536,7 +536,7 @@ function complaintChat() {
             files.forEach(file => {
                 this.editNewMsgImagesFiles.push(file);
                 const reader = new FileReader();
-                reader.onload = (e) => this.editNewImagesPreviews.push(e.target.result);
+                reader.onload = (e) => this.editNewMsgImagesPreviews.push(e.target.result);
                 reader.readAsDataURL(file);
             });
         },
@@ -544,6 +544,24 @@ function complaintChat() {
         removeNewMsgEditImage(index) {
             this.editNewMsgImagesFiles.splice(index, 1);
             this.editNewMsgImagesPreviews.splice(index, 1);
+        },
+
+        cancelMessageEdit() {
+            const msgId = this.editingMessageId;
+            this.editingMessageId = null;
+            this.editNewMsgImagesFiles = [];
+            this.editNewMsgImagesPreviews = [];
+            this.editMsgHasAudio = false;
+            if (msgId && this.$refs['editMsgAudioInput_' + msgId]) {
+                this.$refs['editMsgAudioInput_' + msgId].value = '';
+            }
+        },
+
+        cancelMsgEditAudio(msgId) {
+            this.editMsgHasAudio = false;
+            if (this.$refs['editMsgAudioInput_' + msgId]) {
+                this.$refs['editMsgAudioInput_' + msgId].value = '';
+            }
         },
 
         markMsgImageDeleted(msgId, imgPath) {
