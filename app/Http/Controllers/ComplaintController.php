@@ -255,7 +255,7 @@ class ComplaintController extends Controller
         if ($complaint->user_id !== Auth::id() && !Auth::user()->isAdmin()) {
             abort(403);
         }
-        $complaint->load('messages.user');
+        $complaint->load(['messages' => fn($q) => $q->withTrashed(), 'messages.user']);
         return view("dashboard.user.complaint-detail", compact("complaint"));
     }
 

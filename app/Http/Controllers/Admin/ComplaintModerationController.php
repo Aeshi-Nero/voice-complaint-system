@@ -55,6 +55,7 @@ class ComplaintModerationController extends Controller
             ->where('status', 'rejected')
             ->count();
             
+        $complaint->load(['messages' => fn($q) => $q->withTrashed(), 'messages.user']);
         return view('dashboard.admin.complaints.show', compact('complaint', 'userComplaints', 'rejectionCount'));
     }
 

@@ -5,7 +5,11 @@
                 <div class="flex items-center gap-2 mb-2 opacity-60">
                     <span class="text-[10px] font-black uppercase tracking-widest">You • Admin Response</span>
                 </div>
+                @if($msg->deleted_at)
+                <p class="text-sm lg:text-base leading-relaxed font-medium italic opacity-60">This message has been deleted</p>
+                @else
                 <p class="text-sm lg:text-base leading-relaxed font-medium">{{ $msg->message }}</p>
+                @if($msg->is_edited)<span class="text-[9px] font-black text-white/40 ml-2 italic">(edited)</span>@endif
                 
                 @if($msg->audio_paths)
                 @foreach($msg->audio_paths as $index => $audioPath)
@@ -23,6 +27,7 @@
                     @endforeach
                 </div>
                 @endif
+                @endif
                 <p class="text-[9px] font-black text-white/40 text-right mt-4 uppercase">{{ $msg->created_at->format('h:i A') }}</p>
             </div>
         </div>
@@ -33,7 +38,11 @@
                     <div class="w-2 h-2 rounded-full bg-accent"></div>
                     <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">{{ $msg->user->name }}</span>
                 </div>
+                @if($msg->deleted_at)
+                <p class="text-sm lg:text-base leading-relaxed font-semibold italic text-gray-400">This message has been deleted</p>
+                @else
                 <p class="text-sm lg:text-base leading-relaxed font-semibold">{{ $msg->message }}</p>
+                @if($msg->is_edited)<span class="text-[9px] font-black text-gray-300 ml-2 italic">(edited)</span>@endif
                 
                 @if($msg->audio_paths)
                 @foreach($msg->audio_paths as $index => $audioPath)
@@ -50,6 +59,7 @@
                     <img src="{{ asset('storage/' . $image) }}" class="rounded-2xl w-full h-24 lg:h-32 object-cover cursor-zoom-in border border-gray-100" @click="window.open($el.src)">
                     @endforeach
                 </div>
+                @endif
                 @endif
                 <p class="text-[9px] font-black text-gray-300 text-right mt-4 uppercase">{{ $msg->created_at->format('h:i A') }}</p>
             </div>

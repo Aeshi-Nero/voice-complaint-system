@@ -774,6 +774,29 @@ function complaintChat() {
             }
         },
 
+        async deleteMessage(msgId) {
+            if (!confirm('Delete this message?')) return;
+            try {
+                const response = await fetch(`/complaints/messages/${msgId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+                if (response.ok) {
+                    await this.fetchMessages();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to delete message');
+                }
+            } catch (error) {
+                console.error('Delete failed:', error);
+                alert('An error occurred while deleting');
+            }
+        },
+
         async saveMessage(msgId) {
             if (this.sending) return;
             this.sending = true;

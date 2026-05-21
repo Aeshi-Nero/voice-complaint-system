@@ -34,7 +34,13 @@
         <div class="flex justify-end ml-12">
             <div class="bg-[#00a651] text-white p-5 rounded-[2rem] rounded-tr-none shadow-lg shadow-green-900/10 max-w-full relative group">
                 <div x-show="editingMessageId !== {{ $msg->id }}" class="space-y-3">
+                    @if($msg->deleted_at)
+                    <div class="space-y-2 opacity-60">
+                        <p class="text-sm leading-relaxed font-medium italic">This message has been deleted</p>
+                    </div>
+                    @else
                     <p class="text-sm leading-relaxed font-medium">{{ $msg->message }}</p>
+                    @if($msg->is_edited)<span class="text-[9px] font-black text-white/40 ml-2 italic">(edited)</span>@endif
                     
                     @if($msg->audio_paths)
                         @foreach($msg->audio_paths as $index => $audioPath)
@@ -52,6 +58,7 @@
                         @endforeach
                     </div>
                     @endif
+                    @endif
                 </div>
 
                 <div x-show="editingMessageId === {{ $msg->id }}" x-cloak class="space-y-4">
@@ -60,30 +67,28 @@
                                   class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-sm font-medium focus:ring-0 focus:border-white/40 outline-none min-h-[100px]" placeholder="Update your message"></textarea>
                     </div>
 
-                    <!-- Existing Images -->
-                    <template x-if="originalMsgImages[{{ $msg->id }}] && originalMsgImages[{{ $msg->id }}].length > 0">
-                        <div class="grid grid-cols-3 gap-2">
-                            <template x-for="(img, index) in originalMsgImages[{{ $msg->id }}]" :key="index">
-                                <div x-show="!(deletedMsgImages[{{ $msg->id }}] || []).includes(img)" class="relative group aspect-square">
-                                    <img :src="'/storage/' + img" class="w-full h-full object-cover rounded-xl border border-white/10">
-                                    <button type="button" @click="markMsgImageDeleted({{ $msg->id }}, img)" class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-lg flex items-center justify-center shadow-lg hover:bg-red-600 transition">
-                                        <i class="fas fa-times text-[8px]"></i>
-                                    </button>
-                                </div>
-                            </template>
-                        </div>
-                    </template>
-
-                    <!-- Existing Audio -->
-                    <template x-if="originalMsgAudio[{{ $msg->id }}] && originalMsgAudio[{{ $msg->id }}].length > 0 && !msgAudioDeleted[{{ $msg->id }}]">
-                        <div class="bg-white/10 p-3 rounded-xl flex items-center gap-3 border border-white/5">
-                            <i class="fas fa-microphone text-[#f3bc3e]"></i>
-                            <span class="text-[10px] font-black uppercase tracking-widest">Original Audio</span>
-                            <button type="button" @click="msgAudioDeleted[{{ $msg->id }}] = true" class="ml-auto w-6 h-6 bg-red-500 text-white rounded-lg flex items-center justify-center hover:bg-red-600 transition">
+                    @if($msg->images)
+                    <div class="grid grid-cols-3 gap-2">
+                        @foreach($msg->images as $img)
+                        <div x-show="!(deletedMsgImages[{{ $msg->id }}] || []).includes('{{ $img }}')" class="relative group aspect-square">
+                            <img src="{{ asset('storage/' . $img) }}" class="w-full h-full object-cover rounded-xl border border-white/10">
+                            <button type="button" @click="markMsgImageDeleted({{ $msg->id }}, '{{ $img }}')" class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-lg flex items-center justify-center shadow-lg hover:bg-red-600 transition">
                                 <i class="fas fa-times text-[8px]"></i>
                             </button>
                         </div>
-                    </template>
+                        @endforeach
+                    </div>
+                    @endif
+
+                    @if($msg->audio_paths)
+                    <div x-show="!msgAudioDeleted[{{ $msg->id }}]" class="bg-white/10 p-3 rounded-xl flex items-center gap-3 border border-white/5">
+                        <i class="fas fa-microphone text-[#f3bc3e]"></i>
+                        <span class="text-[10px] font-black uppercase tracking-widest">Original Audio</span>
+                        <button type="button" @click="msgAudioDeleted[{{ $msg->id }}] = true" class="ml-auto w-6 h-6 bg-red-500 text-white rounded-lg flex items-center justify-center hover:bg-red-600 transition">
+                            <i class="fas fa-times text-[8px]"></i>
+                        </button>
+                    </div>
+                    @endif
 
                     <!-- New Images Preview -->
                     <template x-if="editNewMsgImagesPreviews.length > 0">
@@ -133,10 +138,16 @@
 
                 <div class="flex items-center justify-end mt-3 gap-3">
                     <p class="text-[9px] font-black text-white/40 uppercase">{{ $msg->created_at->format('h:i A') }}</p>
+                    @unless($msg->deleted_at)
                     <button @click="startEditingMessage({{ $msg->id }}, '{{ addslashes($msg->message) }}')" 
                             class="text-white/40 hover:text-white transition-colors">
                         <i class="fas fa-pencil-alt text-[10px]"></i>
                     </button>
+                    <button @click="deleteMessage({{ $msg->id }})" 
+                            class="text-white/30 hover:text-red-400 transition-colors">
+                        <i class="fas fa-trash-alt text-[10px]"></i>
+                    </button>
+                    @endunless
                 </div>
             </div>
         </div>

@@ -96,6 +96,7 @@ class ComplaintMessageController extends Controller
         if ($request->has('message')) {
             $data['message'] = $request->message ?? '';
         }
+        $data['is_edited'] = true;
 
         // Handle image deletions
         $deletedImages = $request->deleted_images;
@@ -146,9 +147,22 @@ class ComplaintMessageController extends Controller
         ]);
     }
 
+    public function destroy(ComplaintMessage $message)
+    {
+        if ($message->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $message->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
     public function getMessages(Request $request, Complaint $complaint)
     {
-        $messages = $complaint->messages()->with('user')->get();
+        $messages = $complaint->messages()->with('user')->withTrashed()->get();
 
         if ($request->query('html')) {
             $view = Auth::user()->isAdmin()
