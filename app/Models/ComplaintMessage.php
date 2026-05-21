@@ -4,22 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ComplaintMessage extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'complaint_id',
         'user_id',
         'message',
         'is_admin',
+        'is_edited',
         'images',
         'audio_paths',
     ];
 
     protected $casts = [
         'is_admin' => 'boolean',
+        'is_edited' => 'boolean',
         'images' => 'array',
         'audio_paths' => 'array',
     ];

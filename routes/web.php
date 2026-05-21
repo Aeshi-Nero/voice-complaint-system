@@ -291,6 +291,7 @@ Route::post("/profile/update", [ProfileController::class, "update"])->name("prof
 Route::middleware(["auth"])->group(function () {
     Route::post("/complaints/{complaint}/messages", [ComplaintMessageController::class, "store"])->name("complaints.messages.store");
     Route::put("/complaints/messages/{message}", [ComplaintMessageController::class, "update"])->name("complaints.messages.update");
+    Route::delete("/complaints/messages/{message}", [ComplaintMessageController::class, "destroy"])->name("complaints.messages.destroy");
     Route::get("/complaints/{complaint}/messages", [ComplaintMessageController::class, "getMessages"])->name("complaints.messages.get");
 });
 
