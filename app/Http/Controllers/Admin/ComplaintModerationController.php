@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Complaint;
 use App\Models\User;
+use App\Models\Complaint;
+use App\Events\ComplaintResolved;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class ComplaintModerationController extends Controller
@@ -102,6 +104,12 @@ class ComplaintModerationController extends Controller
             'status' => 'resolved',
             'resolved_at' => Carbon::now('Asia/Manila'),
         ]);
+
+        try {
+            ComplaintResolved::dispatch($complaint);
+        } catch (\Exception $e) {
+            \Log::error('Failed to broadcast ComplaintResolved: ' . $e->getMessage());
+        }
         
         return redirect()->route('admin.complaints.show', $complaint)->with('success', 'Complaint marked as resolved.');
     }
