@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Complaint;
 use Illuminate\Support\Facades\Auth;
+use App\Events\ComplaintRated;
 use App\Services\ComplaintNumberService;
 use App\Services\ProfanityService;
 
@@ -424,6 +425,12 @@ class ComplaintController extends Controller
         $request->validate(['rating' => 'required|integer|min:1|max:5']);
 
         $complaint->update(['rating' => $request->rating]);
+
+        try {
+            ComplaintRated::dispatch($complaint);
+        } catch (\Exception $e) {
+            \Log::error('Failed to broadcast ComplaintRated: ' . $e->getMessage());
+        }
 
         return response()->json(['success' => true]);
     }

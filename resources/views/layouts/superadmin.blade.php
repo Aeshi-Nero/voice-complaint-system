@@ -5,6 +5,8 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'V.O.I.C.E. Superadmin')</title>
+    <script src="https://js.pusher.com/8.3.0/pusher.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -42,6 +44,22 @@
           },
         }
     </script>
+    <script>
+        window.Pusher = Pusher;
+        try {
+            window.Echo = new Echo({
+                broadcaster: 'reverb',
+                key: '{{ env('REVERB_APP_KEY') }}',
+                wsHost: '{{ env('REVERB_HOST') }}',
+                wsPort: {{ env('REVERB_PORT', 8080) }},
+                wssPort: {{ env('REVERB_PORT', 8080) }},
+                forceTLS: false,
+                enabledTransports: ['ws', 'wss'],
+            });
+        } catch (e) {
+            console.error("Echo initialization failed:", e);
+        }
+    </script>
     <style>
         [x-cloak] { display: none !important; }
         body { font-family: 'Inter', sans-serif; background-color: #fff9ec; }
@@ -61,7 +79,7 @@
     </style>
     @yield('styles')
 </head>
-<body class="text-on-surface antialiased overflow-x-hidden" x-data="{ sidebarOpen: false, profileModalOpen: false, profilePreview: null, showCurrentPassword: false, showNewPassword: false }">
+<body class="text-on-surface antialiased overflow-x-hidden" x-data="superadminApp()">
 
     <!-- Mobile Header -->
     <div class="lg:hidden bg-[#163a24] text-white p-4 flex items-center justify-between sticky top-0 z-[110] shadow-lg">
@@ -142,11 +160,6 @@
                 <span class="text-sm font-black uppercase tracking-widest">Users</span>
             </a>
 
-            <a href="{{ route('superadmin.dashboard') }}" 
-               class="flex items-center gap-4 px-4 lg:px-6 py-3 lg:py-4 rounded-2xl transition group {{ Request::is('superadmin/performance*') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
-                <i class="fas fa-tachometer-alt w-5 text-center"></i>
-                <span class="text-sm font-black uppercase tracking-widest">Performance</span>
-            </a>
         </nav>
 
         <!-- Bottom Sidebar -->
@@ -317,6 +330,27 @@
     </div>
     @endauth
 
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('superadminApp', () => ({
+                sidebarOpen: false,
+                profileModalOpen: false,
+                profilePreview: null,
+                showCurrentPassword: false,
+                showNewPassword: false,
+                init() {
+                    if (window.Echo) {
+                        window.Echo.channel('superadmin')
+                            .listen('ComplaintRated', (e) => {
+                                window.dispatchEvent(new CustomEvent('complaint-rated', { 
+                                    detail: { complaint: e.complaint }
+                                }));
+                            });
+                    }
+                }
+            }));
+        });
+    </script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @yield('scripts')
 </body>

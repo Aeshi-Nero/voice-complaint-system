@@ -3,7 +3,7 @@
 @section('title', 'Administrator Management | V.O.I.C.E.')
 
 @section('content')
-<div class="space-y-8">
+<div class="space-y-8" x-data="adminRatings()">
     <!-- Header Section -->
     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 mb-10">
         <div>
@@ -76,11 +76,17 @@
                     </span>
                 </div>
 
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex justify-between items-center mb-3">
                     <div class="space-y-1">
+                        <p class="text-[9px] font-bold text-outline uppercase tracking-widest">Overall Rating</p>
+                        <p class="text-sm font-bold text-accent">{{ number_format((float) $admin->avg_rating, 1) }} <span class="text-yellow-400">★</span></p>
+                    </div>
+                    <div class="space-y-1 text-right">
                         <p class="text-[9px] font-bold text-outline uppercase tracking-widest">Last Active</p>
                         <p class="text-[10px] font-black text-primary">{{ $admin->updated_at->diffForHumans() }}</p>
                     </div>
+                </div>
+                <div class="flex justify-between items-center mb-6">
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-secondary-container text-on-secondary-container text-[10px] font-black uppercase tracking-widest">
                         <span class="w-1.5 h-1.5 rounded-full bg-secondary {{ $admin->is_blocked ? '' : 'animate-pulse' }}"></span> 
                         {{ $admin->is_blocked ? 'Suspended' : 'Active' }}
@@ -120,6 +126,7 @@
                         <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Administrator</th>
                         <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Department</th>
                         <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Role</th>
+                        <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Overall Rating</th>
                         <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Last Active</th>
                         <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-outline">Status</th>
                         <th class="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-outline text-right">Actions</th>
@@ -127,7 +134,7 @@
                 </thead>
                 <tbody class="divide-y divide-outline-variant/10">
                     @forelse($admins as $admin)
-                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                     <tr class="hover:bg-gray-50/50 transition-colors group" :id="'admin-row-{{ $admin->id }}'">
                         <td class="px-8 py-6">
                             <div class="flex items-center gap-3">
                                 <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center font-black text-xs border border-primary/20 overflow-hidden shadow-inner">
@@ -150,6 +157,13 @@
                             <span class="bg-primary-container/10 text-primary-container text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded">
                                 {{ $admin->role === 'superadmin' ? 'Superadmin' : 'Lead Admin' }}
                             </span>
+                        </td>
+                        <td class="px-8 py-6">
+                            <span x-text="ratings[{{ $admin->id }}] !== undefined ? ratings[{{ $admin->id }}] : '{{ number_format((float) $admin->avg_rating, 1) }}'"
+                                  class="text-sm font-bold text-accent">
+                                {{ number_format((float) $admin->avg_rating, 1) }}
+                            </span>
+                            <span class="text-yellow-400 ml-1">★</span>
                         </td>
                         <td class="px-8 py-6 text-sm text-on-surface-variant font-medium">
                             {{ $admin->updated_at->diffForHumans() }}
@@ -184,7 +198,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-8 py-10 text-center text-zinc-400 italic">No administrators found.</td>
+                        <td colspan="7" class="px-8 py-10 text-center text-zinc-400 italic">No administrators found.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -199,4 +213,40 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('adminRatings', () => ({
+            ratings: {},
+            init() {
+                // Initialize ratings from server data
+                @foreach($admins as $admin)
+                    this.ratings[{{ $admin->id }}] = '{{ number_format((float) $admin->avg_rating, 1) }}';
+                @endforeach
+
+                // Listen for live rating updates
+                window.addEventListener('complaint-rated', (e) => {
+                    const complaint = e.detail.complaint;
+                    if (complaint.assigned_to && complaint.rating) {
+                        // Mark this admin's rating as needing refresh
+                        // We'll refetch the avg rating via a simple fetch
+                        this.refreshAdminRating(complaint.assigned_to);
+                    }
+                });
+            },
+            refreshAdminRating(adminId) {
+                fetch('/superadmin/admins/' + adminId + '/avg-rating')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.avg_rating !== undefined) {
+                            this.ratings[adminId] = data.avg_rating;
+                        }
+                    })
+                    .catch(() => {});
+            }
+        }));
+    });
+</script>
 @endsection

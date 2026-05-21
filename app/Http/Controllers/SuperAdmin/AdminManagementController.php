@@ -13,7 +13,12 @@ class AdminManagementController extends Controller
 {
     public function index()
     {
-        $admins = User::whereIn('role', ['admin', 'superadmin'])->paginate(10);
+        $admins = User::whereIn('role', ['admin', 'superadmin'])
+            ->addSelect(['avg_rating' => Complaint::selectRaw('COALESCE(AVG(rating), 0)')
+                ->whereColumn('assigned_to', 'users.id')
+                ->whereNotNull('rating')
+            ])
+            ->paginate(10);
         return view('dashboard.superadmin.admins.index', compact('admins'));
     }
 
@@ -74,6 +79,16 @@ class AdminManagementController extends Controller
             'efficiencyRate',
             'monthlyTrends'
         ));
+    }
+
+    public function getAvgRating(User $admin)
+    {
+        $avg = Complaint::where('assigned_to', $admin->id)
+            ->whereNotNull('rating')
+            ->avg('rating');
+        return response()->json([
+            'avg_rating' => $avg ? number_format((float) $avg, 1) : '0.0'
+        ]);
     }
 
     public function block(User $admin)

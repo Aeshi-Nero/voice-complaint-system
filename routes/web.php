@@ -354,4 +354,5 @@ Route::middleware(["auth", \App\Http\Middleware\SuperAdminMiddleware::class])->p
     Route::get("/admins/{admin}/performance", [\App\Http\Controllers\SuperAdmin\AdminManagementController::class, "performance"])->name("admins.performance");
     Route::post("/admins/{admin}/block", [\App\Http\Controllers\SuperAdmin\AdminManagementController::class, "block"])->name("admins.block");
     Route::post("/admins/{admin}/unblock", [\App\Http\Controllers\SuperAdmin\AdminManagementController::class, "unblock"])->name("admins.unblock");
+    Route::get("/admins/{admin}/avg-rating", [\App\Http\Controllers\SuperAdmin\AdminManagementController::class, "getAvgRating"])->name("admins.avg_rating");
 });
