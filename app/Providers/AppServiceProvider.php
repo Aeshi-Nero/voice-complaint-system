@@ -85,11 +85,11 @@ class AppServiceProvider extends ServiceProvider
                         });
                     }
 
-                    // Always check for unrated resolved complaints for the current user
+                    // Always check for unrated closed complaints (resolved or rejected) for the current user
                     $composedData['resolvedUnrated'] = \App\Models\Complaint::where('user_id', $user->id)
-                        ->where('status', 'resolved')
+                        ->whereIn('status', ['resolved', 'rejected'])
                         ->whereNull('rating')
-                        ->with('assignedTo')
+                        ->with('resolver')
                         ->get();
                 }
             }

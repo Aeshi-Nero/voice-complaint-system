@@ -385,7 +385,7 @@ class ComplaintController extends Controller
 
     public function rate(Request $request, Complaint $complaint)
     {
-        if ($complaint->user_id !== Auth::id() || $complaint->status !== 'resolved') {
+        if ($complaint->user_id !== Auth::id() || !in_array($complaint->status, ['resolved', 'rejected'])) {
             abort(403);
         }
 
@@ -419,9 +419,9 @@ class ComplaintController extends Controller
         }
 
         $counts['resolved_unrated'] = \App\Models\Complaint::where('user_id', $user->id)
-            ->where('status', 'resolved')
+            ->whereIn('status', ['resolved', 'rejected'])
             ->whereNull('rating')
-            ->with(['user', 'assignedTo'])
+            ->with(['user', 'resolver'])
             ->get();
 
         return response()->json($counts);

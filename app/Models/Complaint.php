@@ -38,7 +38,7 @@ class Complaint extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function assignedTo()
+    public function resolver()
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
