@@ -151,8 +151,10 @@ class ComplaintMessageController extends Controller
         $messages = $complaint->messages()->with('user')->get();
 
         if ($request->query('html')) {
-            // Return just the message loop part of the view
-            return view('dashboard.user.partials.messages', compact('complaint', 'messages'))->render();
+            $view = Auth::user()->isAdmin()
+                ? 'dashboard.admin.complaints.partials.messages'
+                : 'dashboard.user.partials.messages';
+            return view($view, compact('complaint', 'messages'))->render();
         }
 
         return response()->json($messages);
