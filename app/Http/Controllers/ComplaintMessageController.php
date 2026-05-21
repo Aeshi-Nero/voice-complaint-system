@@ -6,7 +6,8 @@ use App\Models\Complaint;
 use App\Models\ComplaintMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Notifications\NewComplaintMessage;
+use App\Models\User;
+use App\Notifications\NewMessageNotification;
 use App\Events\MessageSent;
 
 class ComplaintMessageController extends Controller
@@ -44,16 +45,19 @@ class ComplaintMessageController extends Controller
         ]);
 
         try {
-            // Broadcast the message
             MessageSent::dispatch($message);
 
-            // Notify the appropriate party
-            if (Auth::user()->isAdmin()) {
-                // Notify the student/user
-                $complaint->user->notify(new NewComplaintMessage($message));
+            $sender = Auth::user();
+            if ($sender->isAdmin()) {
+                $recipient = $complaint->user;
+            } else {
+                $recipient = $complaint->assignedTo ?: User::whereIn('role', ['admin', 'superadmin'])->first();
+            }
+
+            if ($recipient && $recipient->id !== $sender->id) {
+                $recipient->notify(new NewMessageNotification($message));
             }
         } catch (\Exception $e) {
-            // Log the error but don't fail the request
             \Log::error('Broadcasting/Notification failed: ' . $e->getMessage());
         }
 

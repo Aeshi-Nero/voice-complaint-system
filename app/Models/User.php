@@ -15,6 +15,7 @@ class User extends Authenticatable
         'id_number',
         'name',
         'email',
+        'phone_number',
         'password',
         'role',
         'is_first_login',
@@ -101,5 +102,15 @@ class User extends Authenticatable
     public function isSuperAdmin(): bool
     {
         return $this->role === 'superadmin';
+    }
+
+    public function routeNotificationForSms()
+    {
+        return $this->phone_number;
+    }
+
+    public function hasCompleteProfile(): bool
+    {
+        return !empty($this->email) && !empty($this->phone_number);
     }
 }

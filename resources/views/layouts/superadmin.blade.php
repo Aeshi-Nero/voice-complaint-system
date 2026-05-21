@@ -322,6 +322,35 @@
             </form>
         </div>
     </div>
+
+    <!-- Profile Completion Prompt -->
+    <div x-show="showProfilePrompt" x-cloak class="fixed inset-0 z-[250] bg-primary/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-[3rem] p-8 shadow-2xl text-center space-y-6" @click.away="showProfilePrompt = false">
+            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto">
+                <i class="fas fa-exclamation-triangle text-yellow-500 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-black text-primary uppercase tracking-tight">Complete Your Profile</h3>
+            <p class="text-sm font-bold text-gray-500">Please provide your email address and phone number to receive important notifications about your work.</p>
+
+            <div class="bg-yellow-50 rounded-2xl p-4 space-y-2 text-left">
+                <div class="flex items-center gap-3 text-sm">
+                    <i class="fas fa-envelope" :class="profileEmail ? 'text-green-500' : 'text-gray-300'"></i>
+                    <span :class="profileEmail ? 'text-green-700' : 'text-gray-400'" x-text="profileEmail || 'Email not set'"></span>
+                </div>
+                <div class="flex items-center gap-3 text-sm">
+                    <i class="fas fa-phone" :class="profilePhone ? 'text-green-500' : 'text-gray-300'"></i>
+                    <span :class="profilePhone ? 'text-green-700' : 'text-gray-400'" x-text="profilePhone || 'Phone number not set'"></span>
+                </div>
+            </div>
+
+            <button type="button" @click="showProfilePrompt = false; setTimeout(() => { profileModalOpen = true; }, 300)" class="w-full py-4 bg-accent text-primary rounded-2xl font-black uppercase tracking-widest text-xs shadow-lg shadow-accent/20 hover:bg-yellow-300 transition">
+                Update Profile
+            </button>
+            <button type="button" @click="showProfilePrompt = false" class="text-[11px] font-bold text-gray-400 hover:text-gray-600 transition">
+                Remind me later
+            </button>
+        </div>
+    </div>
     @endauth
 
     <script>
@@ -332,7 +361,16 @@
                 profilePreview: null,
                 showCurrentPassword: false,
                 showNewPassword: false,
+                showProfilePrompt: false,
+                profileEmail: '{{ auth()->user()?->email ?? '' }}',
+                profilePhone: '{{ auth()->user()?->phone_number ?? '' }}',
+                get profileComplete() {
+                    return this.profileEmail && this.profilePhone;
+                },
                 init() {
+                    if (!this.profileComplete) {
+                        setTimeout(() => { this.showProfilePrompt = true; }, 2000);
+                    }
                     if (window.Echo) {
                         window.Echo.channel('superadmin')
                             .listen('ComplaintRated', (e) => {

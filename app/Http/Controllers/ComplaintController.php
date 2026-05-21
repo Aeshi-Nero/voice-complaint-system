@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Complaint;
 use Illuminate\Support\Facades\Auth;
 use App\Events\ComplaintRated;
+use App\Models\User;
+use App\Notifications\ComplaintCreatedNotification;
 use App\Services\ComplaintNumberService;
 use App\Services\ProfanityService;
 
@@ -227,6 +229,16 @@ class ComplaintController extends Controller
 
             // Dispatch real-time event for admins
             \App\Events\ComplaintSubmitted::dispatch($complaint);
+
+            // Notify admins via email/SMS
+            try {
+                $admins = User::whereIn('role', ['admin', 'superadmin'])->get();
+                foreach ($admins as $admin) {
+                    $admin->notify(new ComplaintCreatedNotification($complaint));
+                }
+            } catch (\Exception $notifyEx) {
+                \Illuminate\Support\Facades\Log::error('Failed to notify admins: ' . $notifyEx->getMessage());
+            }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Complaint creation failed: " . $e->getMessage());
             if ($request->ajax() || $request->wantsJson()) {
