@@ -582,7 +582,6 @@
         })
 
         function updateClock() {
-    ...
             const clock = document.getElementById('institutional-clock');
             if (clock) {
                 const now = new Date();
