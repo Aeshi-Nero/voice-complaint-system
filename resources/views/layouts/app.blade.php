@@ -116,19 +116,19 @@
                 :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
                 class="fixed inset-y-0 left-0 z-[100] w-80 bg-[#163a24] text-white transition-transform duration-300 transform overflow-y-auto flex flex-col shadow-2xl lg:translate-x-0 pt-20 lg:pt-0"
             >
-                <!-- Logo Section (Hidden on mobile as it's redundant with the header) -->
-                <div class="hidden lg:block p-8 mb-4">
-                    <div class="flex items-center justify-between lg:justify-start gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="hidden lg:flex bg-white w-12 h-12 lg:w-14 lg:h-14 rounded-2xl items-center justify-center overflow-hidden border-2 border-[#f3bc3e] shadow-inner p-1">
+                <!-- Logo Section -->
+                <div class="p-8 mb-4">
+                    <div class="flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-4 min-w-0">
+                            <div class="hidden lg:flex bg-white w-12 h-12 lg:w-14 lg:h-14 rounded-2xl items-center justify-center overflow-hidden border-2 border-[#f3bc3e] shadow-inner p-1 shrink-0">
                                 <img src="data:image/png;base64,{{ $logoBase64 ?? '' }}" alt="Logo" class="w-full h-full object-contain">
                             </div>
-                            <div>
-                                <h2 class="text-xl lg:text-2xl font-black tracking-tighter leading-none uppercase text-white">V.O.I.C.E.</h2>
+                            <div class="min-w-0">
+                                <h2 class="text-xl lg:text-2xl font-black tracking-tighter leading-none uppercase text-white truncate">V.O.I.C.E.</h2>
                                 <p class="text-[8px] lg:text-[9px] font-bold text-[#f3bc3e] tracking-tight uppercase opacity-80 mt-1">Virtual Outlet</p>
                             </div>
                         </div>
-                        <button @click="sidebarOpen = false" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/20 transition">
+                        <button @click="sidebarOpen = false" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/20 transition shrink-0">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
@@ -489,14 +489,14 @@
                                 </div>
                             </div>
 
-                            <div class="bg-gray-50 rounded-2xl p-4 border-2 border-dashed border-gray-100" x-show="ratingComplaint && ratingComplaint.assigned_to">
+                            <div class="bg-gray-50 rounded-2xl p-4 border-2 border-dashed border-gray-100" x-show="ratingComplaint && ratingComplaint.resolver">
                                 <div class="flex items-center gap-4">
                                     <div class="w-10 h-10 rounded-xl bg-[#163a24] flex items-center justify-center text-white shrink-0">
                                         <i class="fas fa-user-shield text-xs"></i>
                                     </div>
                                     <div class="flex-1 overflow-hidden">
                                         <p class="text-[8px] font-black text-gray-400 uppercase tracking-widest">Handled by</p>
-                                        <p class="text-xs font-black text-[#163a24] truncate uppercase" x-text="ratingComplaint && ratingComplaint.assigned_to ? ratingComplaint.assigned_to.name : 'System Administrator'"></p>
+                                        <p class="text-xs font-black text-[#163a24] truncate uppercase" x-text="ratingComplaint && ratingComplaint.resolver ? ratingComplaint.resolver.name : 'System Administrator'"></p>
                                     </div>
                                 </div>
                             </div>
