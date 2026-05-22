@@ -239,9 +239,8 @@
             <div class="relative z-10">
                 <h3 class="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-6">Case Decision</h3>
                 
-                @if($complaint->status === 'pending' || $complaint->status === 'in_progress')
-                    @php $route = $complaint->status === 'pending' ? route('admin.complaints.update', $complaint) : route('admin.complaints.resolve', $complaint); @endphp
-                    <form method="POST" action="{{ $route }}" class="space-y-6">
+                @if($complaint->status === 'in_progress')
+                    <form method="POST" action="{{ route('admin.complaints.resolve', $complaint) }}" class="space-y-6">
                         @csrf
                         <div>
                             <label class="block text-[9px] font-black text-white/30 uppercase tracking-widest mb-3 ml-1">Resolution Notes</label>
@@ -251,22 +250,21 @@
                         </div>
 
                         <div class="space-y-3">
-                            @if($complaint->status === 'pending')
-                                <button type="submit" name="action" value="accept" 
-                                        class="w-full bg-accent text-primary py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-yellow-300 transition-all flex items-center justify-center gap-3 text-xs">
-                                    <i class="fas fa-check-double"></i> Accept Case
-                                </button>
-                                <button type="submit" name="action" value="reject" 
-                                        class="w-full bg-white/5 text-red-400 border border-red-400/30 py-4 rounded-2xl font-black hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-3 text-xs">
-                                    <i class="fas fa-ban"></i> Reject Submission
-                                </button>
-                            @else
-                                <button type="submit" 
-                                        class="w-full bg-accent text-primary py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-yellow-300 transition-all flex items-center justify-center gap-3 text-sm">
-                                    <i class="fas fa-flag-checkered"></i> Resolve Case
-                                </button>
-                            @endif
+                            <button type="submit" 
+                                    class="w-full bg-accent text-primary py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-yellow-300 transition-all flex items-center justify-center gap-3 text-sm">
+                                <i class="fas fa-flag-checkered"></i> Resolve Case
+                            </button>
                         </div>
+                    </form>
+
+                    <form method="POST" action="{{ route('admin.complaints.update', $complaint) }}" class="mt-4">
+                        @csrf
+                        <button type="submit" 
+                                class="w-full bg-white/5 text-red-400 border border-red-400/30 py-4 rounded-2xl font-black hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-3 text-xs"
+                                onclick="return confirm('Reject this complaint?')">
+                            <i class="fas fa-ban"></i> Reject Submission
+                        </button>
+                    </form>
                     </form>
                 @else
                     <div class="py-10 text-center opacity-40">

@@ -48,9 +48,18 @@ class ComplaintModerationController extends Controller
 
     public function show(Complaint $complaint)
     {
-        $complaint->load('messages.user');
+        if ($complaint->status === 'pending') {
+            $complaint->update([
+                'status' => 'in_progress',
+                'assigned_to' => auth()->id(),
+                'admin_notes' => $complaint->admin_notes,
+            ]);
+        }
+
         $userComplaints = Complaint::where('user_id', $complaint->user_id)
-            ->orderBy('created_at', 'desc')
+            ->where('id', '!=', $complaint->id)
+            ->latest()
+            ->take(5)
             ->get();
             
         $rejectionCount = Complaint::where('user_id', $complaint->user_id)
@@ -64,35 +73,24 @@ class ComplaintModerationController extends Controller
     public function update(Request $request, Complaint $complaint)
     {
         $request->validate([
-            'action' => 'required|in:accept,reject',
             'admin_notes' => 'nullable|string',
         ]);
         
-        if ($request->action === 'accept') {
-            $complaint->update([
-                'status' => 'in_progress',
-                'admin_notes' => $request->admin_notes,
-            ]);
+        $complaint->update([
+            'status' => 'rejected',
+            'admin_notes' => $request->admin_notes,
+            'resolved_at' => Carbon::now('Asia/Manila'),
+        ]);
+        
+        $rejectionCount = Complaint::where('user_id', $complaint->user_id)
+            ->where('status', 'rejected')
+            ->count();
             
-            $message = 'Complaint accepted and marked as in progress.';
+        if ($rejectionCount >= 3) {
+            $complaint->user->update(['is_blocked' => true]);
+            $message = 'Complaint rejected. User has been blocked due to 3 rejections.';
         } else {
-            $complaint->update([
-                'status' => 'rejected',
-                'admin_notes' => $request->admin_notes,
-                'resolved_at' => Carbon::now('Asia/Manila'),
-            ]);
-            
-            // Check if user should be blocked after 3 rejections
-            $rejectionCount = Complaint::where('user_id', $complaint->user_id)
-                ->where('status', 'rejected')
-                ->count();
-                
-            if ($rejectionCount >= 3) {
-                $complaint->user->update(['is_blocked' => true]);
-                $message = 'Complaint rejected. User has been blocked due to 3 rejections.';
-            } else {
-                $message = 'Complaint rejected.';
-            }
+            $message = 'Complaint rejected.';
         }
         
         return redirect()->route('admin.complaints.show', $complaint)->with('success', $message);
