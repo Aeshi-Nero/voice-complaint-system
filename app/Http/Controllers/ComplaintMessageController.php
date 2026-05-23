@@ -115,16 +115,11 @@ class ComplaintMessageController extends Controller
         }));
 
         // Handle audio deletions
-        $deletedAudio = $request->deleted_audio;
-        if (is_string($deletedAudio)) {
-            $deletedAudio = json_decode($deletedAudio, true) ?? [];
+        if ($request->boolean('delete_audio') || $request->input('delete_audio') === '1') {
+            $remainingAudio = [];
+        } else {
+            $remainingAudio = $message->audio_paths ?? [];
         }
-        $deletedAudio = $deletedAudio ?? [];
-
-        $currentAudio = $message->audio_paths ?? [];
-        $remainingAudio = array_values(array_filter($currentAudio, function($audio) use ($deletedAudio) {
-            return !in_array($audio, $deletedAudio);
-        }));
 
         // Handle new images
         if ($request->hasFile('images')) {
@@ -145,6 +140,12 @@ class ComplaintMessageController extends Controller
 
         $message->update($data);
 
+        try {
+            MessageSent::dispatch($message->fresh()->load('user'));
+        } catch (\Exception $e) {
+            \Log::error('Broadcasting update failed: ' . $e->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'message' => $message,
@@ -158,6 +159,12 @@ class ComplaintMessageController extends Controller
         }
 
         $message->delete();
+
+        try {
+            MessageSent::dispatch($message);
+        } catch (\Exception $e) {
+            \Log::error('Broadcasting delete failed: ' . $e->getMessage());
+        }
 
         return response()->json([
             'success' => true,
