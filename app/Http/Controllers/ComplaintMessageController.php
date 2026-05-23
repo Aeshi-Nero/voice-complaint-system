@@ -73,7 +73,8 @@ class ComplaintMessageController extends Controller
 
     public function update(Request $request, ComplaintMessage $message)
     {
-        if ($message->user_id !== Auth::id()) {
+        $user = Auth::user();
+        if ($message->user_id !== $user->id && !$user->isAdmin()) {
             abort(403);
         }
 
@@ -84,16 +85,18 @@ class ComplaintMessageController extends Controller
         ]);
 
         // Optional: Add profanity check
-        $profanityService = app(\App\Services\ProfanityService::class);
-        if ($request->message && $profanityService->containsProfanity($request->message)) {
-            $user = Auth::user();
-            $user->profanity_count += 1;
-            $user->save();
-            
-            return response()->json([
-                'success' => false,
-                'error' => "Your message contains inappropriate language. Strike {$user->profanity_count}/3."
-            ], 422);
+        if ($request->message) {
+            $profanityService = app(\App\Services\ProfanityService::class);
+            if ($profanityService->containsProfanity($request->message)) {
+                $profanityUser = Auth::user();
+                $profanityUser->profanity_count += 1;
+                $profanityUser->save();
+
+                return response()->json([
+                    'success' => false,
+                    'error' => "Your message contains inappropriate language. Strike {$profanityUser->profanity_count}/3."
+                ], 422);
+            }
         }
 
         $data = [];
@@ -154,7 +157,8 @@ class ComplaintMessageController extends Controller
 
     public function destroy(ComplaintMessage $message)
     {
-        if ($message->user_id !== Auth::id()) {
+        $user = Auth::user();
+        if ($message->user_id !== $user->id && !$user->isAdmin()) {
             abort(403);
         }
 
