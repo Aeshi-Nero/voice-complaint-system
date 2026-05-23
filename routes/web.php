@@ -13,7 +13,7 @@ use App\Http\Controllers\ComplaintMessageController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 
-Route::get('/fix-db', function () {
+Route::middleware(['auth', \App\Http\Middleware\SuperAdminMiddleware::class])->get('/fix-db', function () {
     try {
         $output = "";
         
@@ -87,7 +87,7 @@ Route::get('/', function () {
     return redirect("/login");
 });
 
-Route::get("/migrate", function() {
+Route::middleware(['auth', \App\Http\Middleware\SuperAdminMiddleware::class])->get("/migrate", function() {
     try {
         $output = "";
         

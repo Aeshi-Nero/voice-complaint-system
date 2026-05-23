@@ -22,6 +22,7 @@ class Complaint extends Model
         'status',
         'assigned_to',
         'rating',
+        'admin_notes',
         'submitted_at',
         'resolved_at',
     ];

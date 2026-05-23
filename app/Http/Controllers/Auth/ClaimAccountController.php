@@ -52,6 +52,7 @@ class ClaimAccountController extends Controller
             $user->phone_number = $request->contact_info;
         }
         
+        $user->is_first_login = false;
         $user->save();
 
         return response()->json([

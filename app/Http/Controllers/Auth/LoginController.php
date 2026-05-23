@@ -23,13 +23,21 @@ class LoginController extends Controller
         $remember = $request->has('remember');
 
         if (Auth::attempt(["id_number" => $request->id_number, "password" => $request->password], $remember)) {
+            $user = Auth::user();
+
+            if ($user->is_blocked || ($user->banned_until && $user->banned_until->isFuture())) {
+                Auth::logout();
+                $request->session()->invalidate();
+                return back()->withErrors(["id_number" => "Your account has been suspended. Contact support."]);
+            }
+
             $request->session()->regenerate();
             
-            if (Auth::user()->role === "superadmin") {
+            if ($user->role === "superadmin") {
                 return redirect("/superadmin/dashboard");
             }
 
-            if (Auth::user()->role === "admin") {
+            if ($user->role === "admin") {
                 return redirect("/admin/dashboard");
             }
             

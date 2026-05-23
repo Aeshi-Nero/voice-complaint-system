@@ -265,7 +265,6 @@
                             <i class="fas fa-ban"></i> Reject Submission
                         </button>
                     </form>
-                    </form>
                 @else
                     <div class="py-10 text-center opacity-40">
                         <i class="fas fa-lock text-4xl mb-4 text-accent"></i>

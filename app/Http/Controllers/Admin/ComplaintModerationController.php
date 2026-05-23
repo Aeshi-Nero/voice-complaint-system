@@ -52,7 +52,6 @@ class ComplaintModerationController extends Controller
             $complaint->update([
                 'status' => 'in_progress',
                 'assigned_to' => auth()->id(),
-                'admin_notes' => $complaint->admin_notes,
             ]);
         }
 

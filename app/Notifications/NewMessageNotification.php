@@ -35,7 +35,7 @@ class NewMessageNotification extends Notification implements ShouldQueue
         $complaint = $this->message->complaint;
         $sender = $this->message->is_admin ? 'An administrator' : $this->message->user->name;
         $url = $this->message->is_admin
-            ? route('complaints.show', $complaint)
+            ? route('user.complaints.show', $complaint)
             : route('admin.complaints.show', $complaint);
 
         return (new \Illuminate\Notifications\Messages\MailMessage)

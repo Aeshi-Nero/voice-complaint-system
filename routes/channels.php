@@ -25,6 +25,10 @@ Broadcast::channel('complaint.{complaintId}', function ($user, $complaintId) {
     return $user->isAdmin() || $user->id === $complaint->user_id;
 });
 
+Broadcast::channel('admin.complaints', function ($user) {
+    return $user->isAdmin();
+});
+
 Broadcast::channel('poll.{pollId}', function ($user, $pollId) {
     return true; // Public channel for poll results
 });
