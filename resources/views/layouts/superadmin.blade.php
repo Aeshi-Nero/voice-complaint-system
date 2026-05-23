@@ -142,6 +142,12 @@
                 <span class="text-sm font-black uppercase tracking-widest">Analytics</span>
             </a>
             
+            <a href="{{ route('superadmin.complaints.index') }}" 
+               class="flex items-center gap-4 px-4 lg:px-6 py-3 lg:py-4 rounded-2xl transition group {{ Request::is('superadmin/complaints*') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
+                <i class="fas fa-list-alt w-5 text-center"></i>
+                <span class="text-sm font-black uppercase tracking-widest">Complaints</span>
+            </a>
+
             <a href="{{ route('superadmin.admins.index') }}" 
                class="flex items-center gap-4 px-4 lg:px-6 py-3 lg:py-4 rounded-2xl transition group {{ Request::is('superadmin/admins*') ? 'bg-white/10 text-white shadow-lg' : 'text-white/40 hover:text-white hover:bg-white/5' }}">
                 <i class="fas fa-users-cog w-5 text-center"></i>
